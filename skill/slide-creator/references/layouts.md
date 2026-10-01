@@ -208,3 +208,6 @@ of numbers short. Max ~6 rows × 5 columns on a normal slide; use `dense` for mo
 | Show a trend or comparison of numbers | `chart` |
 | Summarise for executives | `summary` |
 | Ask for a decision | `closing` (+ checklist on the slide before) |
+# Automatic logo slot
+
+When `slides.json` sets `logo`, the builder adds a `.brand-logo-slot` to cover and closing pages. The style controls its position and height; deck authors do not place or size it by hand. `logoDark` supplies light artwork for dark page backgrounds.

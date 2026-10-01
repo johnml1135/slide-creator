@@ -56,6 +56,12 @@ common reason decks feel wrong — a slide crammed with 200 words is a bad docum
   type), a serif body face (it reads well at small sizes), plain sans subheads to make the page scannable,
   and colour pages only for the cover and chapters.
 
+## Density and page shape
+
+Use `"density": "roomy"` for a presenter-led story with a few points per slide, `"standard"` for most decks, and `"compact"` when a table or set of steps needs more room. The choice changes text, spacing, and writing limits together. Compact is still a slide: split a page when the content no longer reads at a glance.
+
+Use `"page": "16:9"` for modern screens and `"4:3"` for older projectors or square screens. Use `letter` or `a4` for a document that will be printed or read as a PDF; add `-portrait` for an upright page. The document styles are intended for paper sizes. Put a local SVG or PNG in `images/` and set `"logo"` in `slides.json` when the deck needs a mark on its first and last pages. Add `"logoDark"` if the mark needs light artwork on a dark cover.
+
 ## Story structures that work
 
 - **Situation → Complication → Resolution** (exec decks): context, what changed/the problem, what we propose.

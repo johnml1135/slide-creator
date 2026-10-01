@@ -72,6 +72,9 @@ path of `msedge.exe` or `chrome.exe`. For style import also run `pip install -r 
 - **Recolour one deck**: in its `slides.json` add `"overrides": { "colors": { "primary": "#…", "accent": "#…" } }`.
 - **Dark version**: `"scheme": "dark"` (every built-in style has one).
 - **Different style**: `"style": "<name>"` or `--style <name>` on the build command.
+- **More or less room**: `"density": "roomy" | "standard" | "compact"` in `slides.json` (standard is the default). Roomy suits a short talk; compact suits detailed content that still reads at a glance.
+- **Page shape**: `"page": "16:9" | "4:3" | "letter" | "a4" | "letter-portrait" | "a4-portrait"` or `{ "width": 900, "height": 600 }` in pixels. Use 4:3 for older screens and paper sizes for documents.
+- **Logo**: set `"logo": "images/logo.svg"` and, for dark covers, optionally `"logoDark": "images/logo-dark.svg"`. The mark appears on cover and closing pages; the style controls its size and place.
 - **New or imported style, or changing a style itself**: follow `workflows/new-style.md`.
 
 ## Files

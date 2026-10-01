@@ -22,12 +22,31 @@ export async function loadConfig(projectDir, cli = {}) {
   const p = path.join(projectDir, 'slides.json');
   const file = existsSync(p) ? JSON.parse(await readFile(p, 'utf8')) : {};
   const cfg = { ...DEFAULT_CONFIG, ...file };
-  for (const k of ['style', 'scheme', 'deck', 'out']) if (cli[k]) cfg[k] = cli[k];
+  for (const k of ['style', 'scheme', 'deck', 'out', 'density', 'page']) if (cli[k]) cfg[k] = cli[k];
   if (cli.formats) cfg.formats = cli.formats;
+  cfg.density = cfg.density || 'standard';
+  cfg.overrides = { ...cfg.overrides, density: cfg.density, ...(cfg.page ? { page: cfg.page } : {}) };
   cfg.projectDir = path.resolve(projectDir);
   cfg.outDir = path.resolve(projectDir, cfg.out);
   cfg.deckPath = path.resolve(projectDir, cfg.deck);
   return cfg;
+}
+
+/** Add a local SVG/PNG logo to the title and final pages without remote assets. */
+export async function injectLogos(md, cfg) {
+  if (!cfg.logo) return md;
+  const data = async (name) => {
+    const file = path.resolve(cfg.projectDir, name);
+    const ext = path.extname(file).toLowerCase();
+    if (!['.svg', '.png'].includes(ext)) throw new Error(`Logo must be an SVG or PNG: ${name}`);
+    if (!existsSync(file)) throw new Error(`Logo not found: ${name}`);
+    const bytes = await readFile(file);
+    return `data:image/${ext === '.svg' ? 'svg+xml' : 'png'};base64,${bytes.toString('base64')}`;
+  };
+  const light = await data(cfg.logo);
+  const dark = await data(cfg.logoDark || cfg.logo);
+  const markup = `<div class="brand-logo-slot"><img class="light" src="${light}" alt=""><img class="dark" src="${dark}" alt=""></div>`;
+  return md.replace(/(<!--\s*_class:\s*(?:cover|closing)\s*-->)/g, `$1\n\n${markup}\n\n`);
 }
 
 /** Tiny argv parser: --key value, --flag, positional. */

@@ -49,6 +49,8 @@
     "measure": "100%"
   },
   "space": { "unit": 5, "margin": [64, 72, 64, 72], "gutter": 36, "safe": 28 },
+  "logo": { "position": "top-right", "height": 34 },
+  "content": "top",
   "shape": { "radius": 4, "radiusLarge": 6, "rule": 1, "ruleStrong": 1.5, "shadow": "none" },
   "diagram": {
     "layoutEngine": "elk",

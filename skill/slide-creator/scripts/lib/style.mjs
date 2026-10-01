@@ -86,6 +86,27 @@ function deepMerge(a, b) {
   return out;
 }
 
+const PAGE_PRESETS = {
+  '16:9': { width: 1280, height: 720 },
+  '4:3': { width: 1280, height: 960 },
+  letter: { width: 1056, height: 816 },
+  a4: { width: 1123, height: 794 },
+  'letter-portrait': { width: 816, height: 1056 },
+  'a4-portrait': { width: 794, height: 1123 },
+};
+const DENSITIES = {
+  roomy: { type: 1.08, space: 1.15, words: 0.9, bullets: 0.8 },
+  standard: { type: 1, space: 1, words: 1, bullets: 1 },
+  compact: { type: 0.91, space: 0.86, words: 1.2, bullets: 1.2 },
+};
+function resolvePage(page) {
+  const p = typeof page === 'string' ? PAGE_PRESETS[page] : page;
+  if (!p || !Number.isFinite(p.width) || !Number.isFinite(p.height) || p.width <= 0 || p.height <= 0) {
+    throw new Error(`Invalid page size ${JSON.stringify(page)}. Use 16:9, 4:3, letter, a4, letter-portrait, a4-portrait, or {width,height}.`);
+  }
+  return { width: Math.round(p.width), height: Math.round(p.height) };
+}
+
 /**
  * Resolve the final token set.
  * @param style    parsed style.json
@@ -97,9 +118,12 @@ export function resolveTokens(style, scheme = 'default', override = {}) {
   if (!schemes[scheme]) throw new Error(`Style "${style.name}" has no colour scheme "${scheme}". Available: ${Object.keys(schemes).join(', ')}`);
   const colors = deepMerge(schemes[scheme], override.colors || {});
   for (const r of COLOR_ROLES) if (!colors[r]) throw new Error(`Colour role "${r}" missing in scheme "${scheme}" of style "${style.name}"`);
+  const density = override.density || 'standard';
+  if (!DENSITIES[density]) throw new Error(`Unknown density "${density}". Use roomy, standard, or compact.`);
   const t = {
     name: style.name,
     scheme,
+    density,
     colors,
     type: deepMerge(style.type, override.type || {}),
     space: deepMerge(style.space, override.space || {}),
@@ -108,8 +132,17 @@ export function resolveTokens(style, scheme = 'default', override = {}) {
     chart: deepMerge(style.chart, override.chart || {}),
     rules: deepMerge(style.rules, override.rules || {}),
     // Page size in CSS px (96 per inch). Slides default to 16:9; a style may set e.g. US Letter landscape.
-    page: deepMerge({ width: 1280, height: 720 }, deepMerge(style.page || {}, override.page || {})),
+    page: resolvePage(override.page || style.page || '16:9'),
+    logo: deepMerge(style.logo || { position: 'top-right', height: 44 }, override.logo || {}),
+    content: override.content || style.content || 'center',
   };
+  const d = DENSITIES[density];
+  t.type.scale = Object.fromEntries(Object.entries(t.type.scale).map(([k, v]) => [k, Math.round(v * d.type)]));
+  t.space.unit = Math.round(t.space.unit * d.space * 10) / 10;
+  t.space.gutter = Math.round(t.space.gutter * d.space);
+  t.space.margin = t.space.margin.map((v) => Math.round(v * (1 + (d.space - 1) * 0.35)));
+  t.rules.maxWords = Math.round(t.rules.maxWords * d.words);
+  t.rules.maxBullets = Math.round(t.rules.maxBullets * d.bullets);
   const c = t.colors;
   // Derived colours — never hand-written.
   // In a dark scheme ink is light, so the dark candidate for text on a fill is whichever of ink/bg is darker.
@@ -157,6 +190,8 @@ export function buildCss(style, t, baseCss) {
   // label.family wins (e.g. a sans for subheads beside a serif body); else label.font picks mono/heading/body.
   const labelFont = ty.label?.family || (ty.label?.font === 'mono' ? ty.mono.family : ty.label?.font === 'heading' ? ty.heading.family : ty.body.family);
   const [mt, mr, mb, ml] = sp.margin;
+  const logoPosition = t.logo.position || 'top-right';
+  if (!['top-left', 'top-right', 'bottom-left', 'bottom-right'].includes(logoPosition)) throw new Error(`Invalid logo position "${logoPosition}"`);
   const vars = {
     '--bg': c.bg, '--surface': c.surface, '--ink': c.ink, '--muted': c.muted, '--rule': c.rule,
     '--primary': c.primary, '--on-primary': c.onPrimary,
@@ -178,6 +213,12 @@ export function buildCss(style, t, baseCss) {
     '--rule-w': `${sh.rule}px`, '--rule-w-strong': `${sh.ruleStrong}px`, '--bar-w': `${Math.max(sh.ruleStrong, 3)}px`,
     '--shadow': sh.shadow || 'none',
     '--page-w': `${t.page.width}px`, '--page-h': `${t.page.height}px`,
+    '--logo-height': `${t.logo.height}px`,
+    '--logo-top': logoPosition.startsWith('top') ? 'var(--m-top)' : 'auto',
+    '--logo-bottom': logoPosition.startsWith('bottom') ? 'var(--m-bottom)' : 'auto',
+    '--logo-left': logoPosition.endsWith('left') ? 'var(--m-left)' : 'auto',
+    '--logo-right': logoPosition.endsWith('right') ? 'var(--m-right)' : 'auto',
+    '--content-gap': t.content === 'top' ? '0px' : 'auto',
   };
   const varBlock = Object.entries(vars).map(([k, v]) => `  ${k}: ${v};`).join('\n');
   return [
@@ -192,6 +233,7 @@ export function buildCss(style, t, baseCss) {
 }`,
     `/* ---- ${style.name} personality ---- */`,
     style._css,
+    t.scheme === 'dark' ? 'section:is(.cover, .closing) > .brand-logo-slot img.light { display: none; }\nsection:is(.cover, .closing) > .brand-logo-slot img.dark { display: block; }' : '',
   ].join('\n\n');
 }
 
