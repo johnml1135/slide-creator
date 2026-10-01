@@ -15,6 +15,7 @@ Use after every build. Two layers:
    | `figure-text` | labels inside a diagram/chart end up too small once scaled to fit | fewer or shorter labels, fewer nodes, or give the figure the full width |
    | `figure-size` | a diagram/chart is narrower than 60% of the content width (one column's width on a two-column page); often a tall diagram shrunk to fit | draw it left-to-right, give it more room, or split it |
    | `orphan` | a heading ends with one word alone on its last line | reword or shorten the heading |
+   | `top-heavy` | a slide of visual blocks (KPIs, columns, steps, table) ends above 55% of the height | let the layout centre it (it does by default); remove forced spacing, or add the missing content |
    | `crowded` | too many separate blocks on one slide | one idea per slide |
 2. **Visual** — you look at the images. Open `build/contact-sheet.png` first (whole deck at a glance),
    then each `build/slides/slide-NN.issues.png` from the report, then at least 3 other slides at full size

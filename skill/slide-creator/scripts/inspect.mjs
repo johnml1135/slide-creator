@@ -222,11 +222,12 @@ function measureSlides({ W, H, minFont, maxBlocks }) {
     if (blocksTop > maxBlocks) add('warning', 'crowded', `${blocksTop} top-level blocks (limit ${maxBlocks}); aim for one idea per slide`);
 
     const title = (section.querySelector('h1, h2') || {}).innerText || '';
-    // Sparse content should use the body area, rather than ending immediately below its title.
+    // Sparse visual blocks (KPI rows, columns, steps, tables…) should use the body area rather than hug the title.
+    // Plain prose and bullets may stay top-aligned, as on any well-made text slide.
     if (![...section.classList].some((c) => ['cover', 'agenda', 'chapter', 'statement', 'closing', 'paper', 'diagram', 'chart', 'dense'].includes(c))) {
       const body = [...section.children].filter((el) => !['H1', 'H2', 'H6', 'HEADER', 'FOOTER'].includes(el.tagName)
         && !el.matches('.source, .tracker, .brand-logo-slot') && getComputedStyle(el).display !== 'none');
-      if (body.length) {
+      if (body.length && section.querySelector('.kpis, .cols, .cols3, .cols4, .cols-wide-left, .cols-wide-right, ol.steps, ol.timeline, table, .do, .dont, .card')) {
         const bottom = Math.max(...body.map((el) => rel(el.getBoundingClientRect()).y + rel(el.getBoundingClientRect()).h));
         if (bottom < H * 0.55) add('warning', 'top-heavy', `Content ends at ${Math.round(bottom / H * 100)}% of the page; center or spread the body below the title`);
       }

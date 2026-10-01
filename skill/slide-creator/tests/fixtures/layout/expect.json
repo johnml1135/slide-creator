@@ -4,6 +4,7 @@
     "2": ["overflow", "off-slide", "too-many-bullets", "too-many-words"],
     "3": ["orphan", "inline-style", "no-title"],
     "4": ["unknown-class"],
-    "5": ["missing-image"]
+    "5": ["missing-image"],
+    "6": []
   }
 }

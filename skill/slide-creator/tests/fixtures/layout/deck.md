@@ -36,3 +36,12 @@ Width 700 leaves the last word alone.
 ## A missing picture
 
 ![](images/nowhere.png)
+
+---
+
+## A sparse KPI row sits in the middle of the page
+
+<div class="kpis">
+<div class="kpi"><b>94 min</b><span>Average changeover</span></div>
+<div class="kpi key"><b>17 h</b><span>Capacity lost weekly</span></div>
+</div>
