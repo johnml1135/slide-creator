@@ -60,6 +60,16 @@ export async function importDep(name, fallbacks = []) {
 
 /** Folder of an installed package. Unlike resolving "<pkg>/package.json", this works when the
  *  package's "exports" map hides package.json (d2, vega, vega-lite do). Throws if not installed. */
+/** Rows of one sheet of an .xlsx file as objects keyed by the header row (first sheet if none named). */
+export async function readSheet(file, sheet) {
+  const excel = await importDep('read-excel-file/node');
+  const workbook = await (excel.default || excel.readXlsxFile)(file, sheet ? { sheet } : undefined);
+  const rows = Array.isArray(workbook[0]) ? workbook : workbook[0]?.data || [];
+  const headers = (rows[0] || []).map((x) => String(x ?? '').trim());
+  const records = rows.slice(1).filter((row) => row.some((x) => x !== null)).map((row) => Object.fromEntries(headers.map((h, i) => [h, row[i] ?? null])));
+  return { headers, records };
+}
+
 export function packageDir(name) {
   const req = createRequire(path.join(SKILL_DIR, 'package.json'));
   for (const dir of req.resolve.paths(name) || []) {

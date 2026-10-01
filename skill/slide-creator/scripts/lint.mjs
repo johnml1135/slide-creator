@@ -7,7 +7,7 @@ import { existsSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { DIAGRAM_CLASSES, loadStyle, resolveTokens } from './lib/style.mjs';
-import { loadConfig, parseArgs, splitSlides } from './lib/project.mjs';
+import { loadConfig, parseArgs, splitSlides, readSheet } from './lib/project.mjs';
 
 export const SLIDE_CLASSES = ['cover', 'agenda', 'chapter', 'statement', 'diagram', 'chart', 'closing', 'dense', 'summary', 'paper'];
 export const COMPONENT_CLASSES = [
@@ -129,6 +129,50 @@ export async function runLint(cfg, tokens) {
       const [, mRight, , mLeft] = tokens.space.margin;
       const contentWidth = tokens.page.width - mLeft - mRight;
       if (spec.width && spec.width > contentWidth) add('warning', 'chart-size', `Width over ${contentWidth}px (the content width) will not fit the page`);
+      const fieldsFor = async (data) => {
+        if (!data) return null;
+        if (data.values) return new Set(data.values.flatMap((row) => Object.keys(row)));
+        if (!data.url || /^(https?:|data:)/i.test(data.url)) return null;
+        const source = path.resolve(cfg.projectDir, data.url);
+        if (!existsSync(source)) {
+          add('error', 'missing-chart-data', `Data file not found: ${data.url}. Available fields: none (file missing)`);
+          return null;
+        }
+        if (/\.xlsx$/i.test(data.url)) {
+          try {
+            return new Set((await readSheet(source, data.sheet)).headers.filter(Boolean));
+          } catch (e) { add('error', 'chart-data', `Cannot read ${data.url}: ${e.message}`); return null; }
+        }
+        if (/\.csv$/i.test(data.url)) {
+          const csv = await readFile(source, 'utf8');
+          const header = csv.replace(/^\uFEFF/, '').split(/\r?\n/, 1)[0];
+          return new Set([...header.matchAll(/(?:^|,)(?:"((?:[^"]|"")*)"|([^,]*))/g)]
+            .map((m) => (m[1] ?? m[2]).replace(/""/g, '"').trim()).filter(Boolean));
+        }
+        return null;
+      };
+      const checkNode = async (node, inherited) => {
+        const fields = node.data ? await fieldsFor(node.data) : inherited;
+        const derived = new Set();
+        for (const transform of node.transform || []) {
+          for (const value of [transform.calculate, transform.aggregate, transform.window, transform.joinaggregate, transform.bin, transform.timeUnit]) {
+            if (Array.isArray(value)) for (const item of value) if (item.as) derived.add(item.as);
+          }
+          if (typeof transform.as === 'string') derived.add(transform.as);
+          if (Array.isArray(transform.as)) transform.as.forEach((x) => derived.add(x));
+        }
+        if (fields) for (const [channel, encoding] of Object.entries(node.encoding || {})) {
+          for (const entry of Array.isArray(encoding) ? encoding : [encoding]) {
+            const field = entry?.field;
+            if (field && !fields.has(field) && !derived.has(field))
+              add('error', 'chart-field', `Encoding ${channel} uses missing field "${field}". Available fields: ${[...fields].join(', ') || '(none)'}`);
+          }
+        }
+        for (const key of ['layer', 'hconcat', 'vconcat', 'concat'])
+          for (const child of node[key] || []) await checkNode(child, fields);
+        if (node.spec) await checkNode(node.spec, fields);
+      };
+      await checkNode(spec, null);
     }
   }
 

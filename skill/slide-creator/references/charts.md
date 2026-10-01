@@ -15,7 +15,12 @@ Docs and examples: https://vega.github.io/vega-lite/examples/
   ("Average changeover time, minutes"). Add `subtitle` for scope.
 - **Label directly** (text marks on bars/line ends) instead of a legend when there are ≤4 series.
 - Width ≤ 1100, height 320–440. Put a `<p class="source">` under every chart.
-- Inline data (`"data": {"values": […]}`) or a CSV next to the spec (`"data": {"url": "charts/x.csv"}`).
+- Keep your numbers in Excel if that is how you maintain them. Put the workbook in the project's `data/` folder and use
+  `"data": {"url": "data/sales.xlsx", "sheet": "Q3"}`. `sheet` is optional; the first sheet is used by default.
+  The first row supplies field names. Numeric cells remain numbers, and date cells remain dates. The workbook is read
+  locally during the build, so the PDF does not need the source file after it is built.
+- Inline data (`"data": {"values": […]}`) and local CSV (`"data": {"url": "charts/x.csv"}`) also work.
+  The linter reports a missing local data file or an encoding field absent from that data and lists the available fields.
 - Bars start at zero. No 3D, no pies with more than 3 slices (use bars), no dual axes.
 
 ## Which chart

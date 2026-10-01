@@ -3,13 +3,7 @@
   "title": { "text": "Average changeover time, minutes", "subtitle": "Line 4, weekly" },
   "width": 1000,
   "height": 380,
-  "data": {
-    "values": [
-      { "week": "W1", "minutes": 94 }, { "week": "W2", "minutes": 91 }, { "week": "W3", "minutes": 86 },
-      { "week": "W4", "minutes": 78 }, { "week": "W5", "minutes": 70 }, { "week": "W6", "minutes": 63 },
-      { "week": "W7", "minutes": 58 }, { "week": "W8", "minutes": 55 }
-    ]
-  },
+  "data": { "url": "data/sales.xlsx", "sheet": "Q3" },
   "layer": [
     {
       "mark": { "type": "bar", "width": { "band": 0.62 } },

@@ -41,6 +41,8 @@ path of `msedge.exe` or `chrome.exe`. For style import also run `pip install -r 
 5. **Diagrams and charts**: write `diagrams/<name>.d2` (see `references/diagrams.md`) and
    `charts/<name>.vl.json` (see `references/charts.md`), and reference them as `diagrams/<name>.svg` /
    `charts/<name>.svg` in the deck.
+   If the numbers live in Excel, keep a `.xlsx` in the project's `data/` folder and set chart data to
+   `{"url":"data/sales.xlsx","sheet":"Q3"}` (`sheet` optional). Row one supplies field names.
 6. **Build and inspect**:
    ```
    node <skill>/scripts/build.mjs <folder>
