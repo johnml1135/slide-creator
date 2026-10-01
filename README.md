@@ -8,7 +8,7 @@ the **Edge or Chrome you already have**, and runs offline — nothing is sent to
 
 | | |
 |---|---|
-| **Slides** | [Marp](https://marp.app) Markdown → PDF (or image-based PPTX) |
+| **Slides** | [Marp](https://marp.app) Markdown → PDF. You edit the Markdown; the PDF is rebuilt from it. |
 | **Diagrams** | [D2](https://d2lang.com) via its npm (WebAssembly) build → SVG |
 | **Charts** | [Vega-Lite](https://vega.github.io/vega-lite/) → SVG |
 | **Icons** | [Lucide](https://lucide.dev) (offline SVGs) |
@@ -177,7 +177,7 @@ Other things to ask for:
 
 ```
 node <skill>/scripts/new.mjs my-deck --style boardroom
-node <skill>/scripts/build.mjs my-deck              # add --pptx for PowerPoint, --scheme dark, --style other
+node <skill>/scripts/build.mjs my-deck              # add --scheme dark or --style other
 ```
 
 `<skill>` is where you installed it, e.g. `.github/skills/slide-creator`. The build writes
@@ -201,8 +201,8 @@ skill/slide-creator/        ← the skill (this is what gets installed)
 ## Status
 
 Version 0.1. The full pipeline (Marp, D2, Vega-Lite, inspection) runs end to end on Windows with Edge;
-the samples and style reference images are real renders. Editable (non-image) PowerPoint output is a
-possible next phase.
+the samples and style reference images are real renders. Output is PDF only, by design: the Markdown
+is the editable source.
 
 ## License
 

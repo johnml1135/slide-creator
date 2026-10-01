@@ -21,8 +21,8 @@ ability still produce on-style output.
   remote fonts/images required). Keep it offline.
 - Target fonts are what ships with Windows/Office: Aptos, Segoe UI, Georgia, Bahnschrift, Consolas,
   Cascadia Mono — always with fallbacks.
-- Output priority: PDF first. Marp's `--pptx` is image-based; editable PPTX (PptxGenJS from the same
-  tokens) is a possible phase 2.
+- Output is **PDF only** (decided 2026-10-01). People edit `deck.md` and rebuild; no PowerPoint output is
+  planned. (`--pptx` still passes through to Marp but is undocumented: image-only slides.)
 
 ## Architecture
 
@@ -31,7 +31,7 @@ style.json ──► scripts/lib/style.mjs ──► build/theme.css        (CSS
                                      ├─► build/d2-header.d2     (prepended to every diagram)
                                      ├─► build/chart-config.json (Vega-Lite config)
                                      └─► build/tokens.json      (resolved + derived colours)
-deck.md ──► build.mjs (icons inlined) ──► Marp ──► deck.pdf / deck.pptx + inspect.html (--template bare)
+deck.md ──► build.mjs (icons inlined) ──► Marp ──► deck.pdf + inspect.html (--template bare)
 diagrams/*.d2 ──► @terrastruct/d2 (WASM) ──► build/diagrams/*.svg
 charts/*.vl.json ──► vega-lite + vega (renderer none → SVG) ──► build/charts/*.svg
 inspect.html ──► inspect.mjs (Playwright) ──► slides/*.png, *.issues.png, contact-sheet.png, report.{md,json}
@@ -51,7 +51,7 @@ Key invariants — keep them:
 
 ## Status (v0.1, 2026-10-01)
 
-**Runs end to end on Windows + Edge**: Marp (PDF/PPTX + `--template bare` inspection HTML), D2 WASM, Vega 6 /
+**Runs end to end on Windows + Edge**: Marp (PDF + `--template bare` inspection HTML), D2 WASM, Vega 6 /
 Vega-Lite 6, Lucide inlining, inspector, linter. Samples (`samples/`, light + dark) and every style's
 `reference/` images are real renders from `npm run samples`. `scripts/install.mjs` installs the skill into a
 repo (`.github/skills/`), `~/.copilot/skills/` or any folder, optionally with `copilot-setup-steps.yml`.
@@ -75,7 +75,9 @@ Integration facts learned the hard way (keep them):
 
 ## Next steps (suggested order)
 
-1. Phase 2: editable PPTX via PptxGenJS from the same tokens; a JSON Schema for `style.json`.
+1. The edit loop: `--watch` with an auto-refreshing preview; name the PDF after the deck; logo slot; PDF bookmarks
+   from page titles. Then deck-level `density` and `page` presets, and a JSON Schema for `style.json`.
+   (Full review with diagrams: the "slide-creator review" Claude Design canvas, 2026-10-01.)
 2. More example decks to test styles against (A3 report-out, exec summary); a document-style variant of
    boardroom if users want branded reports.
 3. `--watch` mode (`--slides` partial builds exist).

@@ -53,7 +53,7 @@ path of `msedge.exe` or `chrome.exe`. For style import also run `pip install -r 
    - Open `build/contact-sheet.png`, then every `build/slides/slide-NN.issues.png` named in the report,
      and 3 other slides at full size. Score the rubric; anything under 4 gets fixed.
    - Rebuild. Stop after 3 rounds and tell the user what is still imperfect.
-8. **Deliver**: `build/deck.pdf` (add `--pptx` for PowerPoint — note each slide is an image in that file).
+8. **Deliver**: `build/deck.pdf`. The Markdown is the editable source: to change the deck, edit `deck.md` and rebuild.
    Give a short summary: style used, slide count, anything you could not fix.
 
 ## Hard rules
