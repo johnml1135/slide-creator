@@ -9,7 +9,7 @@ import { fileURLToPath } from 'node:url';
 import { DIAGRAM_CLASSES, loadStyle, resolveTokens } from './lib/style.mjs';
 import { loadConfig, parseArgs, splitSlides, readSheet } from './lib/project.mjs';
 
-export const SLIDE_CLASSES = ['cover', 'agenda', 'chapter', 'statement', 'diagram', 'chart', 'closing', 'dense', 'summary', 'paper'];
+export const SLIDE_CLASSES = ['cover', 'agenda', 'chapter', 'statement', 'diagram', 'chart', 'closing', 'dense', 'summary', 'paper', 'section-summary', 'appendix', 'comparison'];
 export const COMPONENT_CLASSES = [
   'cols', 'cols3', 'cols4', 'cols-wide-left', 'cols-wide-right', 'card', 'outline', 'callout', 'good', 'warn', 'bad', 'info',
   'kpis', 'kpi', 'key', 'stat', 'label', 'do', 'dont', 'check', 'done', 'steps', 'on', 'timeline', 'tag', 'accent',

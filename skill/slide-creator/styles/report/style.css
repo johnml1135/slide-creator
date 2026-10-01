@@ -1,0 +1,32 @@
+/* Report: restrained single-column reading pages. All colour and type come from tokens. */
+section { --bullet: '•'; --bullet-color: var(--ink); }
+section.paper { display: block; column-count: 1; column-fill: auto; }
+section.paper > h1 { margin-bottom: calc(var(--u) * 3); }
+section.paper > h6 { margin-bottom: var(--u); }
+section.paper h2 { margin: calc(var(--u) * 4) 0 var(--u); border-bottom: var(--rule-w) solid var(--rule); padding-bottom: var(--u); }
+section.paper h3 { margin: calc(var(--u) * 2.5) 0 var(--u); }
+section.paper p { max-width: none; }
+section.paper ul, section.paper ol { max-width: none; }
+section.paper li { margin: calc(var(--u) * 0.8) 0; }
+section.paper .figure { margin: calc(var(--u) * 2) 0; }
+section.paper .figure img { max-height: 320px; }
+section.paper p:has(> img) { margin: var(--u) 0; }
+section.paper p > img { max-height: 310px; }
+section.paper .caption { margin-top: var(--u); }
+section.paper .callout { max-width: none; font-size: var(--fs-body); }
+section.paper table { font-size: var(--fs-small); margin: calc(var(--u) * 2) 0; }
+section.paper th, section.paper td { padding: var(--u) calc(var(--u) * 1.5); }
+section.paper th { background: var(--surface); color: var(--ink); }
+section.paper .source { font-size: var(--fs-caption); }
+header { top: calc(var(--u) * 4); border-bottom: var(--rule-w) solid var(--rule); padding-bottom: var(--u); }
+footer { bottom: calc(var(--u) * 4); }
+section::after { color: var(--ink); font-family: var(--font-label); }
+section.cover { justify-content: center; border-top: calc(var(--u) * 3) solid var(--primary); }
+section.cover h1 { font-size: var(--fs-display); max-width: 12em; }
+section.cover p { max-width: 30em; }
+section.agenda ol > li { font-family: var(--font-label); font-size: var(--fs-body); grid-template-columns: 2em 1fr auto; padding: calc(var(--u) * 1.3) 0; }
+section.agenda ol > li em { font-size: var(--fs-body); }
+section.section-summary { background: var(--surface); }
+section.section-summary h1 { font-size: var(--fs-h1); }
+section.appendix h1 { border-bottom: var(--rule-w-strong) solid var(--ink); padding-bottom: calc(var(--u) * 2); }
+section.appendix p, section.appendix li { font-size: var(--fs-small); }

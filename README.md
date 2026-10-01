@@ -13,11 +13,11 @@ the **Edge or Chrome you already have**, and runs offline — nothing is sent to
 | **Charts** | [Vega-Lite](https://vega.github.io/vega-lite/) → SVG |
 | **Icons** | [Lucide](https://lucide.dev) (offline SVGs) |
 | **Inspection** | headless Edge/Chrome via Playwright: per-slide PNGs, contact sheet, layout & contrast checks |
-| **Styles** | token-based style packs; three slide styles and one document style built in; import your own from a .pptx/.pdf |
+| **Styles** | token-based style packs; five slide styles and two document styles built in; import your own from a .pptx/.pdf |
 
 ## The built-in styles
 
-Every style below is the same Markdown, rendered by `npm run samples` — only the style name changes.
+Each style below is rendered from its example project by `npm run samples`.
 
 ![Editorial style: a calm, book-like serif deck](skill/slide-creator/samples/editorial-hero.png)
 
@@ -41,8 +41,21 @@ pre-reads, handouts. The editorial look set as a printed guide: US Letter landsc
 two columns, sans subheads, tables, full-width figures, colour cover and chapter pages; ~350–550 words a page.
 [PDF](skill/slide-creator/samples/editorial-whitepaper.pdf) · [dark](skill/slide-creator/samples/editorial-whitepaper-dark.pdf) · [all pages](skill/slide-creator/samples/editorial-whitepaper.png) · [source](skill/slide-creator/examples/whitepaper/deck.md)
 
+![Report style: formal portrait pages](skill/slide-creator/samples/report-hero.png)
+
+**report** — formal US Letter portrait pages with numbered sections, a running header, tables and captioned figures. For quarterly reports, specifications and audits. [PDF](skill/slide-creator/samples/report.pdf) · [dark](skill/slide-creator/samples/report-dark.pdf) · [all pages](skill/slide-creator/samples/report.png) · [source](skill/slide-creator/examples/report/deck.md)
+
+![Keynote style: large type and broad colour](skill/slide-creator/samples/keynote-hero.png)
+
+**keynote** — dark-first, large type and full-colour section pages for talks, town halls and announcements. [PDF](skill/slide-creator/samples/keynote.pdf) · [light](skill/slide-creator/samples/keynote-light.pdf) · [all slides](skill/slide-creator/samples/keynote.png)
+
+![Minimal style: black on white with one accent](skill/slide-creator/samples/minimal-hero.png)
+
+**minimal** — black on white, strict grid, Aptos/Segoe type and one restrained accent. A safe corporate default. [PDF](skill/slide-creator/samples/minimal.pdf) · [dark](skill/slide-creator/samples/minimal-dark.pdf) · [all slides](skill/slide-creator/samples/minimal.png)
+
 Slide samples come from one 12-slide showcase deck ([source](skill/slide-creator/examples/showcase/deck.md)).
-Every style has a dark scheme, and any colour can be overridden per deck (your brand colours, for example).
+The seven-slide [executive summary](skill/slide-creator/examples/exec-summary/deck.md) is another starting point and builds in every slide style.
+Every style has an alternate scheme, and any colour can be overridden per deck (your brand colours, for example).
 Ask for a document by name (*"Write this up as an editorial-whitepaper document"*), or start one with
 `node <skill>/scripts/new.mjs my-paper --style editorial-whitepaper`.
 
@@ -199,13 +212,15 @@ author metadata (`author` in the deck front matter or `slides.json`).
 ```
 skill/slide-creator/        ← the skill (this is what gets installed)
   SKILL.md                  agent instructions
-  styles/                   editorial, boardroom, plant-floor, editorial-whitepaper (style.json, style.css, guide.md, reference/)
+  styles/                   seven built-in slide and document style packs (style.json, style.css, guide.md, reference/)
   assets/base.css           shared layouts and components
   scripts/                  install, doctor, new, build, inspect, lint, samples, import_style.py
   references/               layouts, tokens, diagrams, charts, rubric, design basics
   workflows/new-style.md    create / import / change a style
   examples/showcase/        one deck using every layout — the test deck for any slide style
   examples/whitepaper/      a 9-page document — the test document for editorial-whitepaper
+  examples/report/          a 9-page portrait operations report
+  examples/exec-summary/    a 7-slide executive summary for every slide style
   samples/                  showcase rendered in each style (light and dark)
 ```
 

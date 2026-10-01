@@ -1,0 +1,17 @@
+/* Minimal: disciplined grid, plain typography, one quiet accent. */
+section { --bullet: '•'; --bullet-color: var(--ink); }
+h2 { max-width: 27em; }
+h6, .kicker { color: var(--muted); }
+section.cover { justify-content: center; border-top: var(--rule-w-strong) solid var(--ink); }
+section.cover h1 { max-width: 13em; }
+section.chapter { background: var(--bg); border-top: var(--rule-w-strong) solid var(--ink); }
+section.chapter h1 { max-width: 13em; }
+section.statement h1, section.statement p { max-width: 22em; }
+section.statement strong { color: var(--accent-text); }
+.card { border-radius: 0; border-top: var(--rule-w) solid var(--rule); }
+.kpi { border-top-color: var(--ink); }
+.kpi > b { color: var(--ink); }
+.kpi.key { border-top-color: var(--accent-text); }
+.kpi.key > b { color: var(--accent-text); }
+th { color: var(--ink); }
+section.agenda ol > li::before { color: var(--ink); }

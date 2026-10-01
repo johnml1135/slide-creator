@@ -1,0 +1,23 @@
+direction: right
+
+before: "Before the stop" {
+  class: group
+  kit: "Kit parts" {class: box}
+  preheat: "Preheat die" {class: box}
+  kit -> preheat {class: link}
+}
+
+stop: "Line stopped" {
+  class: group
+  swap: "Swap die" {class: key}
+}
+
+after: "After restart" {
+  class: group
+  check: "First-off check" {class: box}
+  log: "Log time" {class: quiet}
+  check -> log {class: link}
+}
+
+before.preheat -> stop.swap {class: link}
+stop.swap -> after.check {class: link}

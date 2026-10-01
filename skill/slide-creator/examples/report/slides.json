@@ -1,0 +1,7 @@
+{
+  "deck": "deck.md",
+  "style": "report",
+  "scheme": "default",
+  "out": "build",
+  "formats": ["pdf"]
+}

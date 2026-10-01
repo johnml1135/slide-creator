@@ -1,6 +1,6 @@
 ---
 name: slide-creator
-description: Create polished slide decks (PDF, or image-based PowerPoint) from Markdown with Marp, with on-style D2 diagrams and Vega-Lite charts, three built-in slide styles (editorial, boardroom, plant-floor) plus a two-column whitepaper document style (editorial-whitepaper), automatic inspection of the rendered slides and assessment against the style. Use when the user asks for a presentation, slide deck, slides, a pitch or review deck, a whitepaper, playbook, handout or pre-read document, diagrams or charts for slides, to restyle or recolour a deck, to check a deck's design, or to create or import a presentation style from an existing PowerPoint or PDF.
+description: Create polished PDF slide decks and documents from Markdown with Marp, on-style D2 diagrams and Vega-Lite charts, seven built-in styles, and automatic visual inspection. Use for presentations, reports, specifications, audits, whitepapers, handouts, diagrams or charts, or to restyle or check a deck.
 compatibility: Needs Node.js 18+ (npm install in this folder), an installed Microsoft Edge or Google Chrome for rendering, and Python 3.9+ only for style import.
 ---
 
@@ -29,6 +29,9 @@ path of `msedge.exe` or `chrome.exe`. For style import also run `pip install -r 
    - `editorial-whitepaper` — a **document** to read, not present: whitepapers, playbooks, pre-reads,
      handouts; US Letter pages, two columns, ~350–550 words a page (see `references/design-basics.md`,
      "Slides or a document?"). Its guide replaces the slide writing limits.
+   - `report` — a **document** for formal reports, specifications and audits: US Letter portrait, one column, numbered sections, running header and page numbers.
+   - `keynote` — dark-first slides for live talks, town halls and announcements: very large type and one idea per slide; use `light` for a pale scheme.
+   - `minimal` — a safe corporate slide default: black on white, strict grid, Aptos/Segoe type and one accent.
    Look at `<skill>/samples/<style>.pdf` if you need to show the user the options.
 2. **Read the style.** `<skill>/styles/<style>/guide.md`, and look at 2–3 images in its `reference/` folder.
 3. **Create the project** (skip if it exists):
@@ -95,4 +98,6 @@ path of `msedge.exe` or `chrome.exe`. For style import also run `pip install -r 
 | `references/` | layouts, tokens, diagrams, charts, rubric, design basics |
 | `workflows/new-style.md` | create, import or change a style |
 | `examples/showcase/` | one deck that uses every layout — the test deck for any style |
+| `examples/exec-summary/` | seven-slide example that builds in every slide style |
+| `examples/report/` | nine-page portrait report for the report style |
 | `samples/` | showcase rendered in each built-in style |

@@ -1,0 +1,172 @@
+{
+  "name": "keynote",
+  "label": "Keynote",
+  "summary": "Dark-first, large-type talks with one idea per slide, broad colour fields and very little chrome.",
+  "bestFor": [
+    "town halls and keynote talks",
+    "big announcements",
+    "presentations delivered live"
+  ],
+  "schemes": {
+    "default": {
+      "bg": "#0C1021",
+      "surface": "#18213A",
+      "ink": "#F8F7F2",
+      "muted": "#B8C2D4",
+      "rule": "#35415B",
+      "primary": "#79E1D3",
+      "accent": "#FFB65C",
+      "good": "#7DDBAB",
+      "warn": "#FFCC71",
+      "bad": "#FF817C",
+      "info": "#8FB5FF",
+      "categorical": [
+        "#FFB65C",
+        "#79E1D3",
+        "#8FB5FF",
+        "#FF817C",
+        "#B8C2D4",
+        "#7DDBAB"
+      ],
+      "sequential": [
+        "#18213A",
+        "#FFB65C"
+      ]
+    },
+    "light": {
+      "bg": "#F7F6F1",
+      "surface": "#EAEDEB",
+      "ink": "#10243C",
+      "muted": "#4C5D6A",
+      "rule": "#C7D0D2",
+      "primary": "#0D655E",
+      "accent": "#A94D15",
+      "good": "#23644A",
+      "warn": "#8D5A0A",
+      "bad": "#A73B37",
+      "info": "#285C9A",
+      "categorical": [
+        "#A94D15",
+        "#0D655E",
+        "#285C9A",
+        "#A73B37",
+        "#4C5D6A",
+        "#23644A"
+      ],
+      "sequential": [
+        "#EAEDEB",
+        "#A94D15"
+      ]
+    }
+  },
+  "type": {
+    "heading": {
+      "family": [
+        "Aptos Display",
+        "Aptos",
+        "Segoe UI",
+        "Arial",
+        "sans-serif"
+      ],
+      "weight": 700,
+      "tracking": "-0.025em",
+      "case": "none"
+    },
+    "body": {
+      "family": [
+        "Aptos",
+        "Segoe UI",
+        "Arial",
+        "sans-serif"
+      ],
+      "weight": 400
+    },
+    "mono": {
+      "family": [
+        "Cascadia Mono",
+        "Consolas",
+        "Menlo",
+        "monospace"
+      ]
+    },
+    "label": {
+      "font": "body",
+      "weight": 600,
+      "tracking": "0.08em",
+      "case": "uppercase"
+    },
+    "scale": {
+      "display": 104,
+      "h1": 72,
+      "h2": 52,
+      "h3": 28,
+      "body": 26,
+      "small": 20,
+      "caption": 16,
+      "label": 16
+    },
+    "lineHeight": {
+      "tight": 1.04,
+      "body": 1.3
+    },
+    "measure": "40em"
+  },
+  "space": {
+    "unit": 8,
+    "margin": [
+      88,
+      96,
+      88,
+      96
+    ],
+    "gutter": 44,
+    "safe": 36
+  },
+  "shape": {
+    "radius": 0,
+    "radiusLarge": 0,
+    "rule": 1,
+    "ruleStrong": 3,
+    "shadow": "none"
+  },
+  "diagram": {
+    "layoutEngine": "elk",
+    "pad": 24,
+    "fontSize": 17,
+    "stroke": 1,
+    "radius": 4,
+    "nodeFill": "surface",
+    "nodeStroke": "rule",
+    "groupStroke": "rule",
+    "sketch": false,
+    "labelCase": "Sentence case"
+  },
+  "chart": {
+    "grid": "y",
+    "fontSize": 14,
+    "barRadius": 0,
+    "lineWidth": 2.5,
+    "emphasis": "primary",
+    "deemphasis": "rule"
+  },
+  "rules": {
+    "maxWords": 65,
+    "maxBullets": 5,
+    "maxAccentsPerSlide": 2,
+    "minFontPx": 15,
+    "titleStyle": "phrase",
+    "photos": "only one purposeful full-bleed image",
+    "icons": "very few; support a label only"
+  },
+  "samples": {
+    "example": "showcase",
+    "reference": [
+      1,
+      3,
+      4,
+      5,
+      7,
+      10
+    ]
+  }
+}
