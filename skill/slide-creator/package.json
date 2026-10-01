@@ -2,6 +2,7 @@
   "name": "slide-creator",
   "version": "0.1.0",
   "private": true,
+  "license": "MIT",
   "description": "Agent skill: styled Marp slide decks with D2 diagrams, Vega-Lite charts, inspection and style import.",
   "type": "module",
   "engines": { "node": ">=18" },

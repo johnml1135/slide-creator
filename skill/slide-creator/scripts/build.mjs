@@ -25,8 +25,11 @@ const problems = [];
 await mkdir(cfg.outDir, { recursive: true });
 
 /* 1. Style → theme.css, d2 header, chart config */
-const style = await loadStyle(cfg.style, projectDir);
-const tokens = resolveTokens(style, cfg.scheme, cfg.overrides);
+let style, tokens;
+try {
+  style = await loadStyle(cfg.style, projectDir);
+  tokens = resolveTokens(style, cfg.scheme, cfg.overrides);
+} catch (e) { fail(e.message); }
 const baseCss = await readFile(path.join(SKILL_DIR, 'assets', 'base.css'), 'utf8');
 const themePath = path.join(cfg.outDir, 'theme.css');
 await writeFile(themePath, buildCss(style, tokens, baseCss));
@@ -104,7 +107,7 @@ const imgDir = path.join(projectDir, 'images');
 if (existsSync(imgDir)) await cp(imgDir, path.join(cfg.outDir, 'images'), { recursive: true });
 
 /* 5. Deck: inline icons, normalise front matter */
-if (!existsSync(cfg.deckPath)) throw new Error(`Deck not found: ${cfg.deckPath}`);
+if (!existsSync(cfg.deckPath)) fail(`Deck not found: ${cfg.deckPath} (create one with scripts/new.mjs)`);
 let md = await readFile(cfg.deckPath, 'utf8');
 md = await inlineIcons(md);
 const { front, body } = splitFrontMatter(md);
@@ -147,6 +150,12 @@ if (!args['no-inspect'] && existsSync(path.join(cfg.outDir, 'inspect.html'))) {
 }
 
 /* ---------- helpers ---------- */
+/** A mistake the user can fix: one plain line, no stack trace. */
+function fail(message) {
+  console.error(`✗ ${message}`);
+  process.exit(1);
+}
+
 /** "3,5-7" → Set {3,5,6,7} */
 function parseSlideList(text) {
   const set = new Set();

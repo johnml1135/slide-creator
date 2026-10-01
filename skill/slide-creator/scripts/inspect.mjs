@@ -39,6 +39,11 @@ export async function inspect(cfg, { buildProblems = [], htmlPath, only } = {}) 
     const s = slides[f.slide - 1];
     if (s) s.issues.push(f); else lint.globalIssues.push(f);
   }
+  // A missing image is reported by lint (with its source line); drop the rendered duplicate.
+  for (const s of slides) {
+    const linted = new Set(s.issues.filter((i) => i.src && i.line).map((i) => i.src));
+    s.issues = s.issues.filter((i) => !(i.check === 'missing-image' && !i.line && linted.has(i.src)));
+  }
   if (only) slides = slides.filter((s) => only.has(s.index));
   // Figure labels may sit a notch below body text; default 80% of the body minimum.
   const minFigure = tokens.rules?.minFigureFontPx ?? Math.round((tokens.rules?.minFontPx ?? 14) * 0.8);
@@ -205,7 +210,7 @@ function measureSlides({ W, H, minFont, maxBlocks }) {
 
     // 5. Images that failed to load
     for (const img of section.querySelectorAll('img')) {
-      if (img.complete && img.naturalWidth === 0) add('error', 'missing-image', `Image did not load: ${img.getAttribute('src')}`, img);
+      if (img.complete && img.naturalWidth === 0) { add('error', 'missing-image', `Image did not load: ${img.getAttribute('src')}`, img); issues[issues.length - 1].src = img.getAttribute('src'); }
     }
 
     // 6. Empty slide
@@ -267,7 +272,7 @@ async function checkFigures(figures = [], outDir, minFont) {
       const px = Math.min(...sizes) * (f.w / svgWidth);
       if (px < minFont - 0.5) issues.push({ severity: 'warning', check: 'figure-text', message: `Smallest text in ${f.src} renders at ${px.toFixed(1)}px (minimum ${minFont}px); give the figure more width, draw it smaller, or use fewer/shorter labels`, box: f.box });
     }
-    if (f.available && f.w < 0.6 * f.available) issues.push({ severity: 'warning', check: 'figure-size', message: `${f.src} uses only ${Math.round((100 * f.w) / f.available)}% of the content width; a tall diagram is probably being shrunk to fit — draw it left-to-right or split it`, box: f.box });
+    if (f.available && f.w < 0.6 * f.available) issues.push({ severity: 'warning', check: 'figure-size', message: `${f.src} uses only ${Math.round((100 * f.w) / f.available)}% of the content width; a tall diagram is being shrunk to fit (draw it left-to-right or split it), or a chart has a small fixed width`, box: f.box });
   }
   return issues;
 }

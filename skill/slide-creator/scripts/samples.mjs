@@ -2,7 +2,8 @@
 // Rebuild the published samples for every built-in style from its example project (examples/showcase, or the
 // one named in style.json "samples.example", e.g. a document style uses examples/whitepaper):
 //   samples/<style>.pdf, samples/<style>.png (contact sheet), samples/<style>-<scheme>.pdf for each extra scheme,
-//   styles/<style>/reference/<example>-NN.png (the pages agents compare against).
+//   styles/<style>/reference/<example>-NN.png (the pages agents compare against),
+//   samples/<style>-hero.png (README showcase: name, use cases, cover and three pages, in the style's own look).
 // Fails (exit 1) if any build reports an error or warning: published samples must be clean.
 // Usage: node <skill>/scripts/samples.mjs [style ...]
 
@@ -11,6 +12,7 @@ import { existsSync } from 'node:fs';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { SKILL_DIR, loadStyle } from './lib/style.mjs';
+import { launchBrowser } from './lib/project.mjs';
 
 // Cover, chapter, KPIs, diagram, chart, table: one of each kind of slide a style has to get right.
 // A style can name its own list in style.json "samples.reference".
@@ -60,10 +62,41 @@ for (const s of styles) {
       await rm(refDir, { recursive: true, force: true });
       await rename(staged, refDir);
       console.log(`→ styles/${s}/reference/ (${refs.length} pages)`);
+      await hero(style, out, refs, path.join(samplesDir, `${s}-hero.png`));
+      console.log(`→ samples/${s}-hero.png`);
     } catch (e) {
       failures.push(`${s}${suffix}: ${e.message}`);
     }
   }
+}
+
+/** README showcase image: the cover large, three content pages beside it, on the style's own colours. */
+async function hero(style, buildDir, refs, file) {
+  const t = JSON.parse(await readFile(path.join(buildDir, 'tokens.json'), 'utf8'));
+  const c = t.colors;
+  const img = async (n) => 'data:image/png;base64,' + (await readFile(path.join(buildDir, 'slides', `slide-${String(n).padStart(2, '0')}.png`))).toString('base64');
+  const [W, H, pad, head, gap] = [1600, 1000, 64, 150, 28];
+  const ratio = t.page.height / t.page.width;
+  const smallH = (H - head - pad - 2 * gap) / 3, smallW = smallH / ratio;
+  const bigW = Math.min(W - 2 * pad - gap - smallW, (H - head - pad) / ratio), bigH = bigW * ratio;
+  const fam = (f) => (Array.isArray(f) ? f : [f]).map((x) => (/\s/.test(x) ? `'${x}'` : x)).join(', ');
+  const shot = (src, w, h) => `<img src="${src}" style="width:${w}px;height:${h}px;display:block;border-radius:6px;box-shadow:0 18px 40px -12px rgba(0,0,0,.35),0 2px 6px rgba(0,0,0,.12)">`;
+  const smalls = await Promise.all(refs.slice(-3).map(async (n) => shot(await img(n), smallW, smallH)));
+  const html = `<body style="margin:0;width:${W}px;height:${H}px;background:linear-gradient(135deg, ${c.surface}, ${c.bg} 60%);font-family:${fam(t.type.body.family)};color:${c.ink};overflow:hidden">
+    <div style="position:absolute;left:${(W - bigW - gap - smallW) / 2}px;top:46px;right:${pad}px;display:flex;align-items:baseline;gap:24px">
+      <div style="font-family:${fam(t.type.heading.family)};font-weight:${t.type.heading.weight ?? 600};font-size:52px;letter-spacing:-0.01em">${style.label}</div>
+      <div style="font-size:20px;color:${c.muted}">${(style.bestFor || []).slice(0, 3).join(' · ')}</div>
+    </div>
+    <div style="position:absolute;left:${(W - bigW - gap - smallW) / 2}px;top:${head}px;height:${H - head - pad}px;display:flex;gap:${gap}px;align-items:center">
+      ${shot(await img(refs[0]), bigW, bigH)}
+      <div style="display:flex;flex-direction:column;gap:${gap}px">${smalls.join('')}</div>
+    </div></body>`;
+  const browser = await launchBrowser();
+  try {
+    const page = await browser.newPage({ viewport: { width: W, height: H }, deviceScaleFactor: 1 });
+    await page.setContent(html, { waitUntil: 'load' });
+    await page.screenshot({ path: file });
+  } finally { await browser.close(); }
 }
 
 if (failures.length) {

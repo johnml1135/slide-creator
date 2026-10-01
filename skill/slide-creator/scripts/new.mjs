@@ -13,7 +13,7 @@ const args = parseArgs(process.argv.slice(2));
 const dir = path.resolve(args._[0] || 'deck');
 const style = args.style || 'editorial';
 const scheme = args.scheme || 'default';
-findStyleDir(style, dir); // throws if unknown
+try { findStyleDir(style, dir); } catch (e) { console.error(`✗ ${e.message}`); process.exit(1); }
 const isDocument = (await loadStyle(style, dir)).kind === 'document';
 
 // Starter for document styles (kind: "document" in style.json): cover, contents, chapter, two-column page.

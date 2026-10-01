@@ -32,7 +32,7 @@ export async function runLint(cfg, tokens) {
   /* ---------- deck ---------- */
   const md = await readFile(cfg.deckPath, 'utf8');
   for (const s of splitSlides(md)) {
-    const add = (severity, check, message) => slideIssues.push({ slide: s.index, severity, check, message, line: s.startLine });
+    const add = (severity, check, message, src) => slideIssues.push({ slide: s.index, severity, check, message, line: s.startLine, src });
     const prose = s.text.replace(/(```|~~~)[\s\S]*?\1/g, ' ');
     const classes = [...prose.matchAll(/<!--\s*_?class\s*:\s*([^>]*?)\s*-->/g)].flatMap((m) => m[1].split(/\s+/));
     const htmlClasses = [...prose.matchAll(/\bclass="([^"]*)"/g)].flatMap((m) => m[1].split(/\s+/)).filter(Boolean);
@@ -74,7 +74,7 @@ export async function runLint(cfg, tokens) {
         const exists = kind === 'diagrams' ? existsSync(path.join(cfg.projectDir, 'diagrams', `${name}.d2`))
           : ['.vl.json', '.json'].some((e) => existsSync(path.join(cfg.projectDir, 'charts', name + e)));
         if (!exists) add('error', 'missing-source', `${src} has no source file in ${kind}/`);
-      } else if (!existsSync(path.join(cfg.projectDir, src))) add('error', 'missing-image', `Image not found: ${src}`);
+      } else if (!existsSync(path.join(cfg.projectDir, src))) add('error', 'missing-image', `Image not found: ${src}`, src);
     }
   }
 

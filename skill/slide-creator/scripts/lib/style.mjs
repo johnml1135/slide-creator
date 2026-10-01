@@ -2,7 +2,7 @@
 // style.json is the single source of truth; everything visual is generated from it.
 
 import { readFile } from 'node:fs/promises';
-import { existsSync } from 'node:fs';
+import { existsSync, readdirSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -67,7 +67,8 @@ export function findStyleDir(name, projectDir) {
     const p = path.join(d, name);
     if (existsSync(path.join(p, 'style.json'))) return p;
   }
-  throw new Error(`Style "${name}" not found. Looked in: ${styleDirs(projectDir).join(', ')}`);
+  const available = styleDirs(projectDir).filter(existsSync).flatMap((d) => readdirSync(d).filter((n) => existsSync(path.join(d, n, 'style.json'))));
+  throw new Error(`Style "${name}" not found. Available: ${[...new Set(available)].join(', ')}`);
 }
 export async function loadStyle(name, projectDir) {
   const dir = findStyleDir(name, projectDir);

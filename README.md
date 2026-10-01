@@ -17,25 +17,33 @@ the **Edge or Chrome you already have**, and runs offline — nothing is sent to
 
 ## The built-in styles
 
-| Style | Feel | Use for | Samples |
-|---|---|---|---|
-| **editorial** | calm, book-like, serif titles, warm paper, one clay accent | explainers, training, strategy narratives | [PDF](skill/slide-creator/samples/editorial.pdf) · [dark](skill/slide-creator/samples/editorial-dark.pdf) · [overview](skill/slide-creator/samples/editorial.png) |
-| **boardroom** | consulting / executive: white, navy, action titles, strict grid | leadership updates, business cases, reviews | [PDF](skill/slide-creator/samples/boardroom.pdf) · [dark](skill/slide-creator/samples/boardroom-dark.pdf) · [overview](skill/slide-creator/samples/boardroom.png) |
-| **plant-floor** | industrial: header bar, condensed headings, mono labels, safety colours | operations, CI/A3, engineering, project status | [PDF](skill/slide-creator/samples/plant-floor.pdf) · [dark](skill/slide-creator/samples/plant-floor-dark.pdf) · [overview](skill/slide-creator/samples/plant-floor.png) |
+Every style below is the same Markdown, rendered by `npm run samples` — only the style name changes.
 
-Every slide sample is the same 12-slide showcase deck ([source](skill/slide-creator/examples/showcase/deck.md)),
-rendered by `npm run samples`. Any colour can be overridden per deck.
+![Editorial style: a calm, book-like serif deck](skill/slide-creator/samples/editorial-hero.png)
 
-### For documents: editorial-whitepaper
+**editorial** — calm and book-like: serif titles, warm paper, one clay accent. For explainers, training and
+strategy narratives. [PDF](skill/slide-creator/samples/editorial.pdf) · [dark](skill/slide-creator/samples/editorial-dark.pdf) · [all slides](skill/slide-creator/samples/editorial.png)
 
-When the result will be **read** rather than presented — a whitepaper, playbook, pre-read or handout —
-use **editorial-whitepaper**: the editorial look set as a printed guide, with US Letter landscape pages,
-serif body text in two columns, sans subheads, tables, full-width figures, and colour cover and chapter
-pages. Same Markdown, diagrams and charts; ~350–550 words a page.
-[PDF](skill/slide-creator/samples/editorial-whitepaper.pdf) · [dark](skill/slide-creator/samples/editorial-whitepaper-dark.pdf) ·
-[overview](skill/slide-creator/samples/editorial-whitepaper.png) · [source](skill/slide-creator/examples/whitepaper/deck.md)
+![Boardroom style: navy and teal executive deck](skill/slide-creator/samples/boardroom-hero.png)
 
-Ask for it by name (*"Write this up as an editorial-whitepaper document"*), or start one with
+**boardroom** — consulting / executive: white, navy, action titles, a strict grid. For leadership updates,
+business cases and reviews read without a presenter. [PDF](skill/slide-creator/samples/boardroom.pdf) · [dark](skill/slide-creator/samples/boardroom-dark.pdf) · [all slides](skill/slide-creator/samples/boardroom.png)
+
+![Plant Floor style: industrial deck with a header bar and hazard stripe](skill/slide-creator/samples/plant-floor-hero.png)
+
+**plant-floor** — industrial: header bar, condensed headings, mono labels, safety colours. For operations,
+CI/A3, engineering and project status. [PDF](skill/slide-creator/samples/plant-floor.pdf) · [dark](skill/slide-creator/samples/plant-floor-dark.pdf) · [all slides](skill/slide-creator/samples/plant-floor.png)
+
+![Editorial whitepaper style: two-column US Letter document](skill/slide-creator/samples/editorial-whitepaper-hero.png)
+
+**editorial-whitepaper** — for documents people **read** rather than watch: whitepapers, playbooks,
+pre-reads, handouts. The editorial look set as a printed guide: US Letter landscape pages, serif body text in
+two columns, sans subheads, tables, full-width figures, colour cover and chapter pages; ~350–550 words a page.
+[PDF](skill/slide-creator/samples/editorial-whitepaper.pdf) · [dark](skill/slide-creator/samples/editorial-whitepaper-dark.pdf) · [all pages](skill/slide-creator/samples/editorial-whitepaper.png) · [source](skill/slide-creator/examples/whitepaper/deck.md)
+
+Slide samples come from one 12-slide showcase deck ([source](skill/slide-creator/examples/showcase/deck.md)).
+Every style has a dark scheme, and any colour can be overridden per deck (your brand colours, for example).
+Ask for a document by name (*"Write this up as an editorial-whitepaper document"*), or start one with
 `node <skill>/scripts/new.mjs my-paper --style editorial-whitepaper`.
 
 ---
@@ -195,3 +203,7 @@ skill/slide-creator/        ← the skill (this is what gets installed)
 Version 0.1. The full pipeline (Marp, D2, Vega-Lite, inspection) runs end to end on Windows with Edge;
 the samples and style reference images are real renders. Editable (non-image) PowerPoint output is a
 possible next phase.
+
+## License
+
+[MIT](LICENSE) © 2026 John Lambert. The tools npm installs alongside it (Marp, D2, Vega, Lucide, Playwright) keep their own licenses.
