@@ -1,7 +1,9 @@
 # slide-creator
 
-An agent skill that lets GitHub Copilot (or Claude) make **properly designed slide decks** from Markdown —
-with diagrams and charts that match, a check of the rendered result, and swappable visual styles.
+A presentation production layer for AI agents: **local Markdown and business data → inspected PDF decks**,
+with charts, diagrams and assets that share a style. Use [Impeccable](https://github.com/pbakaus/impeccable)
+for art direction and critique when available; slide-creator supplies the presentation-specific tooling.
+See [the integration guide](skill/slide-creator/references/impeccable.md).
 
 Built for locked-down corporate PCs: everything installs with **npm** (plus optional **pip**), renders with
 the **Edge or Chrome you already have**, and runs offline — nothing is sent to web services.
@@ -11,7 +13,8 @@ the **Edge or Chrome you already have**, and runs offline — nothing is sent to
 | **Slides** | [Marp](https://marp.app) Markdown → PDF. You edit the Markdown; the PDF is rebuilt from it. |
 | **Diagrams** | [D2](https://d2lang.com) via its npm (WebAssembly) build → SVG |
 | **Charts** | [Vega-Lite](https://vega.github.io/vega-lite/) → SVG |
-| **Icons** | [Lucide](https://lucide.dev) (offline SVGs) |
+| **Icons** | [Lucide](https://lucide.dev) (offline SVGs, style-controlled line weight) |
+| **Illustrations and photos** | Validated, themed local SVGs; crop, tint, duotone and readable photo panels |
 | **Inspection** | headless Edge/Chrome via Playwright: per-slide PNGs, contact sheet, layout & contrast checks |
 | **Styles** | token-based style packs; five slide styles and two document styles built in; import your own from a .pptx/.pdf |
 
@@ -60,6 +63,21 @@ Ask for a document by name (*"Write this up as an editorial-whitepaper document"
 `node <skill>/scripts/new.mjs my-paper --style editorial-whitepaper`.
 
 ---
+
+## Richer visuals, still offline
+
+Use reviewed compositions rather than asking an agent to invent detailed SVG paths. The bundled layer
+stack, Lucide icons, D2 diagrams and Vega-Lite charts provide reliable parts to assemble. Authored SVGs in
+`illustrations/` inherit the current style and scheme; validation catches malformed markup, literal colours
+and external resources. It does not grade artistic quality.
+
+Local photos support crop focus, framing, accent tint, duotone and solid caption panels. The inspector warns
+about enlarged raster pixels and text whose contrast still needs visual review. Detailed photographs and
+complex artwork come from approved local assets. See the [visual authoring guide](skill/slide-creator/references/visuals.md)
+and [quality workflow](skill/slide-creator/references/visual-quality.md).
+
+[Visual story PDF](gallery/visual-story.pdf) · [dark PDF](gallery/visual-story-dark.pdf) ·
+[contact sheet](gallery/visual-story.png) · [source](skill/slide-creator/examples/visual-story/deck.md)
 
 ## Get it working
 

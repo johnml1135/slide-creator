@@ -51,3 +51,20 @@ test('logo is embedded on cover and closing with a dark variant', async () => {
   assert.equal((result.match(/class="dark"/g) || []).length, 2);
   assert.match(result, /data:image\/svg\+xml;base64,/);
 });
+
+
+test('imagery tokens inherit style, allow overrides and reject invalid geometry', async () => {
+  const style = await loadStyle('editorial');
+  const t = resolveTokens(style);
+  assert.equal(t.icon.stroke, 1.5);
+  const custom = resolveTokens(style, 'dark', { icon: { stroke: 2.5 }, image: { position: '0% 50%', aspect: 2 } });
+  assert.equal(custom.icon.stroke, 2.5);
+  assert.equal(custom.image.position, '0% 50%');
+  const { buildCss } = await import('../../../skill/slide-creator/scripts/lib/style.mjs');
+  const css = buildCss(style, custom, '');
+  assert.match(css, /--icon-stroke: 2.5/);
+  assert.match(css, /--image-position: 0% 50%/);
+  assert.match(css, /feComponentTransfer/);
+  for (const override of [{ icon: { stroke: 0 } }, { image: { aspect: 0 } }, { image: { position: '120% 50%' } }, { image: { fit: 'bad' } }, { image: { overlay: 2 } }])
+    assert.throws(() => resolveTokens(style, 'default', override));
+});

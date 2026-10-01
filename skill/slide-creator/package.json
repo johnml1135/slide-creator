@@ -17,6 +17,7 @@
   "dependencies": {
     "@marp-team/marp-cli": "^4.1.0",
     "@terrastruct/d2": ">=0.1.33 <1",
+    "@xmldom/xmldom": "^0.9.10",
     "lucide-static": ">=0.460.0 <1",
     "pdf-lib": "^1.17.1",
     "playwright-core": "^1.50.0",

@@ -77,7 +77,7 @@ if (existsSync(dir) && (await readdir(dir)).length && !args.force) {
   console.error(`${dir} is not empty (use --force to add the starter files anyway).`);
   process.exit(1);
 }
-for (const d of ['diagrams', 'charts', 'images']) await mkdir(path.join(dir, d), { recursive: true });
+for (const d of ['diagrams', 'charts', 'images', 'illustrations']) await mkdir(path.join(dir, d), { recursive: true });
 
 const write = async (rel, text) => {
   const p = path.join(dir, rel);

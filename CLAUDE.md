@@ -6,7 +6,7 @@ Context for anyone (human or agent) continuing work on this repo.
 
 An agent skill (`skill/slide-creator/`) that lets GitHub Copilot agents (and Claude) produce well-designed
 slide decks from Markdown: Marp for slides, D2 for diagrams, Vega-Lite for charts, Lucide icons, and a
-Playwright-driven inspector that renders every slide to PNG and checks layout. Visual decisions come only
+Playwright-driven inspector that renders every slide to PNG and checks layout. Presentation rendering decisions come
 from **style packs** (`styles/<name>/style.json` + `style.css` + `guide.md`), so agents with weak visual
 ability still produce on-style output.
 
@@ -23,6 +23,14 @@ ability still produce on-style output.
   Cascadia Mono — always with fallbacks.
 - Output is **PDF only** (decided 2026-10-01). People edit `deck.md` and rebuild; no PowerPoint output is
   planned. (`--pptx` still passes through to Marp but is undocumented: image-only slides.)
+
+## Relationship to Impeccable
+
+The user chose a thin presentation layer beside Impeccable (2026-10-01). Impeccable owns general design
+and critique when available; this repo owns the offline presentation compiler, shared style tokens,
+local data/asset handling, PDF export and slide-specific inspection. Do not build a competing general
+design command suite. `references/impeccable.md` explains optional setup and the review handoff emitted
+by inspection as `build/design-review.md`. No native Impeccable engine is required for deck builds.
 
 ## Architecture
 
@@ -59,6 +67,12 @@ bookmarks + metadata (`scripts/pdf.mjs`). `scripts/install.mjs` installs the ski
 
 Styles: slides `editorial`, `boardroom`, `plant-floor`, `keynote`, `minimal`; documents (`kind: "document"`)
 `editorial-whitepaper` (Letter landscape, two-column `paper` layout) and `report` (Letter portrait).
+Visual assets: `illustrations/*.svg` are validated and inlined with scoped IDs and alt-derived accessible
+names; style tokens drive fills/fonts. `icon.stroke` and `image` control optional photo framing, crop,
+tint, duotone and overlays. Inspector checks raster enlargement and flags unverified image/gradient contrast.
+`examples/visual-story` and the reviewed layer-stack template demonstrate reuse; complex artwork is supplied
+locally. See `references/visuals.md` and `references/visual-quality.md`.
+
 Deck knobs in slides.json: `density`, `page`, `logo`/`logoDark`. Examples: showcase, whitepaper, report,
 exec-summary.
 
@@ -78,6 +92,10 @@ Integration facts learned the hard way (keep them):
 - d2/vega/vega-lite hide `package.json` behind `exports`; use `packageDir()`, not `resolve('<pkg>/package.json')`.
 - In dark schemes `ink` is light: derived "text on a fill" colours must pick the darker of `ink`/`bg`.
 - Markdown `breaks` is on in Marp by default; document styles set `"markdown": {"breaks": false}`.
+
+Rendering from WSL: Node 24 is installed through nvm; this machine has no Linux browser. Windows Node
+and installed Edge passed doctor and render tests using `/mnt/c/Program Files/nodejs/node.exe` from WSL
+(with interop permitted). A Linux browser download was unreachable; corporate users still use installed Edge.
 
 ## Next steps (suggested order)
 

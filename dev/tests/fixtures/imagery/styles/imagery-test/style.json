@@ -1,0 +1,197 @@
+{
+  "name": "imagery-test",
+  "label": "Boardroom",
+  "summary": "Executive / consulting style: white canvas, strong sans-serif, navy structure, one bright highlight, strict grid. Every title is an 'action title' that states the conclusion, and every number carries a source.",
+  "bestFor": [
+    "steering committees and leadership updates",
+    "business cases and investment asks",
+    "quarterly reviews",
+    "decks that will be read without a presenter"
+  ],
+  "schemes": {
+    "default": {
+      "bg": "#FFFFFF",
+      "surface": "#F2F4F7",
+      "ink": "#1A2230",
+      "muted": "#5C6677",
+      "rule": "#D3D9E2",
+      "primary": "#0B2A4A",
+      "accent": "#00808A",
+      "good": "#2E7D4F",
+      "warn": "#C77700",
+      "bad": "#B42318",
+      "info": "#1F5FA8",
+      "categorical": [
+        "#0B2A4A",
+        "#00808A",
+        "#7F8FA6",
+        "#4F8FD6",
+        "#C77700",
+        "#B8C2D1"
+      ],
+      "sequential": [
+        "#E6EEF7",
+        "#0B2A4A"
+      ]
+    },
+    "dark": {
+      "bg": "#0B1626",
+      "surface": "#142338",
+      "ink": "#EEF2F7",
+      "muted": "#9AA6B8",
+      "rule": "#26364E",
+      "primary": "#7FB2E5",
+      "accent": "#2EC4CE",
+      "good": "#5FBF86",
+      "warn": "#F0A73A",
+      "bad": "#F0685D",
+      "info": "#7FB2E5",
+      "categorical": [
+        "#7FB2E5",
+        "#2EC4CE",
+        "#9AA6B8",
+        "#C6D4E6",
+        "#F0A73A",
+        "#5FBF86"
+      ],
+      "sequential": [
+        "#142338",
+        "#7FB2E5"
+      ]
+    }
+  },
+  "type": {
+    "heading": {
+      "family": [
+        "Aptos Display",
+        "Aptos",
+        "Segoe UI Semibold",
+        "Segoe UI",
+        "Calibri",
+        "Arial",
+        "sans-serif"
+      ],
+      "weight": 600,
+      "tracking": "-0.01em",
+      "case": "none"
+    },
+    "body": {
+      "family": [
+        "Aptos",
+        "Segoe UI",
+        "Calibri",
+        "Arial",
+        "sans-serif"
+      ],
+      "weight": 400
+    },
+    "mono": {
+      "family": [
+        "Cascadia Mono",
+        "Consolas",
+        "Menlo",
+        "monospace"
+      ]
+    },
+    "label": {
+      "font": "body",
+      "weight": 700,
+      "tracking": "0.04em",
+      "case": "uppercase"
+    },
+    "scale": {
+      "display": 64,
+      "h1": 48,
+      "h2": 34,
+      "h3": 22,
+      "body": 22,
+      "small": 18,
+      "caption": 14,
+      "label": 14
+    },
+    "lineHeight": {
+      "tight": 1.15,
+      "body": 1.45
+    },
+    "measure": "40em"
+  },
+  "space": {
+    "unit": 8,
+    "margin": [
+      72,
+      64,
+      72,
+      64
+    ],
+    "gutter": 40,
+    "safe": 32
+  },
+  "logo": {
+    "position": "top-right",
+    "height": 42
+  },
+  "content": "center",
+  "shape": {
+    "radius": 4,
+    "radiusLarge": 6,
+    "rule": 1,
+    "ruleStrong": 3,
+    "shadow": "none"
+  },
+  "diagram": {
+    "layoutEngine": "elk",
+    "pad": 24,
+    "fontSize": 17,
+    "stroke": 1,
+    "radius": 4,
+    "nodeFill": "surface",
+    "nodeStroke": "rule",
+    "groupStroke": "rule",
+    "sketch": false,
+    "labelCase": "Sentence case"
+  },
+  "chart": {
+    "grid": "y",
+    "fontSize": 14,
+    "barRadius": 0,
+    "lineWidth": 2.5,
+    "emphasis": "primary",
+    "deemphasis": "rule"
+  },
+  "rules": {
+    "maxWords": 60,
+    "maxBullets": 5,
+    "maxAccentsPerSlide": 2,
+    "minFontPx": 13,
+    "titleStyle": "action",
+    "photos": "only real company/site photos with a purpose; never stock",
+    "icons": "allowed in KPI tiles and agenda; single colour, consistent size"
+  },
+  "icon": {
+    "stroke": 2
+  },
+  "image": {
+    "radius": 4,
+    "aspect": 1.6,
+    "fit": "cover",
+    "position": "50% 50%",
+    "saturation": 1,
+    "brightness": 1,
+    "overlay": 0.65
+  },
+  "extraClasses": [
+    "test-cover",
+    "test-contain",
+    "test-layer",
+    "test-image",
+    "test-copy",
+    "test-panel",
+    "test-gradient",
+    "test-translucent",
+    "test-hidden",
+    "test-faded",
+    "test-faint",
+    "test-large",
+    "test-invisible"
+  ]
+}

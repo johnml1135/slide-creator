@@ -68,5 +68,7 @@
     "titleStyle": "phrase",
     "photos": "rare; only full-bleed, calm, desaturated; never stock clichés",
     "icons": "rare; 1.5px outline icons in muted ink, never as decoration"
-  }
+  },
+  "icon": {"stroke": 1.5},
+  "image": {"radius": 8, "aspect": 1.6, "fit": "cover", "position": "50% 50%", "saturation": 0.65, "brightness": 1, "overlay": 0.65}
 }

@@ -214,3 +214,41 @@ of numbers short. Max ~6 rows × 5 columns on a normal slide; use `dense` for mo
 # Automatic logo slot
 
 When `slides.json` sets `logo`, the builder adds a `.brand-logo-slot` to cover and closing pages. The style controls its position and height; deck authors do not place or size it by hand. `logoDark` supplies light artwork for dark page backgrounds.
+
+
+## Styled illustrations and local photos
+
+Use `![Descriptive alternative text](illustrations/overview.svg)` for an authored SVG that follows the
+active style. It is inlined, so `var(--accent)`, `var(--ink)` and the font variables follow light/dark schemes.
+Use `illustration` for the generated SVG; see [visuals.md](visuals.md) for the supported authoring profile.
+
+Photo components accept a local image, in HTML so its crop and treatment are explicit:
+
+```html
+<div class="photo photo-frame crop-right">
+<img src="images/workcell.jpg" alt="Prepared tools beside the changeover workcell">
+</div>
+```
+
+| Class | Purpose |
+|---|---|
+| `photo` | Style-controlled aspect ratio, fit, focus, saturation and brightness |
+| `photo-frame` | Style-controlled corner radius and quiet border |
+| `photo-tint` | Accent tint over the original image |
+| `photo-duotone` | Map luminance from the dark style colour to the accent |
+| `crop-left`, `crop-right`, `crop-top`, `crop-bottom` | Move crop focus toward that edge |
+| `photo-overlay` | Shade a photo before placing text; still requires visual contrast review |
+| `photo-copy` | Place a short caption inside the photo at the bottom |
+| `photo-panel` | Give photo-copy an opaque, measurable text background |
+| `illustration` | Generated, responsive inline SVG using style colours and fonts |
+
+```html
+<div class="photo photo-frame">
+<img src="images/workcell.jpg" alt="Tools prepared before the line stops">
+<div class="photo-copy photo-panel"><p>Preparation makes the next changeover predictable.</p></div>
+</div>
+```
+
+Keep one treatment across related photos. Do not filter charts, logos or evidence screenshots.
+`image-resolution` warns when a crop enlarges raster pixels; `contrast-unverified` requires visual review
+when text sits on a photo, gradient or translucent panel. An opaque `photo-panel` is the reliable choice.

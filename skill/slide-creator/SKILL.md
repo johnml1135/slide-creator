@@ -6,8 +6,10 @@ compatibility: Needs Node.js 18+ (npm install in this folder), an installed Micr
 
 # slide-creator
 
-You make slides that look designed, without needing to see well: **content goes in Markdown, every visual
-decision comes from a style pack**, and the rendered result is inspected and checked before you hand it over.
+You provide the presentation production layer: **content in Markdown, shared style tokens, local assets,
+PDF export, and checks on rendered slides**. When Impeccable is installed, use it for visual direction and
+critique; see `references/impeccable.md`. Corporate requirements and the chosen style pack govern the output.
+Do not recreate a general design command suite here.
 
 `<skill>` below means the folder containing this file.
 
@@ -41,7 +43,7 @@ path of `msedge.exe` or `chrome.exe`. For style import also run `pip install -r 
    ```
    node <skill>/scripts/new.mjs <folder> --style <style>
    ```
-   This makes `slides.json`, `deck.md`, `diagrams/`, `charts/`, `images/`.
+   This makes `slides.json`, `deck.md`, `diagrams/`, `charts/`, `illustrations/`, `images/`.
 4. **Write the story first**: one slide title per line, each title a complete thought. Check the flow reads
    as an argument, then build each slide with a layout from `references/layouts.md`.
 5. **Diagrams and charts**: write `diagrams/<name>.d2` (see `references/diagrams.md`) and
@@ -49,6 +51,10 @@ path of `msedge.exe` or `chrome.exe`. For style import also run `pip install -r 
    `charts/<name>.svg` in the deck.
    If the numbers live in Excel, keep a `.xlsx` in the project's `data/` folder and set chart data to
    `{"url":"data/sales.xlsx","sheet":"Q3"}` (`sheet` optional). Row one supplies field names.
+   For authored graphics, read `references/visuals.md`: place token-based SVGs in `illustrations/` and
+   reference them with descriptive alternative text. Use the `photo` components for local photos.
+   Read `references/visual-quality.md` before image-rich decks: write a visual brief, choose one dominant
+   visual per key slide, and vary the page rhythm without changing the style. No image service is required.
 6. **Build and inspect**:
    ```
    node <skill>/scripts/build.mjs <folder>
@@ -59,6 +65,9 @@ path of `msedge.exe` or `chrome.exe`. For style import also run `pip install -r 
    While fixing a few slides, `--slides 3,5-7` re-checks only those (about twice as fast, no PDF); do a
    full build before delivering.
 7. **Assess** (`references/assessment-rubric.md`):
+   - If Impeccable is available, give it `build/design-review.md` and the local rendered artifacts for
+     critique. Translate findings into deck content, style tokens/CSS or approved assets, then rebuild.
+     The handoff is guidance for the reviewing agent; the build does not invoke external tools.
    - Fix every ✗ error in `report.md`.
    - Open `build/contact-sheet.png`, then every `build/slides/slide-NN.issues.png` named in the report,
      and 3 other slides at full size. Score the rubric; anything under 4 gets fixed.
@@ -75,6 +84,8 @@ path of `msedge.exe` or `chrome.exe`. For style import also run `pip install -r 
 - **One focal point per slide**: one `key` node per diagram, one highlighted series per chart,
   one `.kpi.key` per KPI row.
 - Put detail in speaker notes (`<!-- note -->` comments at the end of a slide), not on the slide.
+- Treat `contrast-unverified` as a required visual review, never a passed contrast test. Inspect new image
+  treatments in the exported PDF as well as the slide PNGs.
 - Keep proprietary data local; never paste it into web tools or online diagram renderers.
 
 ## Changing how things look

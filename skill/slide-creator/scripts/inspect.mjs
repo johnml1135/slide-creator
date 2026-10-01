@@ -13,6 +13,7 @@ import path from 'node:path';
 import { pathToFileURL, fileURLToPath } from 'node:url';
 import { launchBrowser, loadConfig, parseArgs } from './lib/project.mjs';
 import { runLint } from './lint.mjs';
+import { buildDesignReview } from './lib/design-review.mjs';
 
 /** only: optional Set of slide numbers to check and screenshot (build.mjs --slides); numbering is kept. */
 export async function inspect(cfg, { buildProblems = [], htmlPath, only } = {}) {
@@ -30,7 +31,7 @@ export async function inspect(cfg, { buildProblems = [], htmlPath, only } = {}) 
   await page.evaluate(() => document.fonts && document.fonts.ready);
   await page.waitForTimeout(300);
 
-  const domFindings = await page.evaluate(measureSlides, { W, H, minFont: tokens.rules?.minFontPx ?? 14, maxBlocks: tokens.rules?.maxBlocks ?? 7 });
+  const domFindings = await page.evaluate(measureSlides, { W, H, minFont: tokens.rules?.minFontPx ?? 14, maxBlocks: tokens.rules?.maxBlocks ?? 7, minImageScale: tokens.rules?.minImageScale ?? 1 });
   const lint = await runLint(cfg, tokens);
 
   // Merge findings per slide
@@ -95,6 +96,7 @@ export async function inspect(cfg, { buildProblems = [], htmlPath, only } = {}) 
   const report = { style: tokens.name, scheme: tokens.scheme, slideCount: slides.length, partial: only ? [...only] : undefined, errors, warnings, global: [...buildProblems.map((m) => ({ severity: 'error', check: 'build', message: m })), ...lint.globalIssues], slides };
   await writeFile(path.join(cfg.outDir, 'report.json'), JSON.stringify(report, null, 2));
   await writeFile(path.join(cfg.outDir, 'report.md'), toMarkdown(report, cfg));
+  await writeFile(path.join(cfg.outDir, 'design-review.md'), buildDesignReview(cfg, tokens, report));
   console.log(`\nInspection: ${slides.length}${only ? ` of ${domFindings.length}` : ''} slides · ${errors} errors · ${warnings} warnings`);
   console.log(`  report:        ${path.relative(cfg.projectDir, path.join(cfg.outDir, 'report.md'))}`);
   console.log(`  contact sheet: ${path.relative(cfg.projectDir, path.join(cfg.outDir, 'contact-sheet.png'))}`);
@@ -103,8 +105,8 @@ export async function inspect(cfg, { buildProblems = [], htmlPath, only } = {}) 
 }
 
 /* Runs inside the page. Must be self-contained. */
-function measureSlides({ W, H, minFont, maxBlocks }) {
-  const sections = [...document.querySelectorAll('section')].filter((s) => !s.parentElement.closest('section'));
+function measureSlides({ W, H, minFont, maxBlocks, minImageScale }) {
+  const sections = [...document.querySelectorAll('section')].filter((s) => !s.parentElement.closest('section') && !['background', 'pseudo'].includes(s.getAttribute('data-marpit-advanced-background')));
   const parse = (c) => {
     const m = /rgba?\(([^)]+)\)/.exec(c || '');
     if (!m) return null;
@@ -124,7 +126,7 @@ function measureSlides({ W, H, minFont, maxBlocks }) {
       const ps = getComputedStyle(section, which);
       if (!ps.content || ps.content === 'none' || ps.position !== 'absolute') continue;
       const c = parse(ps.backgroundColor);
-      if (!c || c.a < 0.9) continue;
+      if (!c || c.a !== 1) continue;
       const top = parseFloat(ps.top), left = parseFloat(ps.left), h = parseFloat(ps.height), w = parseFloat(ps.width);
       const bottom = parseFloat(ps.bottom);
       const y0 = isNaN(top) ? sr.height - bottom - h : top;
@@ -134,13 +136,38 @@ function measureSlides({ W, H, minFont, maxBlocks }) {
   };
   const bgOf = (el) => {
     const sec = el.closest('section');
-    const pb = sec && pseudoBg(sec, el);
-    if (pb) return pb;
+    // Ancestor compositing affects even an opaque panel nested inside it.
     for (let e = el; e; e = e.parentElement) {
       const cs = getComputedStyle(e);
+      const ownBackground = parse(cs.backgroundColor);
+      if ((+cs.opacity < 1 && (e !== el || (ownBackground && ownBackground.a > 0))) || cs.filter !== 'none' || cs.mixBlendMode !== 'normal') return null;
+      if (e === sec) break;
+    }
+    for (let e = el; e; e = e.parentElement) {
+      const cs = getComputedStyle(e);
+      if (e === sec) {
+        const pb = pseudoBg(sec, el);
+        if (pb) return pb;
+      }
+      if (e === sec && sec.getAttribute('data-marpit-advanced-background') === 'content') {
+        const r = el.getBoundingClientRect();
+        const figures = sec.closest('svg[data-marpit-svg]')?.querySelectorAll('[data-marpit-advanced-background=background] figure') || [];
+        if ([...figures].some((figure) => {
+          const b = figure.getBoundingClientRect();
+          return getComputedStyle(figure).backgroundImage !== 'none' && r.left < b.right && r.right > b.left && r.top < b.bottom && r.bottom > b.top;
+        })) return null;
+      }
       if (cs.backgroundImage && cs.backgroundImage !== 'none') return null; // gradient/image: can't judge
+      const r = el.getBoundingClientRect();
+      if ([...e.querySelectorAll('img')].some((img) => {
+        const imageStyle = getComputedStyle(img);
+        if (!img.complete || !img.naturalWidth || imageStyle.visibility === 'hidden' || imageStyle.display === 'none' || +imageStyle.opacity === 0) return false;
+        const b = img.getBoundingClientRect();
+        return b.width > 0 && b.height > 0 && r.left < b.right && r.right > b.left && r.top < b.bottom && r.bottom > b.top;
+      })) return null;
       const c = parse(cs.backgroundColor);
-      if (c && c.a > 0.9) return c;
+      if (c && c.a === 1 && +cs.opacity === 1) return c;
+      if ((c && c.a > 0) || (e !== el && +cs.opacity < 1)) return null;
       if (e.tagName === 'SECTION') break;
     }
     return null;
@@ -196,14 +223,18 @@ function measureSlides({ W, H, minFont, maxBlocks }) {
       if (!el || seen.has(el) || section.contains(el.closest('svg'))) continue; // skip text in inline SVGs; every slide itself sits inside Marp's <svg>
       seen.add(el);
       const cs = getComputedStyle(el);
-      if (cs.display === 'none' || cs.visibility === 'hidden' || +cs.opacity === 0) continue;
+      const textRect = el.getBoundingClientRect();
+      if (cs.display === 'none' || cs.visibility === 'hidden' || +cs.opacity === 0 || !textRect.width || !textRect.height) continue;
       const size = parseFloat(cs.fontSize);
       if (size < minFont - 0.5) add('warning', 'small-text', `Text is ${Math.round(size)}px (minimum ${minFont}px)`, el);
       const fg = parse(cs.color), bg = bgOf(el);
+      if (fg && !bg) add('warning', 'contrast-unverified', 'Text background includes an image, gradient, or transparency; visually verify contrast', el);
       if (fg && bg) {
         const large = size >= 24 || (size >= 18.6 && +cs.fontWeight >= 700);
         const need = large ? 3 : 4.5;
-        const r = ratio(fg, bg);
+        const alpha = fg.a * +cs.opacity;
+        const effective = { r: fg.r * alpha + bg.r * (1 - alpha), g: fg.g * alpha + bg.g * (1 - alpha), b: fg.b * alpha + bg.b * (1 - alpha) };
+        const r = ratio(effective, bg);
         if (r < need) add(r < need - 1 ? 'error' : 'warning', 'contrast', `Contrast ${r.toFixed(1)}:1 (needs ${need}:1)`, el);
       }
     }
@@ -211,6 +242,26 @@ function measureSlides({ W, H, minFont, maxBlocks }) {
     // 5. Images that failed to load
     for (const img of section.querySelectorAll('img')) {
       if (img.complete && img.naturalWidth === 0) { add('error', 'missing-image', `Image did not load: ${img.getAttribute('src')}`, img); issues[issues.length - 1].src = img.getAttribute('src'); }
+    }
+
+    // Raster quality at the rendered size, including the extra scaling imposed by cover crops.
+    for (const img of section.querySelectorAll('img')) {
+      const src = img.getAttribute('src') || '';
+      if (/\.svg(?:[?#]|$)|^data:image\/svg\+xml/i.test(src) || !img.naturalWidth) continue;
+      const cs = getComputedStyle(img), rect = img.getBoundingClientRect();
+      if (cs.display === 'none' || cs.visibility === 'hidden' || +cs.opacity === 0 || !rect.width || !rect.height) continue;
+      const sx = img.naturalWidth / rect.width, sy = img.naturalHeight / rect.height;
+      const scale = cs.objectFit === 'contain' ? Math.max(sx, sy)
+        : cs.objectFit === 'none' ? 1 : cs.objectFit === 'scale-down' ? Math.max(1, sx, sy) : Math.min(sx, sy);
+      if (scale < minImageScale - 0.01) add('warning', 'image-resolution', `Raster image has ${scale.toFixed(2)} source pixels per displayed pixel (minimum ${minImageScale}); use a larger image or display it smaller`, img);
+    }
+    // Inlined illustrations remain inspectable even when their viewBox scales their labels.
+    for (const label of section.querySelectorAll('svg.illustration text')) {
+      const matrix = label.getScreenCTM(), cs = getComputedStyle(label);
+      const rect = label.getBoundingClientRect();
+      if (!matrix || cs.visibility === 'hidden' || cs.display === 'none' || +cs.opacity === 0 || !rect.width || !rect.height) continue;
+      const px = parseFloat(cs.fontSize) * Math.hypot(matrix.c, matrix.d);
+      if (px < minFont - 0.5) add('warning', 'figure-text', `Illustration label is ${px.toFixed(1)}px after scaling (minimum ${minFont}px)`, label);
     }
 
     // 6. Empty slide

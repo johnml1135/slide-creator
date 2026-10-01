@@ -29,7 +29,8 @@ const failures = [];
 async function build(style, scheme, out, project) {
   const label = `${style}${scheme === 'default' ? '' : ` (${scheme})`}`;
   console.log(`\n=== ${label} ===`);
-  spawnSync(process.execPath, [path.join(SKILL_DIR, 'scripts', 'build.mjs'), project, '--style', style, '--scheme', scheme, '--out', out], { stdio: 'inherit' });
+  const result = spawnSync(process.execPath, [path.join(SKILL_DIR, 'scripts', 'build.mjs'), project, '--style', style, '--scheme', scheme, '--out', out], { stdio: 'inherit' });
+  if (result.error || result.status !== 0) { failures.push(`${label} (${path.basename(project)}): build failed (${result.error?.message || result.status || result.signal})`); return null; }
   const dir = path.join(project, out);
   const config = JSON.parse(await readFile(path.join(project, 'slides.json'), 'utf8'));
   const pdfName = `${String(config.name || path.basename(project)).normalize('NFKD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'deck'}.pdf`;
@@ -58,6 +59,23 @@ for (const s of styles) {
       console.log(`→ gallery/${s}.png, gallery/${s}-hero.png`);
     } catch (e) {
       failures.push(`${s}${suffix}: ${e.message}`);
+    }
+  }
+}
+
+
+// Exercise authored SVGs, icons and raster treatments in every slide style and scheme.
+// Publish the editorial pair as the compact, reusable visual-authoring gallery example.
+const visualProject = path.join(SKILL_DIR, 'examples', 'visual-story');
+for (const name of styles) {
+  const style = await loadStyle(name);
+  if (style.kind === 'document') continue;
+  for (const scheme of Object.keys(style.schemes)) {
+    const suffix = scheme === 'default' ? '' : `-${scheme}`;
+    const built = await build(name, scheme, `build-${name}${suffix}`, visualProject);
+    if (built && name === 'editorial') {
+      await copyFile(path.join(built.dir, built.pdfName), path.join(galleryDir, `visual-story${suffix}.pdf`));
+      await copyFile(path.join(built.dir, 'contact-sheet.png'), path.join(galleryDir, `visual-story${suffix}.png`));
     }
   }
 }

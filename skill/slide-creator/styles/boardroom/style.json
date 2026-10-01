@@ -69,5 +69,7 @@
     "titleStyle": "action",
     "photos": "only real company/site photos with a purpose; never stock",
     "icons": "allowed in KPI tiles and agenda; single colour, consistent size"
-  }
+  },
+  "icon": {"stroke": 2},
+  "image": {"radius": 4, "aspect": 1.6, "fit": "cover", "position": "50% 50%", "saturation": 1, "brightness": 1, "overlay": 0.65}
 }

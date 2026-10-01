@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 400">
+<g stroke="var(--rule)" stroke-width="2" fill="none">
+<path d="M130 180V290M450 260V370M700 175V285" stroke-dasharray="5 8"/>
+</g>
+<path d="M130 280 380 185 700 265 450 360Z" fill="var(--surface)" stroke="var(--muted)" stroke-width="2"/>
+<path d="M130 225 380 130 700 210 450 305Z" fill="var(--bg)" stroke="var(--ink)" stroke-width="2"/>
+<path d="M130 160 380 65 700 145 450 240Z" fill="var(--accent)" stroke="var(--accent)" stroke-width="2"/>
+<g stroke="var(--muted)" stroke-width="2" fill="none">
+<path d="M650 280H735M655 220H735M675 150H735"/>
+</g>
+<g font-family="var(--font-body)" font-size="32" fill="var(--ink)">
+<text x="755" y="160">Decide</text><text x="755" y="230">Standardise</text><text x="755" y="290">Observe</text>
+</g>
+<g fill="var(--on-accent)">
+<circle cx="378" cy="148" r="8"/><circle cx="418" cy="158" r="8"/><circle cx="458" cy="168" r="8"/>
+</g>
+</svg>

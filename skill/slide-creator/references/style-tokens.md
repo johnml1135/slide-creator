@@ -116,3 +116,24 @@ and may override `--accent-text` (e.g. to `var(--ink)` when accent is a fill-onl
   }
 }
 ```
+
+
+## Icons and imagery
+
+Style packs (or `slides.json.overrides`) may include:
+
+```json
+"icon": { "stroke": 1.5 },
+"image": {
+  "radius": 8, "aspect": 1.6, "fit": "cover", "position": "50% 50%",
+  "saturation": 0.65, "brightness": 1, "overlay": 0.65
+}
+```
+
+`icon.stroke` is the line width in the Lucide 24-unit viewBox (0.5–4). Image treatment is opt-in through
+`photo` components, leaving charts and brand assets alone. Radius is 0–100px; aspect 0.25–4; fit cover or
+contain; position two percentages 0–100; saturation 0–2; brightness 0.25–2; overlay opacity 0–1.
+Duotone uses the darker of ink/background as shadows and accent as highlights; overlay uses the darker
+colour and a contrasting text colour. These derive from the scheme, with no extra literal colours.
+`rules.minImageScale` defaults to 1 source pixel per displayed pixel; increase it for print-quality raster
+assets. The inspector accounts for the extra enlargement caused by cover cropping.

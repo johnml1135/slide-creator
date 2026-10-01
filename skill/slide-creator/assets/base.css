@@ -158,8 +158,8 @@ section.statement strong { color: var(--accent-text); font-weight: inherit; }
 
 /* diagram / chart: title + one figure filling the rest */
 section.diagram, section.chart { padding-bottom: calc(var(--m-bottom) - var(--u) * 2); }
-section.diagram p:has(> img), section.chart p:has(> img) { flex: 1; min-height: 0; max-width: none; margin: 0; display: flex; align-items: center; justify-content: center; }
-section.diagram p > img, section.chart p > img { max-height: 100%; max-width: 100%; object-fit: contain; }
+section.diagram p:has(> img, > .illustration), section.chart p:has(> img, > .illustration) { flex: 1; min-height: 0; max-width: none; margin: 0; display: flex; align-items: center; justify-content: center; }
+section.diagram p > img, section.chart p > img, section.diagram p > .illustration, section.chart p > .illustration { max-height: 100%; max-width: 100%; object-fit: contain; }
 .caption { color: var(--muted); font-size: var(--fs-caption); margin-top: var(--u); max-width: none; }
 
 /* closing: last slide */
@@ -301,7 +301,7 @@ ol.timeline > li.on > b:first-child { color: var(--accent-text); }
 .figure img { max-height: 420px; }
 
 /* Icons (inlined Lucide SVGs): <i data-icon="truck"></i> */
-.icon { width: 1.1em; height: 1.1em; vertical-align: -0.18em; stroke: currentColor; }
+.icon { width: 1.1em; height: 1.1em; vertical-align: -0.18em; stroke: currentColor; stroke-width: var(--icon-stroke); }
 .icon.lg { width: 2.2em; height: 2.2em; }
 .kpi .icon, .card > .icon:first-child { display: block; width: 36px; height: 36px; color: var(--accent-text); margin-bottom: var(--u); }
 
@@ -329,3 +329,28 @@ section.appendix table { font-size: var(--fs-small); }
 section.comparison > .cols, section.comparison > .cols-wide-left, section.comparison > .cols-wide-right { margin-top: calc(var(--u) * 2); flex: 1; }
 section.comparison .card { height: 100%; }
 section.comparison .callout { max-width: none; }
+
+
+/* Locally authored vector illustrations inherit the active scheme and typography. */
+.illustration { display: block; width: 100%; height: auto; max-height: 420px; color: var(--ink); font-family: var(--font-body); }
+.figure .illustration { max-height: 420px; }
+section.paper .illustration { max-height: 280px; }
+
+/* Photo treatments are opt-in; charts, diagrams and brand assets keep their own geometry. */
+.photo { position: relative; isolation: isolate; width: 100%; aspect-ratio: var(--image-aspect); max-height: min(420px, calc(var(--page-h) - var(--m-top) - var(--m-bottom) - var(--fs-h2) * 2 - var(--u) * 6)); overflow: hidden; background: var(--surface); flex-shrink: 0; }
+.photo > img, .photo > p { position: absolute; inset: 0; }
+.photo > img, .photo > p, .photo > p > img { display: block; width: 100%; height: 100%; max-width: none; max-height: none; margin: 0; }
+.photo > img, .photo > p > img { object-fit: var(--image-fit); object-position: var(--image-position); filter: saturate(var(--image-saturation)) brightness(var(--image-brightness)); }
+.photo-frame { border-radius: var(--image-radius); border: var(--rule-w) solid var(--rule); }
+.photo-tint::after { content: ''; position: absolute; inset: 0; background: var(--accent); opacity: 0.22; pointer-events: none; mix-blend-mode: color; }
+.photo-duotone > img, .photo-duotone > p > img { filter: var(--image-duotone); }
+.photo-overlay::after { content: ''; position: absolute; inset: 0; background: var(--image-shade); opacity: var(--image-overlay); pointer-events: none; }
+.photo-copy { position: absolute; inset: auto calc(var(--u) * 3) calc(var(--u) * 3); z-index: 1; color: var(--image-on-shade); }
+.photo-copy :is(h1,h2,h3,p) { color: inherit; margin-bottom: var(--u); }
+.photo-panel { background: var(--bg); color: var(--ink); padding: calc(var(--u) * 2); border-radius: var(--image-radius); }
+.photo-copy.photo-panel :is(h1,h2,h3,p) { color: var(--ink); }
+.crop-left > img, .crop-left > p > img { object-position: 0% 50%; }
+.crop-right > img, .crop-right > p > img { object-position: 100% 50%; }
+.crop-top > img, .crop-top > p > img { object-position: 50% 0%; }
+.crop-bottom > img, .crop-bottom > p > img { object-position: 50% 100%; }
+section { print-color-adjust: exact; -webkit-print-color-adjust: exact; }

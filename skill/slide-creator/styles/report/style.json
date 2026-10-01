@@ -185,5 +185,7 @@
     "titleStyle": "phrase",
     "photos": "only documentary evidence or a relevant site photo",
     "icons": "avoid in body text"
-  }
+  },
+  "icon": {"stroke": 1.75},
+  "image": {"radius": 4, "aspect": 1.6, "fit": "cover", "position": "50% 50%", "saturation": 1, "brightness": 1, "overlay": 0.65}
 }

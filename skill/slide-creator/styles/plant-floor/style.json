@@ -70,5 +70,7 @@
     "titleStyle": "phrase",
     "photos": "real equipment, line and site photos; annotated with numbered callouts",
     "icons": "functional only (safety, equipment, status); solid single colour"
-  }
+  },
+  "icon": {"stroke": 2.5},
+  "image": {"radius": 2, "aspect": 1.6, "fit": "cover", "position": "50% 50%", "saturation": 1, "brightness": 1, "overlay": 0.65}
 }

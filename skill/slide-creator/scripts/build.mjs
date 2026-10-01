@@ -16,6 +16,7 @@ import { fileURLToPath } from 'node:url';
 import { SKILL_DIR, loadStyle, resolveTokens, buildCss, buildD2Header, buildVegaConfig, resolveTokenRefs } from './lib/style.mjs';
 import { loadConfig, parseArgs, importDep, packageDir, findBrowser, splitFrontMatter, splitSlides, readSheet, injectLogos } from './lib/project.mjs';
 import { finishPdf } from './pdf.mjs';
+import { inlineIllustrations } from './lib/illustrations.mjs';
 
 /** A mistake the user can fix (unknown style, missing deck): shown as one plain line, no stack trace. */
 export class UserError extends Error {}
@@ -152,6 +153,9 @@ export async function build(projectDir, o = {}) {
   if (!existsSync(cfg.deckPath)) throw new UserError(`Deck not found: ${cfg.deckPath} (create one with scripts/new.mjs)`);
   let md = await readFile(cfg.deckPath, 'utf8');
   md = await inlineIcons(md, problems);
+  const illustrations = await inlineIllustrations(md, projectDir);
+  md = illustrations.markdown;
+  problems.push(...illustrations.problems);
   md = await injectLogos(md, cfg);
   const { front, body } = splitFrontMatter(md);
   const author = /^author:\s*["']?(.+?)["']?\s*$/m.exec(front)?.[1] || cfg.author;

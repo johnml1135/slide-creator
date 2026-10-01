@@ -130,12 +130,22 @@ export function resolveTokens(style, scheme = 'default', override = {}) {
     shape: deepMerge(style.shape, override.shape || {}),
     diagram: deepMerge(style.diagram, override.diagram || {}),
     chart: deepMerge(style.chart, override.chart || {}),
+    icon: deepMerge({ stroke: 2 }, deepMerge(style.icon, override.icon || {})),
+    image: deepMerge({ radius: style.shape?.radius ?? 0, aspect: 1.6, fit: 'cover', position: '50% 50%', saturation: 1, brightness: 1, overlay: 0.65 }, deepMerge(style.image, override.image || {})),
     rules: deepMerge(style.rules, override.rules || {}),
     // Page size in CSS px (96 per inch). Slides default to 16:9; a style may set e.g. US Letter landscape.
     page: resolvePage(override.page || style.page || '16:9'),
     logo: deepMerge(style.logo || { position: 'top-right', height: 44 }, override.logo || {}),
     content: override.content || style.content || 'center',
   };
+  for (const [key, value, min, max] of [
+    ['icon.stroke', t.icon.stroke, 0.5, 4], ['image.radius', t.image.radius, 0, 100],
+    ['image.aspect', t.image.aspect, 0.25, 4], ['image.saturation', t.image.saturation, 0, 2],
+    ['image.brightness', t.image.brightness, 0.25, 2], ['image.overlay', t.image.overlay, 0, 1],
+  ]) if (!Number.isFinite(value) || value < min || value > max) throw new Error(`${key} must be a number from ${min} to ${max}`);
+  if (t.rules.minImageScale !== undefined && (!Number.isFinite(t.rules.minImageScale) || t.rules.minImageScale <= 0)) throw new Error('rules.minImageScale must be a positive number');
+  if (!['cover', 'contain'].includes(t.image.fit)) throw new Error('image.fit must be cover or contain');
+  if (!/^\d+(?:\.\d+)?% \d+(?:\.\d+)?%$/.test(t.image.position) || t.image.position.split(' ').some((x) => parseFloat(x) > 100)) throw new Error('image.position must be two percentages from 0% to 100%');
   const d = DENSITIES[density];
   t.type.scale = Object.fromEntries(Object.entries(t.type.scale).map(([k, v]) => [k, Math.round(v * d.type)]));
   t.space.unit = Math.round(t.space.unit * d.space * 10) / 10;
@@ -192,6 +202,10 @@ export function buildCss(style, t, baseCss) {
   const [mt, mr, mb, ml] = sp.margin;
   const logoPosition = t.logo.position || 'top-right';
   if (!['top-left', 'top-right', 'bottom-left', 'bottom-right'].includes(logoPosition)) throw new Error(`Invalid logo position "${logoPosition}"`);
+  const shade = luminance(hexToRgb(c.bg)) < luminance(hexToRgb(c.ink)) ? c.bg : c.ink;
+  const photoInk = onColor(shade, c.bg, c.ink);
+  const low = hexToRgb(shade).map((x) => x / 255), high = hexToRgb(c.accent).map((x) => x / 255);
+  const duotone = `<svg xmlns="http://www.w3.org/2000/svg"><filter id="duotone" color-interpolation-filters="sRGB"><feColorMatrix type="saturate" values="0"/><feComponentTransfer>${['R', 'G', 'B'].map((channel, i) => `<feFunc${channel} type="table" tableValues="${low[i]} ${high[i]}"/>`).join('')}</feComponentTransfer></filter></svg>`;
   const vars = {
     '--bg': c.bg, '--surface': c.surface, '--ink': c.ink, '--muted': c.muted, '--rule': c.rule,
     '--primary': c.primary, '--on-primary': c.onPrimary,
@@ -213,6 +227,12 @@ export function buildCss(style, t, baseCss) {
     '--rule-w': `${sh.rule}px`, '--rule-w-strong': `${sh.ruleStrong}px`, '--bar-w': `${Math.max(sh.ruleStrong, 3)}px`,
     '--shadow': sh.shadow || 'none',
     '--page-w': `${t.page.width}px`, '--page-h': `${t.page.height}px`,
+    '--icon-stroke': t.icon.stroke,
+    '--image-radius': `${t.image.radius}px`, '--image-aspect': t.image.aspect,
+    '--image-fit': t.image.fit, '--image-position': t.image.position,
+    '--image-saturation': t.image.saturation, '--image-brightness': t.image.brightness,
+    '--image-overlay': t.image.overlay, '--image-shade': shade, '--image-on-shade': photoInk,
+    '--image-duotone': `url("data:image/svg+xml,${encodeURIComponent(duotone)}#duotone")`,
     '--logo-height': `${t.logo.height}px`,
     '--logo-top': logoPosition.startsWith('top') ? 'var(--m-top)' : 'auto',
     '--logo-bottom': logoPosition.startsWith('bottom') ? 'var(--m-bottom)' : 'auto',

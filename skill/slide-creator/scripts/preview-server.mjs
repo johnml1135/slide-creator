@@ -48,6 +48,7 @@ export async function watch(projectDir, argv = []) {
       ['charts', (f) => /\.(json|csv|xlsx)$/i.test(f)],
       ['data', (f) => /\.(csv|xlsx)$/i.test(f)],
       ['images', () => true],
+      ['illustrations', (f) => f.endsWith('.svg')],
     ]) watchDir(path.join(projectDir, dir), `${dir}/`, accept);
     const styleDir = existsSync(path.join(projectDir, 'styles', cfg.style))
       ? path.join(projectDir, 'styles', cfg.style) : path.join(SKILL_DIR, 'styles', cfg.style);

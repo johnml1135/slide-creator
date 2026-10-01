@@ -1,7 +1,7 @@
 /* Keynote: broad colour fields, oversized message, quiet supporting detail. */
 section { --bullet: '•'; --bullet-color: var(--accent-text); }
-header, footer { opacity: 0.55; }
-section::after { opacity: 0.55; }
+header, footer { opacity: 0.9; }
+section::after { opacity: 0.9; }
 h2 { max-width: 19em; }
 h6, .kicker { color: var(--primary); }
 section.cover { justify-content: center; background: var(--primary); color: var(--on-primary); }
@@ -20,4 +20,4 @@ section.statement strong { color: var(--on-primary); text-decoration: underline;
 .kpi.key > b { color: var(--accent-text); }
 .card { border-radius: 0; }
 section.closing { background: var(--primary); }
-section.closing h1, section.closing h6, section.closing header, section.closing footer { color: var(--on-primary); }
+section.closing h1, section.closing h6, section.closing p, section.closing header, section.closing footer { color: var(--on-primary); }

@@ -74,5 +74,7 @@
     "titleStyle": "phrase",
     "photos": "rare; a single calm image per chapter at most",
     "icons": "avoid in body text"
-  }
+  },
+  "icon": {"stroke": 1.5},
+  "image": {"radius": 4, "aspect": 1.6, "fit": "cover", "position": "50% 50%", "saturation": 0.65, "brightness": 1, "overlay": 0.65}
 }

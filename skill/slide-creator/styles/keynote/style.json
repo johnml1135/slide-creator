@@ -168,5 +168,7 @@
       7,
       10
     ]
-  }
+  },
+  "icon": {"stroke": 2},
+  "image": {"radius": 0, "aspect": 1.6, "fit": "cover", "position": "50% 50%", "saturation": 1, "brightness": 1, "overlay": 0.65}
 }

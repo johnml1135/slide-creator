@@ -8,6 +8,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { DIAGRAM_CLASSES, loadStyle, resolveTokens } from './lib/style.mjs';
 import { loadConfig, parseArgs, splitSlides, readSheet } from './lib/project.mjs';
+import { lintIllustrations } from './lib/illustrations.mjs';
 
 export const SLIDE_CLASSES = ['cover', 'agenda', 'chapter', 'statement', 'diagram', 'chart', 'closing', 'dense', 'summary', 'paper', 'section-summary', 'appendix', 'comparison'];
 export const COMPONENT_CLASSES = [
@@ -15,7 +16,8 @@ export const COMPONENT_CLASSES = [
   'kpis', 'kpi', 'key', 'stat', 'label', 'do', 'dont', 'check', 'done', 'steps', 'on', 'timeline', 'tag', 'accent',
   'source', 'tracker', 'figure', 'caption', 'icon', 'lg', 'center', 'right', 'grow', 'mt', 'muted', 'lede', 'small',
   'hl', 'num', 'total', 'kicker',
-  'brand-logo-slot',
+  'brand-logo-slot', 'photo', 'photo-frame', 'photo-tint', 'photo-duotone', 'photo-overlay', 'photo-copy', 'photo-panel',
+  'crop-left', 'crop-right', 'crop-top', 'crop-bottom', 'illustration',
 ];
 const NO_TITLE_OK = ['cover', 'statement', 'chapter', 'closing'];
 const HEX = /(?<![\w&/])#(?:[0-9a-fA-F]{3}){1,2}\b(?![\w-])/g;
@@ -26,6 +28,7 @@ export async function runLint(cfg, tokens) {
   const slideIssues = [];
   const globalIssues = [];
   const style = await loadStyle(cfg.style, cfg.projectDir);
+  globalIssues.push(...await lintIllustrations(cfg.projectDir));
   const allowed = new Set([...SLIDE_CLASSES, ...COMPONENT_CLASSES, ...(style.extraClasses || [])]);
   const maxWords = rules.maxWords ?? 45;
   const maxBullets = rules.maxBullets ?? 5;
