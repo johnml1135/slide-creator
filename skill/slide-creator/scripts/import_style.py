@@ -2,7 +2,7 @@
 """
 Import a style from an existing presentation (.pptx or .pdf) as a DRAFT style pack.
 
-    python <skill>/scripts/import_style.py source.pdf --name acme-quarterly [--base boardroom] [--out <dir>]
+    python <skill>/scripts/import_style.py source.pdf --name acme-quarterly [--base <style>] [--out <project>]
     python <skill>/scripts/import_style.py source.pptx --pdf source.pdf --name acme-quarterly
 
 What it does
@@ -27,6 +27,42 @@ GENERIC_SANS = ["Segoe UI", "Aptos", "Arial", "sans-serif"]
 GENERIC_SERIF = ["Georgia", "Cambria", "Times New Roman", "serif"]
 GENERIC_MONO = ["Cascadia Mono", "Consolas", "Menlo", "monospace"]
 SERIF_HINTS = re.compile(r"serif|times|georgia|garamond|cambria|book|roman|tiempos|lora|merriweather|caslon|minion|palatino", re.I)
+MONO_HINTS = re.compile(r"mono|consolas|courier|code|menlo", re.I)
+
+
+def font_category(name):
+    if MONO_HINTS.search(name):
+        return "mono"
+    if re.search(r"sans", name, re.I):
+        return "sans"
+    return "serif" if SERIF_HINTS.search(name) else "sans"
+
+
+def fallback_stack(name):
+    """The source font first (used where installed), then installed Windows/Office fonts of the same kind."""
+    return [name] + {"serif": GENERIC_SERIF, "sans": GENERIC_SANS, "mono": GENERIC_MONO}[font_category(name)]
+
+
+def installed_fonts():
+    """Font family names registered on this Windows PC (machine and per-user); empty elsewhere."""
+    names = set()
+    try:
+        import winreg
+        for root in (winreg.HKEY_LOCAL_MACHINE, winreg.HKEY_CURRENT_USER):
+            try:
+                key = winreg.OpenKey(root, r"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Fonts")
+            except OSError:
+                continue
+            for i in range(winreg.QueryInfoKey(key)[1]):
+                names.add(re.sub(r"\s*\(.*\)$", "", winreg.EnumValue(key, i)[0]).strip().lower())
+    except ImportError:
+        pass
+    return names
+
+
+def is_installed(family, names):
+    f = family.lower()
+    return any(n == f or n.startswith(f + " ") for n in names)
 
 
 # ---------------- colour helpers ----------------
@@ -130,10 +166,13 @@ def image_colours(paths):
 def analyse_pdf_text(pdf):
     import pdfplumber
     sizes, fonts, colours, font_by_size = Counter(), Counter(), Counter(), {}
-    width_pt = None
+    width_pt = height_pt = None
+    per_page = []
     with pdfplumber.open(str(pdf)) as doc:
         for page in doc.pages[:40]:
             width_pt = width_pt or float(page.width)
+            height_pt = height_pt or float(page.height)
+            per_page.append(len(page.chars))
             for ch in page.chars:
                 if not ch.get("text", "").strip():
                     continue
@@ -145,7 +184,7 @@ def analyse_pdf_text(pdf):
                 col = pdf_color(ch.get("non_stroking_color"))
                 if col:
                     colours[hex_of(col)] += 1
-    return {"widthPt": width_pt, "sizes": sizes, "fonts": fonts, "colours": colours, "fontBySize": font_by_size}
+    return {"widthPt": width_pt, "heightPt": height_pt, "charsPerPage": sorted(per_page)[int(len(per_page) * 0.75)] if per_page else 0, "sizes": sizes, "fonts": fonts, "colours": colours, "fontBySize": font_by_size}
 
 
 def family_of(fontname):
@@ -191,13 +230,15 @@ def analyse_pptx(pptx):
 
 
 # ---------------- token synthesis ----------------
-def pick_scale(sizes_px):
-    """Map measured sizes (px at 1280 wide, weighted by count) onto the type scale."""
+def pick_scale(sizes_px, document=False):
+    """Map measured sizes (px, weighted by count) onto the type scale. Slides are measured on a 1280-wide
+    slide; documents at real print size (96 px per inch), where body text is 12-18 px."""
     if not sizes_px:
         return None
-    plausible = {s: n for s, n in sizes_px.items() if 18 <= s <= 32}
+    lo, hi = (12, 18) if document else (18, 32)
+    plausible = {s: n for s, n in sizes_px.items() if lo <= s <= hi}
     body = max(plausible or sizes_px, key=lambda s: (plausible or sizes_px)[s])
-    body = min(max(body, 20), 30)
+    body = min(max(body, 13), 17) if document else min(max(body, 20), 30)
     larger = sorted([s for s in sizes_px if s > body * 1.15], reverse=True)
     smaller = sorted([s for s in sizes_px if s < body * 0.92 and sizes_px[s] > 0], reverse=True)
     big = larger[:3] + [body * 2.6, body * 2.0, body * 1.5][len(larger[:3]):]
@@ -217,9 +258,13 @@ def pick_scale(sizes_px):
     scale["h1"] = min(scale["h1"], scale["display"] - 8)
     scale["h2"] = min(scale["h2"], scale["h1"] - 8)
     scale["h3"] = max(min(scale["h3"], scale["h2"] - 6), scale["body"])
-    scale["small"] = max(min(scale["small"], scale["body"] - 3), 16)
-    scale["caption"] = max(min(scale["caption"], scale["small"] - 2), 13)
+    floor_small, floor_caption = (11, 10) if document else (16, 13)
+    scale["small"] = max(min(scale["small"], scale["body"] - (1 if document else 3)), floor_small)
+    scale["caption"] = max(min(scale["caption"], scale["small"] - 1), floor_caption)
     scale["label"] = scale["caption"]
+    if document:  # in a document ## and ### are subheads inside the text, not slide titles
+        scale["h2"], scale["h3"] = round(scale["body"] * 1.45), round(scale["body"] * 1.15)
+        scale["label"] = scale["small"]
     return scale
 
 
@@ -228,7 +273,7 @@ def main():
     ap.add_argument("source", help=".pdf or .pptx")
     ap.add_argument("--pdf", help="PDF export of the .pptx (for reference images and text measurements)")
     ap.add_argument("--name", required=True, help="new style name, kebab-case")
-    ap.add_argument("--base", default="boardroom", help="existing style to copy structure and CSS from")
+    ap.add_argument("--base", help="existing style to copy structure and CSS from (default: chosen from the source)")
     ap.add_argument("--out", help="folder that will contain styles/<name> (default: current directory)")
     ap.add_argument("--force", action="store_true")
     a = ap.parse_args()
@@ -236,8 +281,7 @@ def main():
     if not re.fullmatch(r"[a-z0-9]+(-[a-z0-9]+)*", a.name):
         sys.exit("--name must be kebab-case, e.g. acme-quarterly")
     src = Path(a.source).resolve()
-    base_dir = SKILL / "styles" / a.base
-    if not (base_dir / "style.json").exists():
+    if a.base and not (SKILL / "styles" / a.base / "style.json").exists():
         sys.exit(f"Unknown --base style {a.base}")
     dest = Path(a.out or ".").resolve() / "styles" / a.name
     if dest.exists() and not a.force:
@@ -245,6 +289,7 @@ def main():
     dest.mkdir(parents=True, exist_ok=True)
 
     extraction = {"source": src.name}
+    notes = []
     pptx_info = None
     pdf = Path(a.pdf).resolve() if a.pdf else (src if src.suffix.lower() == ".pdf" else None)
     with tempfile.TemporaryDirectory() as tmp:
@@ -260,9 +305,33 @@ def main():
             refs = render_pages(pdf, dest / "reference")
             text = analyse_pdf_text(pdf)
 
+    # Page shape: slides keep a 1280-wide canvas; a document (portrait, or text-heavy) is kept at real size.
+    page = document = None
+    if text and text["widthPt"] and text["heightPt"]:
+        w_in, h_in = text["widthPt"] / 72, text["heightPt"] / 72
+        document = h_in > w_in or text["charsPerPage"] > 1500
+        page = {"width": round(w_in * 96), "height": round(h_in * 96)} if document else {"width": 1280, "height": round(1280 * h_in / w_in)}
+    elif pptx_info:
+        page = {"width": 1280, "height": round(1280 * pptx_info["slideHeightIn"] / pptx_info["slideWidthIn"])}
+    extraction["page"] = page
+    extraction["document"] = bool(document)
+
+    # Base style: the closest built-in, unless --base names one.
+    if not a.base:
+        heading_guess = family_of(text["fontBySize"][max(text["fontBySize"])].most_common(1)[0][0]) if text and text["fontBySize"] else ""
+        if document:
+            portrait = page and page["height"] > page["width"]
+            a.base = "report" if portrait and (SKILL / "styles" / "report" / "style.json").exists() else "editorial-whitepaper"
+        elif heading_guess and font_category(heading_guess) == "serif":
+            a.base = "editorial"
+        elif heading_guess and font_category(heading_guess) == "mono":
+            a.base = "plant-floor"
+        else:
+            a.base = "boardroom"
+        notes.append(f"base style chosen automatically: {a.base}")
+    base_dir = SKILL / "styles" / a.base
     base = json.loads((base_dir / "style.json").read_text())
     scheme = dict(base["schemes"]["default"])
-    notes = []
 
     # Colours from rendered pages
     if refs:
@@ -272,12 +341,17 @@ def main():
         palette = [c for c, _ in body.most_common() if not near(c, bg, 40)]
         extraction["imagePalette"] = [hex_of(c) for c in palette[:12]]
         saturated = sorted([c for c in palette if sat(c) > 0.25], key=lambda c: -body[c])
-        if saturated:
-            scheme["primary"] = hex_of(saturated[0])
-        if len(saturated) > 1:
-            accent = next((c for c in saturated[1:] if not near(c, saturated[0], 90)), saturated[1])
+        # Structure colours are dark (navy bars, deep greens); the accent is the vivid colour used most.
+        value = lambda c: max(c) / 255
+        dark = [c for c in saturated if value(c) < 0.45]
+        vivid = sorted([c for c in saturated if value(c) >= 0.45], key=lambda c: -body[c] * sat(c))
+        accent = vivid[0] if vivid else (saturated[1] if len(saturated) > 1 else None)
+        primary = dark[0] if dark else next((c for c in saturated if accent is None or not near(c, accent, 90)), None)
+        if primary:
+            scheme["primary"] = hex_of(primary)
+        if accent:
             scheme["accent"] = hex_of(accent)
-        notes.append("bg/primary/accent guessed from rendered pages — check against reference/*.png")
+        notes.append("bg/primary/accent guessed from rendered pages (primary = most-used dark colour, accent = most-used vivid colour); check against reference/*.png")
 
     # Text colours
     if text and text["colours"]:
@@ -330,26 +404,34 @@ def main():
     if pptx_info and pptx_info["fonts"]:
         heading_font = pptx_info["fonts"].get("major") or heading_font
         body_font = pptx_info["fonts"].get("minor") or body_font
-    if heading_font:
-        style["type"]["heading"]["family"] = [heading_font] + (GENERIC_SERIF if SERIF_HINTS.search(heading_font) else GENERIC_SANS)
-    if body_font:
-        style["type"]["body"]["family"] = [body_font] + (GENERIC_SERIF if SERIF_HINTS.search(body_font) else GENERIC_SANS)
+    installed = installed_fonts()
+    for role, font in (("heading", heading_font), ("body", body_font)):
+        if not font:
+            continue
+        style["type"][role]["family"] = fallback_stack(font)
+        if installed and not is_installed(font, installed):
+            fallback = next((f for f in fallback_stack(font)[1:] if is_installed(f, installed)), fallback_stack(font)[1])
+            notes.append(f"{role} font '{font}' is not installed on this PC; it will render as {fallback}. Install it, or accept the fallback.")
 
     # Type scale (convert to px on a 1280-wide slide)
     sizes_px = Counter()
     if text and text["sizes"] and text["widthPt"]:
-        k = 1280 / text["widthPt"]
+        k = 96 / 72 if document else 1280 / text["widthPt"]
         for s, n in text["sizes"].items():
             sizes_px[round(s * k)] += n
     elif pptx_info and pptx_info["sizes"]:
         k = 1280 / (pptx_info["slideWidthIn"] * 72)
         for s, n in pptx_info["sizes"].items():
             sizes_px[round(s * k)] += n
-    scale = pick_scale(sizes_px)
+    scale = pick_scale(sizes_px, document=bool(document))
     if scale:
         style["type"]["scale"] = scale
         extraction["sizesPx"] = dict(sorted(sizes_px.items()))
-    style["rules"]["minFontPx"] = max(12, min(style["type"]["scale"]["caption"], 16))
+    style["rules"]["minFontPx"] = max(10 if document else 12, min(style["type"]["scale"]["caption"], 16))
+    if page:
+        style["page"] = page
+    if document:
+        style["kind"] = "document"
 
     (dest / "style.json").write_text(json.dumps(style, indent=2) + "\n")
     shutil.copy(base_dir / "style.css", dest / "style.css")
@@ -364,6 +446,9 @@ def main():
     print(f"  fonts:   heading {heading_font}  body {body_font}")
     if scale:
         print(f"  scale:   {scale}")
+    print(f"  base:    {a.base}  page: {page}  {'document' if document else 'slides'}")
+    for n in notes:
+        print(f"  ! {n}" if "not installed" in n else f"  - {n}")
     print(f"  {len(refs)} reference images in reference/")
     print("Next: follow workflows/new-style.md (step 3 onward).")
 

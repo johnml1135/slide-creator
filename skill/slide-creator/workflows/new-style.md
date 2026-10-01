@@ -27,16 +27,20 @@ listed in `references/style-tokens.md`.
    theme fonts come from the .pptx.
 2. **Run the importer.**
    ```
-   python <skill>/scripts/import_style.py company.pptx --pdf company.pdf --name acme --base boardroom --out <deck project>
+   python <skill>/scripts/import_style.py company.pptx --pdf company.pdf --name acme --out <deck project>
    ```
-   Pick `--base` closest in spirit: `editorial` (calm, serif, document-like), `boardroom` (corporate,
-   action titles, navy), `plant-floor` (industrial, high contrast, header bar).
+   It decides by itself whether the source is **slides** or a **document** (portrait pages, or pages full of
+   text), keeps the page shape, and picks the closest built-in style to copy the layout CSS from (a serif
+   look → `editorial`, mono labels → `plant-floor`, otherwise `boardroom`; documents → `editorial-whitepaper`
+   or `report`). Pass `--base <style>` to choose yourself. It prints any font that isn't installed on this PC
+   and what it will fall back to.
 3. **Look before you trust.** Open 4–6 images in `styles/acme/reference/`. Compare them with the
    colours and fonts the importer printed and with `extraction.json`. Typical corrections:
-   - `primary` vs `accent` swapped (primary = structural brand colour, accent = rare highlight).
+   - `primary` is the most-used *dark* colour (bars, chapter pages), `accent` the most-used *vivid* one. A
+     mid-tone brand colour (a sage green, a teal) may land in the wrong slot — swap them by hand.
    - `bg` picked up a photo or a dark title slide; most content pages decide `bg`.
-   - Font names are PostScript names (`ArialMT`) — use the family (`Arial`) and keep fallbacks.
-   - Type scale from a text-heavy deck can be too small for slides; body under 20px is too small.
+   - A brand font that isn't installed renders as the fallback the importer named. Install it or accept it.
+   - Type scale: slides want body text of 20px or more; documents are measured at print size (about 13–16px).
 4. Continue at **Finish a style** below.
 
 ## Path B — design a new style from a description
