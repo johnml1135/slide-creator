@@ -52,7 +52,7 @@
     "fontSize": 18,
     "stroke": 1,
     "radius": 8,
-    "nodeFill": "#FFFFFF",
+    "nodeFill": "bg",
     "groupStroke": "surface",
     "sketch": false,
     "labelCase": "Sentence case for nodes; UPPERCASE for group labels"

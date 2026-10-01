@@ -181,7 +181,7 @@ function measureSlides({ minFont }) {
     const seen = new Set();
     for (let n = walker.nextNode(); n; n = walker.nextNode()) {
       const el = n.parentElement;
-      if (!el || seen.has(el) || el.closest('svg') ) continue;
+      if (!el || seen.has(el) || section.contains(el.closest('svg'))) continue; // skip text in inline SVGs; every slide itself sits inside Marp's <svg>
       seen.add(el);
       const cs = getComputedStyle(el);
       if (cs.display === 'none' || cs.visibility === 'hidden' || +cs.opacity === 0) continue;
