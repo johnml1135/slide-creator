@@ -150,7 +150,7 @@
     "deemphasis": "rule"
   },
   "rules": {
-    "maxWords": 40,
+    "maxWords": 45,
     "maxBullets": 5,
     "maxAccentsPerSlide": 2,
     "minFontPx": 15,
