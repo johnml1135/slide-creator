@@ -1,0 +1,21 @@
+{
+  "name": "slide-creator",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Agent skill: styled Marp slide decks with D2 diagrams, Vega-Lite charts, inspection and style import.",
+  "type": "module",
+  "engines": { "node": ">=18" },
+  "scripts": {
+    "doctor": "node scripts/doctor.mjs",
+    "showcase": "node scripts/build.mjs examples/showcase",
+    "samples": "node scripts/samples.mjs"
+  },
+  "dependencies": {
+    "@marp-team/marp-cli": "^4.1.0",
+    "@terrastruct/d2": ">=0.1.33 <1",
+    "lucide-static": ">=0.460.0 <1",
+    "playwright-core": "^1.50.0",
+    "vega": "^6.1.0",
+    "vega-lite": "^6.1.0"
+  }
+}

@@ -1,0 +1,280 @@
+/*
+  slide-creator base layer.
+  Shared by every style: slide geometry, layouts and components.
+  Uses ONLY the CSS variables emitted from style.json; never a literal colour.
+  A style's style.css is appended after this file and adds its personality.
+*/
+
+/* ---------------- Slide canvas ---------------- */
+section {
+  width: 1280px;
+  height: 720px;
+  box-sizing: border-box;
+  padding: var(--m-top) var(--m-right) var(--m-bottom) var(--m-left);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  position: relative;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-weight: var(--weight-body);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  -webkit-font-smoothing: antialiased;
+}
+section * { box-sizing: border-box; }
+section > *:last-child { margin-bottom: 0; }
+
+/* ---------------- Type ---------------- */
+h1, h2, h3, h4 {
+  font-family: var(--font-heading);
+  font-weight: var(--weight-heading);
+  letter-spacing: var(--tracking-heading);
+  text-transform: var(--case-heading);
+  color: var(--ink);
+  line-height: var(--lh-tight);
+  margin: 0;
+  text-wrap: balance;
+}
+h1 { font-size: var(--fs-h1); margin-bottom: calc(var(--u) * 3); }
+h2 { font-size: var(--fs-h2); margin-bottom: calc(var(--u) * 4); }
+h3 { font-size: var(--fs-h3); margin: calc(var(--u) * 3) 0 var(--u); }
+h4 { font-size: var(--fs-body); margin: calc(var(--u) * 2) 0 calc(var(--u) / 2); }
+
+/* Kicker: "###### Chapter 2" above a title */
+h6, .kicker {
+  font-family: var(--font-label);
+  font-size: var(--fs-label);
+  font-weight: var(--weight-label);
+  letter-spacing: var(--tracking-label);
+  text-transform: var(--case-label);
+  color: var(--accent-text);
+  line-height: 1.2;
+  margin: 0 0 calc(var(--u) * 1.5);
+}
+
+p { margin: 0 0 calc(var(--u) * 2); max-width: var(--measure); text-wrap: pretty; }
+.lede { font-size: calc(var(--fs-body) * 1.2); color: var(--muted); max-width: 26em; }
+strong { font-weight: 600; }
+em { font-style: italic; }
+a { color: var(--accent-text); text-decoration: none; }
+small, .small { font-size: var(--fs-small); }
+.muted { color: var(--muted); }
+
+/* Lists */
+ul, ol { margin: 0 0 calc(var(--u) * 2); padding: 0; max-width: var(--measure); }
+li { margin: calc(var(--u) * 1.25) 0; }
+li > ul, li > ol { margin: var(--u) 0 0; font-size: 0.9em; }
+ul { list-style: none; }
+ul > li { position: relative; padding-left: 1.1em; }
+ul > li::before { content: var(--bullet, '•'); position: absolute; left: 0; color: var(--bullet-color, var(--muted)); }
+ol { padding-left: 1.4em; }
+ol > li::marker { color: var(--accent-text); font-weight: 700; }
+
+/* Code */
+code, pre { font-family: var(--font-mono); }
+pre {
+  background: var(--surface);
+  color: var(--ink);
+  border-radius: var(--radius);
+  padding: calc(var(--u) * 2.5) calc(var(--u) * 3);
+  font-size: var(--fs-small);
+  line-height: 1.5;
+  margin: 0 0 calc(var(--u) * 2);
+  overflow: hidden;
+  white-space: pre;
+}
+:not(pre) > code { background: var(--surface); padding: 0.1em 0.35em; border-radius: calc(var(--radius) / 2); font-size: 0.88em; }
+pre code { background: none; padding: 0; font-size: inherit; }
+
+/* Tables: hairlines, no zebra, numbers right-aligned via .num */
+table { border-collapse: collapse; width: 100%; font-size: var(--fs-small); margin: 0 0 calc(var(--u) * 2); display: table; }
+th {
+  text-align: left; font-weight: 700; color: var(--muted);
+  font-size: var(--fs-caption); letter-spacing: var(--tracking-label); text-transform: var(--case-label);
+  background: transparent; border: none; border-bottom: var(--rule-w-strong) solid var(--ink);
+  padding: var(--u) calc(var(--u) * 1.5);
+}
+td { background: transparent; border: none; border-bottom: var(--rule-w) solid var(--rule); padding: calc(var(--u) * 1.25) calc(var(--u) * 1.5); vertical-align: top; }
+tr:nth-child(2n) td { background: transparent; }
+td.num, th.num, td:has(> .num) { text-align: right; font-variant-numeric: tabular-nums; }
+tr.total td { font-weight: 700; border-top: var(--rule-w-strong) solid var(--ink); border-bottom: none; }
+tr.hl td { background: var(--surface); }
+
+img { max-width: 100%; }
+blockquote { margin: 0; padding: 0; border: none; }
+
+/* Header / footer / page number (Marp renders these) */
+header, footer {
+  position: absolute; left: var(--m-left); right: var(--m-right);
+  font-size: var(--fs-caption); color: var(--muted); line-height: 1.2;
+}
+header { top: calc(var(--u) * 4); }
+footer { bottom: calc(var(--u) * 4); right: calc(var(--m-right) + 80px); }
+section::after {
+  content: attr(data-marpit-pagination);
+  position: absolute; right: var(--m-right); bottom: calc(var(--u) * 4);
+  font-size: var(--fs-caption); color: var(--muted); font-variant-numeric: tabular-nums;
+}
+
+/* ================= Layouts: <!-- _class: name --> ================= */
+
+/* cover: first slide */
+section.cover { justify-content: flex-end; padding-bottom: calc(var(--m-bottom) + var(--u) * 4); }
+section.cover h1 { font-size: var(--fs-display); max-width: 14em; }
+section.cover p { font-size: calc(var(--fs-body) * 1.15); color: var(--muted); }
+section.cover::after { display: none; }
+
+/* agenda: numbered list of sections; mark the current one with <strong> */
+section.agenda ol { list-style: none; padding: 0; counter-reset: ag; max-width: none; }
+section.agenda ol > li {
+  counter-increment: ag; display: grid; grid-template-columns: 2.2em 1fr auto; align-items: baseline;
+  font-size: calc(var(--fs-body) * 1.15); margin: 0; padding: calc(var(--u) * 1.5) 0; border-bottom: var(--rule-w) solid var(--rule);
+}
+section.agenda ol > li::before { content: counter(ag, decimal-leading-zero); font-family: var(--font-label); color: var(--accent-text); font-weight: 700; font-size: var(--fs-small); }
+section.agenda ol > li em { font-style: normal; color: var(--muted); font-size: var(--fs-small); }
+section.agenda ol > li:has(strong) { color: var(--ink); }
+section.agenda ol:has(strong) > li:not(:has(strong)) { color: var(--muted); }
+
+/* chapter: section divider */
+section.chapter { justify-content: center; background: var(--surface); }
+section.chapter h1 { font-size: var(--fs-display); }
+section.chapter p { color: var(--muted); font-size: calc(var(--fs-body) * 1.1); }
+
+/* statement: one big sentence */
+section.statement { justify-content: center; }
+section.statement h1, section.statement p { font-family: var(--font-heading); font-size: calc(var(--fs-h1) * 0.95); line-height: var(--lh-tight); max-width: 18em; color: var(--ink); }
+section.statement strong { color: var(--accent-text); font-weight: inherit; }
+
+/* diagram / chart: title + one figure filling the rest */
+section.diagram, section.chart { padding-bottom: calc(var(--m-bottom) - var(--u) * 2); }
+section.diagram p:has(> img), section.chart p:has(> img) { flex: 1; min-height: 0; max-width: none; margin: 0; display: flex; align-items: center; justify-content: center; }
+section.diagram p > img, section.chart p > img { max-height: 100%; max-width: 100%; object-fit: contain; }
+.caption { color: var(--muted); font-size: var(--fs-caption); margin-top: var(--u); max-width: none; }
+
+/* closing: last slide */
+section.closing { justify-content: center; }
+section.closing h1 { font-size: var(--fs-display); }
+section.closing::after { display: none; }
+
+/* dense: tables or detail slides that need more room */
+section.dense { font-size: var(--fs-small); }
+section.dense h2 { margin-bottom: calc(var(--u) * 2.5); }
+section.dense li { margin: calc(var(--u) * 0.75) 0; }
+
+/* ================= Components (HTML in Markdown, needs --html) ================= */
+
+/* Grids */
+.cols, .cols3, .cols4, .cols-wide-left, .cols-wide-right { display: grid; gap: var(--gutter); align-items: start; }
+.cols { grid-template-columns: 1fr 1fr; }
+.cols3 { grid-template-columns: repeat(3, 1fr); }
+.cols4 { grid-template-columns: repeat(4, 1fr); }
+.cols-wide-left { grid-template-columns: 2fr 1fr; }
+.cols-wide-right { grid-template-columns: 1fr 2fr; }
+.cols > *, .cols3 > *, .cols4 > *, .cols-wide-left > *, .cols-wide-right > * { min-width: 0; }
+.cols h3:first-child, .cols3 h3:first-child, .cols4 h3:first-child, .card h3:first-child,
+.cols-wide-left h3:first-child, .cols-wide-right h3:first-child { margin-top: 0; }
+.cols p, .cols3 p, .cols4 p, .cols ul, .cols3 ul, .cols4 ul { max-width: none; }
+
+/* Card */
+.card { background: var(--surface); border-radius: var(--radius-lg); padding: calc(var(--u) * 3); }
+.card > *:last-child { margin-bottom: 0; }
+.card.outline { background: transparent; border: var(--rule-w) solid var(--rule); }
+
+/* Callout (tip / note / warning) */
+.callout {
+  background: var(--surface); border-left: var(--bar-w) solid var(--accent);
+  border-radius: var(--radius); padding: calc(var(--u) * 2.5) calc(var(--u) * 3);
+  margin: calc(var(--u) * 2) 0; max-width: 36em; font-size: var(--fs-small);
+}
+.callout > b:first-child, .callout > strong:first-child {
+  display: block; font-family: var(--font-label); font-size: var(--fs-label); font-weight: var(--weight-label);
+  letter-spacing: var(--tracking-label); text-transform: var(--case-label); color: var(--accent-text); margin-bottom: calc(var(--u) / 2);
+}
+.callout.good { border-left-color: var(--good-text); } .callout.good > b:first-child { color: var(--good-text); }
+.callout.warn { border-left-color: var(--warn); } .callout.warn > b:first-child { color: var(--warn-text); }
+.callout.bad  { border-left-color: var(--bad-text); }  .callout.bad > b:first-child  { color: var(--bad-text); }
+.callout.info { border-left-color: var(--info-text); } .callout.info > b:first-child { color: var(--info-text); }
+
+/* KPI tiles: <div class="kpis"><div class="kpi"><b>42%</b><span>Label</span><em>+3 pts vs plan</em></div>…</div> */
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(0, 1fr)); gap: var(--gutter); margin: calc(var(--u) * 2) 0; }
+.kpi { border-top: var(--rule-w-strong) solid var(--ink); padding-top: calc(var(--u) * 1.5); }
+.kpi > b { display: block; font-family: var(--font-heading); font-weight: var(--weight-heading); font-size: calc(var(--fs-h1) * 1.1); line-height: 1; letter-spacing: -0.02em; color: var(--ink); font-variant-numeric: tabular-nums; }
+.kpi > span { display: block; margin-top: var(--u); font-size: var(--fs-small); color: var(--ink); }
+.kpi > em { display: block; margin-top: calc(var(--u) / 2); font-style: normal; font-size: var(--fs-caption); color: var(--muted); }
+.kpi.key { border-top-color: var(--accent-text); } .kpi.key > b { color: var(--accent-text); }
+.kpi.good > em { color: var(--good-text); } .kpi.bad > em { color: var(--bad-text); }
+
+/* Big single number */
+.stat { font-family: var(--font-heading); font-size: calc(var(--fs-display) * 1.3); line-height: 1; letter-spacing: -0.03em; color: var(--accent-text); font-variant-numeric: tabular-nums; }
+.label { font-size: var(--fs-small); color: var(--muted); margin-top: var(--u); }
+
+/* Do / Don't */
+.do, .dont { border-top: var(--bar-w) solid; padding-top: calc(var(--u) * 1.5); }
+.do { border-color: var(--good-text); } .dont { border-color: var(--bad-text); }
+.do > b:first-child, .dont > b:first-child, .do > p:first-child > b:only-child, .dont > p:first-child > b:only-child { display: block; font-family: var(--font-label); font-size: var(--fs-label); letter-spacing: var(--tracking-label); text-transform: var(--case-label); margin-bottom: var(--u); }
+.do > b:first-child, .do > p:first-child > b:only-child { color: var(--good-text); }
+.dont > b:first-child, .dont > p:first-child > b:only-child { color: var(--bad-text); }
+.do > p:first-child:has(> b:only-child), .dont > p:first-child:has(> b:only-child) { margin-bottom: 0; }
+.do pre, .dont pre { margin: 0; }
+
+/* Checklist: <ul class="check"> ; mark done items with <li class="done"> */
+ul.check > li { padding-left: 1.5em; }
+ul.check > li::before { content: ''; width: 0.8em; height: 0.8em; top: 0.35em; border: var(--rule-w-strong) solid var(--muted); border-radius: calc(var(--radius) / 2); }
+ul.check > li.done::before { background: var(--good); border-color: var(--good-text); }
+ul.check > li.done { color: var(--muted); }
+
+/* Numbered steps: <ol class="steps"> — horizontal process with big numbers */
+ol.steps { list-style: none; padding: 0; counter-reset: st; display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: var(--gutter); max-width: none; }
+ol.steps > li { counter-increment: st; margin: 0; padding-top: calc(var(--u) * 1.5); border-top: var(--rule-w-strong) solid var(--rule); font-size: var(--fs-small); }
+ol.steps > li::before { content: counter(st); display: block; font-family: var(--font-heading); font-size: var(--fs-h2); line-height: 1; color: var(--accent-text); margin-bottom: var(--u); }
+ol.steps > li > b:first-child { display: block; font-size: var(--fs-body); color: var(--ink); margin-bottom: calc(var(--u) / 2); }
+ol.steps > li.on { border-top-color: var(--accent-text); }
+
+/* Timeline: <ol class="timeline"><li><b>Q1</b>Pilot on Line 4</li>…</ol> ; add class="on" to the current milestone */
+ol.timeline { list-style: none; padding: 0; display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; max-width: none; position: relative; margin-top: calc(var(--u) * 3); }
+ol.timeline::before { content: ''; position: absolute; left: 0; right: 0; top: 7px; border-top: var(--rule-w-strong) solid var(--rule); }
+ol.timeline > li { position: relative; margin: 0; padding: calc(var(--u) * 3.5) calc(var(--u) * 2) 0 0; font-size: var(--fs-small); color: var(--muted); }
+ol.timeline > li::before { content: ''; position: absolute; left: 0; top: 0; width: 16px; height: 16px; border-radius: 50%; background: var(--bg); border: var(--rule-w-strong) solid var(--muted); }
+ol.timeline > li > b:first-child { display: block; color: var(--ink); font-size: var(--fs-body); margin-bottom: calc(var(--u) / 2); }
+ol.timeline > li.done::before { background: var(--muted); }
+ol.timeline > li.on::before { background: var(--accent); border-color: var(--accent-text); }
+ol.timeline > li.on > b:first-child { color: var(--accent-text); }
+
+/* Status tag: <span class="tag good">On track</span> */
+.tag {
+  display: inline-block; font-family: var(--font-label); font-size: var(--fs-label); font-weight: 700;
+  letter-spacing: var(--tracking-label); text-transform: var(--case-label); line-height: 1;
+  padding: 0.35em 0.6em; border-radius: calc(var(--radius) / 1.5); background: var(--surface); color: var(--ink); vertical-align: 0.15em;
+}
+.tag.good { background: var(--good); color: var(--on-good); }
+.tag.warn { background: var(--warn); color: var(--on-warn); }
+.tag.bad  { background: var(--bad);  color: var(--on-bad); }
+.tag.info { background: var(--info); color: var(--on-info); }
+.tag.accent { background: var(--accent); color: var(--on-accent); }
+
+/* Source / footnote line at the bottom of the content area */
+.source { margin-top: auto; padding-top: var(--u); font-size: var(--fs-caption); color: var(--muted); max-width: none; }
+.source::before { content: var(--source-prefix, 'Source: '); }
+
+/* Agenda tracker shown on content slides: <div class="tracker"><span>Context</span><span class="on">Plan</span>…</div> */
+.tracker { position: absolute; top: calc(var(--u) * 3.5); right: var(--m-right); display: flex; gap: calc(var(--u) * 2); font-family: var(--font-label); font-size: var(--fs-label); letter-spacing: var(--tracking-label); text-transform: var(--case-label); color: var(--muted); }
+.tracker > .on { color: var(--accent-text); font-weight: 700; }
+
+/* Figure with caption */
+.figure { display: flex; flex-direction: column; align-items: center; }
+.figure img { max-height: 420px; }
+
+/* Icons (inlined Lucide SVGs): <i data-icon="truck"></i> */
+.icon { width: 1.1em; height: 1.1em; vertical-align: -0.18em; stroke: currentColor; }
+.icon.lg { width: 2.2em; height: 2.2em; }
+.kpi .icon, .card > .icon:first-child { display: block; width: 36px; height: 36px; color: var(--accent-text); margin-bottom: var(--u); }
+
+/* Utilities */
+.center { text-align: center; } .right { text-align: right; }
+.grow { flex: 1; }
+.mt { margin-top: calc(var(--u) * 3); }
+.accent { color: var(--accent-text); }
+.hl { background: linear-gradient(transparent 60%, var(--accent-soft) 60%); }

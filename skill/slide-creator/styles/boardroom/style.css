@@ -1,0 +1,50 @@
+/* Boardroom personality — appended after base.css. Variables only, no literal colours. */
+
+section { --bullet: '■'; --bullet-color: var(--primary); }
+ul > li::before { font-size: 0.55em; top: 0.75em; }
+
+/* Thin brand bar across the top of every content slide */
+section::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 6px; background: var(--primary); }
+
+/* Action titles: full sentence, semibold, primary colour, no rule */
+h2 { color: var(--primary); font-size: var(--fs-h2); max-width: 30em; margin-bottom: calc(var(--u) * 3.5); }
+h6, .kicker { color: var(--muted); }
+
+/* Cover: colour block on the left third */
+section.cover { background: linear-gradient(90deg, var(--primary) 0 34%, var(--bg) 34%); padding-left: calc(1280px * 0.34 + var(--u) * 7); justify-content: center; }
+section.cover::before { display: none; }
+section.cover h1 { font-size: var(--fs-display); color: var(--primary); }
+section.cover h6 { color: var(--accent-text); }
+section.cover footer, section.cover header { left: calc(1280px * 0.34 + var(--u) * 7); }
+
+/* Chapter divider: full primary background, white type */
+section.chapter { background: var(--primary); color: var(--on-primary); }
+section.chapter::before { background: var(--accent); }
+section.chapter h1, section.chapter h6, section.chapter p { color: var(--on-primary); }
+section.chapter h6 { opacity: 0.75; }
+section.chapter::after, section.chapter footer, section.chapter header { color: var(--on-primary); opacity: 0.8; }
+
+/* Statement: left-aligned, big, with an accent bar */
+section.statement h1, section.statement p { font-family: var(--font-heading); font-weight: 600; color: var(--primary); border-left: 8px solid var(--accent); padding-left: calc(var(--u) * 4); }
+
+/* Executive summary: <!-- _class: summary --> ; each top-level bullet bold lead-in + detail */
+section.summary ul > li { padding: calc(var(--u) * 1.5) 0 calc(var(--u) * 1.5) 1.1em; margin: 0; border-bottom: var(--rule-w) solid var(--rule); }
+section.summary ul > li > strong:first-child { color: var(--primary); }
+
+/* KPI tiles: primary numbers */
+.kpi { border-top-color: var(--primary); }
+.kpi > b { color: var(--primary); font-size: calc(var(--fs-display) * 0.9); }
+
+/* Cards: flat panels, no rounded fluff */
+.card { border-radius: var(--radius); }
+.card h3 { color: var(--primary); }
+
+/* Tables: primary header rule */
+th { color: var(--primary); border-bottom-color: var(--primary); }
+
+/* Source line is standard on chart and number slides */
+.source { border-top: var(--rule-w) solid var(--rule); }
+
+/* Agenda: plain numbered rows */
+section.agenda ol > li::before { color: var(--primary); }
+section.agenda ol > li:has(strong) { color: var(--primary); }

@@ -1,0 +1,5 @@
+# Only needed for scripts/import_style.py
+pdfplumber>=0.11
+pypdfium2>=4.0
+pillow>=10.0
+python-pptx>=1.0

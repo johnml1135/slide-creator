@@ -1,0 +1,72 @@
+{
+  "name": "plant-floor",
+  "label": "Plant Floor",
+  "summary": "Industrial / engineering style: high contrast, condensed DIN-like headings, numbered sections, monospace labels, square corners and the familiar safety colour language (red stop, amber caution, green OK, blue info). Built for operations, process and engineering content.",
+  "bestFor": ["operations and production reviews", "continuous improvement (A3, kaizen, root cause)", "engineering and process documentation", "project status, schedules and readiness checks", "shop-floor screens (use the dark scheme)"],
+  "schemes": {
+    "default": {
+      "bg": "#F5F5F2",
+      "surface": "#E7E7E2",
+      "ink": "#111418",
+      "muted": "#565B63",
+      "rule": "#C4C6C2",
+      "primary": "#1E2833",
+      "accent": "#F2A900",
+      "good": "#2E8540",
+      "warn": "#F2A900",
+      "bad": "#C8102E",
+      "info": "#005EB8",
+      "categorical": ["#1E2833", "#F2A900", "#005EB8", "#7A8089", "#2E8540", "#C8102E"],
+      "sequential": ["#E7E7E2", "#1E2833"]
+    },
+    "dark": {
+      "bg": "#111418",
+      "surface": "#1D2229",
+      "ink": "#F2F3F1",
+      "muted": "#9AA0A8",
+      "rule": "#353C45",
+      "primary": "#2A3440",
+      "accent": "#FFC020",
+      "good": "#4CC069",
+      "warn": "#FFC020",
+      "bad": "#FF4D5E",
+      "info": "#4DA3FF",
+      "categorical": ["#F2F3F1", "#FFC020", "#4DA3FF", "#9AA0A8", "#4CC069", "#FF4D5E"],
+      "sequential": ["#1D2229", "#FFC020"]
+    }
+  },
+  "type": {
+    "heading": { "family": ["Bahnschrift", "DIN Alternate", "Roboto Condensed", "Arial Narrow", "Segoe UI", "sans-serif"], "weight": 600, "tracking": "0", "case": "none" },
+    "body": { "family": ["Segoe UI", "Aptos", "Roboto", "Arial", "sans-serif"], "weight": 400 },
+    "mono": { "family": ["Cascadia Mono", "Consolas", "Roboto Mono", "Menlo", "monospace"] },
+    "label": { "font": "mono", "weight": 600, "tracking": "0.06em", "case": "uppercase" },
+    "scale": { "display": 72, "h1": 54, "h2": 36, "h3": 23, "body": 23, "small": 19, "caption": 15, "label": 15 },
+    "lineHeight": { "tight": 1.1, "body": 1.45 },
+    "measure": "38em"
+  },
+  "space": { "unit": 8, "margin": [104, 64, 80, 64], "gutter": 40, "safe": 28 },
+  "shape": { "radius": 2, "radiusLarge": 2, "rule": 2, "ruleStrong": 4, "shadow": "none" },
+  "diagram": {
+    "layoutEngine": "elk",
+    "pad": 24,
+    "fontSize": 17,
+    "stroke": 2,
+    "radius": 2,
+    "nodeFill": "bg",
+    "groupStroke": "muted",
+    "groupDash": 0,
+    "sketch": false,
+    "monoLabels": true,
+    "labelCase": "Sentence case; equipment tags and IDs in monospace (e.g. L4-PRESS-02)"
+  },
+  "chart": { "grid": "both", "fontSize": 14, "barRadius": 0, "lineWidth": 2.5, "emphasis": "accent", "deemphasis": "muted" },
+  "rules": {
+    "maxWords": 60,
+    "maxBullets": 6,
+    "maxAccentsPerSlide": 3,
+    "minFontPx": 13,
+    "titleStyle": "phrase",
+    "photos": "real equipment, line and site photos; annotated with numbered callouts",
+    "icons": "functional only (safety, equipment, status); solid single colour"
+  }
+}

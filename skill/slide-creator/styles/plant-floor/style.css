@@ -1,0 +1,77 @@
+/* Plant Floor personality — appended after base.css. Variables only, no literal colours. */
+
+/* Safety amber is a FILL colour here, never text on a light background: accent text falls back to ink. */
+section { --bullet: ''; --source-prefix: 'SRC · '; --accent-text: var(--ink); }
+ul > li { padding-left: 1.2em; }
+ul > li::before { width: 0.42em; height: 0.42em; top: 0.55em; background: var(--accent); }
+ul.check > li::before { width: 0.8em; height: 0.8em; top: 0.35em; background: transparent; border-radius: 0; }
+ul.check > li.done::before { background: var(--good); }
+
+/* Header bar: dark band across the top; Marp's `header:` text sits inside it */
+section::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 64px; background: var(--primary); border-bottom: 4px solid var(--accent); }
+header {
+  top: 22px; color: var(--on-primary); font-family: var(--font-mono); font-size: var(--fs-label);
+  letter-spacing: var(--tracking-label); text-transform: uppercase; font-weight: 600;
+}
+.tracker { top: 22px; color: var(--on-primary); opacity: 0.85; }
+.tracker > .on { color: var(--accent); opacity: 1; }
+
+/* Titles: condensed, tight; kicker is a mono section code like "02.3 · CHANGEOVER" */
+h2 { font-size: var(--fs-h2); margin-bottom: calc(var(--u) * 3); }
+h6, .kicker { color: var(--muted); }
+h6::before, .kicker::before { content: '■ '; color: var(--accent); }
+
+/* Footer and page number in mono, like a drawing title block */
+footer, section::after { font-family: var(--font-mono); letter-spacing: 0.04em; text-transform: uppercase; }
+
+/* Cover: dark full-bleed with a hazard stripe at the bottom */
+section.cover { background: var(--primary); color: var(--on-primary); }
+section.cover::before { top: auto; bottom: 0; height: 24px; border: none;
+  background: repeating-linear-gradient(-45deg, var(--accent) 0 18px, var(--primary) 18px 36px); }
+section.cover h1, section.cover p { color: var(--on-primary); }
+section.cover p { opacity: 0.8; }
+section.cover h6 { color: var(--accent); }
+section.cover h6::before { content: ''; }
+section.cover header, section.cover footer { color: var(--on-primary); }
+
+/* Chapter: big section number on dark */
+section.chapter { background: var(--primary); color: var(--on-primary); }
+section.chapter::before { height: 8px; border: none; background: var(--accent); }
+section.chapter h1 { color: var(--on-primary); }
+section.chapter h6 { color: var(--accent); font-size: calc(var(--fs-h1) * 1.1); font-family: var(--font-heading); letter-spacing: 0; margin-bottom: var(--u); }
+section.chapter h6::before { content: ''; }
+section.chapter p, section.chapter footer, section.chapter::after { color: var(--on-primary); opacity: 0.75; }
+section.chapter header { display: none; }
+
+/* Statement: amber rule, condensed type */
+section.statement h1, section.statement p { font-weight: 600; }
+section.statement strong { background: var(--accent); color: var(--on-accent); padding: 0 0.12em; }
+
+/* Cards: outlined boxes like panels on a control board */
+.card { background: var(--bg); border: var(--rule-w) solid var(--ink); border-radius: var(--radius); }
+.card.outline { border-color: var(--rule); }
+.card h3 { font-family: var(--font-label); font-size: var(--fs-label); letter-spacing: var(--tracking-label); text-transform: uppercase; color: var(--muted); }
+
+/* KPI tiles: andon-board feel */
+.kpi { border-top-width: var(--rule-w-strong); }
+.kpi > b { font-family: var(--font-heading); }
+.kpi > span { font-family: var(--font-label); font-size: var(--fs-label); letter-spacing: var(--tracking-label); text-transform: uppercase; color: var(--muted); }
+.kpi.key { background: var(--accent); border-top-color: var(--ink); padding: calc(var(--u) * 1.5) calc(var(--u) * 2) calc(var(--u) * 2); }
+.kpi.key > b, .kpi.key > span, .kpi.key > em { color: var(--on-accent); }
+.kpi.good { border-top-color: var(--good); } .kpi.warn { border-top-color: var(--warn); } .kpi.bad { border-top-color: var(--bad); }
+
+/* Tables: dark header row, mono labels, square */
+th { background: var(--primary); color: var(--on-primary); border-bottom: none; font-family: var(--font-label); }
+td { border-bottom-color: var(--rule); }
+
+/* Tags: square-cornered status chips */
+.tag { border-radius: 0; }
+
+/* Steps and timeline: mono numbers */
+ol.steps > li::before { font-family: var(--font-mono); font-size: var(--fs-h3); content: counter(st, decimal-leading-zero); }
+ol.timeline > li::before { border-radius: 0; transform: rotate(45deg) scale(0.85); }
+ol.timeline > li.on > b:first-child { background: var(--accent); color: var(--on-accent); padding: 0 0.25em; display: table; }
+ol.steps > li.on::before { background: var(--accent); color: var(--on-accent); display: inline-block; padding: 0 0.2em; }
+
+/* Callout: square, heavy left bar */
+.callout { border-radius: 0; border-left-width: 6px; }
