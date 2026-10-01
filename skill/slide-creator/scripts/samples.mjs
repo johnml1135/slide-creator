@@ -31,11 +31,13 @@ async function build(style, scheme, out, project) {
   console.log(`\n=== ${label} ===`);
   spawnSync(process.execPath, [path.join(SKILL_DIR, 'scripts', 'build.mjs'), project, '--style', style, '--scheme', scheme, '--out', out], { stdio: 'inherit' });
   const dir = path.join(project, out);
+  const config = JSON.parse(await readFile(path.join(project, 'slides.json'), 'utf8'));
+  const pdfName = `${String(config.name || path.basename(project)).normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'deck'}.pdf`;
   const reportPath = path.join(dir, 'report.json');
-  if (!existsSync(path.join(dir, 'deck.pdf')) || !existsSync(reportPath)) { failures.push(`${label}: no PDF or report produced`); return null; }
+  if (!existsSync(path.join(dir, pdfName)) || !existsSync(reportPath)) { failures.push(`${label}: no PDF or report produced`); return null; }
   const { errors, warnings } = JSON.parse(await readFile(reportPath, 'utf8'));
   if (errors || warnings) { failures.push(`${label}: ${errors} errors, ${warnings} warnings (see ${path.relative(SKILL_DIR, path.join(dir, 'report.md'))})`); return null; }
-  return dir;
+  return { dir, pdfName };
 }
 
 for (const s of styles) {
@@ -44,10 +46,11 @@ for (const s of styles) {
   const refs = style.samples?.reference || REFERENCE_SLIDES;
   for (const scheme of Object.keys(style.schemes || { default: 1 })) {
     const suffix = scheme === 'default' ? '' : `-${scheme}`;
-    const out = await build(s, scheme, `build-${s}${suffix}`, example);
-    if (!out) continue;
+    const built = await build(s, scheme, `build-${s}${suffix}`, example);
+    if (!built) continue;
+    const { dir: out, pdfName } = built;
     try {
-      await copyFile(path.join(out, 'deck.pdf'), path.join(samplesDir, `${s}${suffix}.pdf`));
+      await copyFile(path.join(out, pdfName), path.join(samplesDir, `${s}${suffix}.pdf`));
       console.log(`→ samples/${s}${suffix}.pdf`);
       if (scheme !== 'default') continue;
       await copyFile(path.join(out, 'contact-sheet.png'), path.join(samplesDir, `${s}.png`));

@@ -31,7 +31,7 @@ style.json ──► scripts/lib/style.mjs ──► build/theme.css        (CSS
                                      ├─► build/d2-header.d2     (prepended to every diagram)
                                      ├─► build/chart-config.json (Vega-Lite config)
                                      └─► build/tokens.json      (resolved + derived colours)
-deck.md ──► build.mjs (icons inlined) ──► Marp ──► deck.pdf + inspect.html (--template bare)
+deck.md ──► build.mjs (icons inlined) ──► Marp ──► <deck-name>.pdf + inspect.html (--template bare)
 diagrams/*.d2 ──► @terrastruct/d2 (WASM) ──► build/diagrams/*.svg
 charts/*.vl.json ──► vega-lite + vega (renderer none → SVG) ──► build/charts/*.svg
 inspect.html ──► inspect.mjs (Playwright) ──► slides/*.png, *.issues.png, contact-sheet.png, report.{md,json}
@@ -89,6 +89,8 @@ Integration facts learned the hard way (keep them):
 - Test a style change quickly: `node skill/slide-creator/scripts/build.mjs skill/slide-creator/examples/showcase --style <name>`
   (`examples/whitepaper` for document styles; `--slides 3,5` for a few slides) then open
   `build/contact-sheet.png`. **Always look at the rendered slides**, not just the report.
+- While editing `deck.md`, run `node skill/slide-creator/scripts/build.mjs <project> --watch` and open the
+  printed local URL. Saves refresh the HTML preview and show lint findings; run a full build for the PDF.
 - Before committing style or pipeline changes: `npm run samples` (all styles, light + dark) must report
   0 errors / 0 warnings, and commit the regenerated samples and reference images.
 - Re-run only the inspection on an existing build: `node skill/slide-creator/scripts/inspect.mjs <project>`.

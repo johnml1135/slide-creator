@@ -47,7 +47,9 @@ path of `msedge.exe` or `chrome.exe`. For style import also run `pip install -r 
    ```
    node <skill>/scripts/build.mjs <folder>
    ```
-   Produces `build/deck.pdf`, `build/slides/slide-NN.png`, `build/contact-sheet.png` and `build/report.md`.
+   Produces `build/<deck-name>.pdf`, `build/slides/slide-NN.png`, `build/contact-sheet.png` and `build/report.md`.
+   While editing with the user, run `node <skill>/scripts/build.mjs <folder> --watch` and open its local URL
+   in a browser or VS Code's **Simple Browser: Show**. It refreshes on saves and shows source lint findings.
    While fixing a few slides, `--slides 3,5-7` re-checks only those (about twice as fast, no PDF); do a
    full build before delivering.
 7. **Assess** (`references/assessment-rubric.md`):
@@ -55,7 +57,7 @@ path of `msedge.exe` or `chrome.exe`. For style import also run `pip install -r 
    - Open `build/contact-sheet.png`, then every `build/slides/slide-NN.issues.png` named in the report,
      and 3 other slides at full size. Score the rubric; anything under 4 gets fixed.
    - Rebuild. Stop after 3 rounds and tell the user what is still imperfect.
-8. **Deliver**: `build/deck.pdf`. The Markdown is the editable source: to change the deck, edit `deck.md` and rebuild.
+8. **Deliver**: `build/<deck-name>.pdf`. The Markdown is the editable source: to change the deck, edit `deck.md` and rebuild.
    Give a short summary: style used, slide count, anything you could not fix.
 
 ## Hard rules

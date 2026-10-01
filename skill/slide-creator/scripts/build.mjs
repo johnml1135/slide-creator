@@ -10,14 +10,25 @@ import { existsSync } from 'node:fs';
 import path from 'node:path';
 import { spawn } from 'node:child_process';
 import { SKILL_DIR, loadStyle, resolveTokens, buildCss, buildD2Header, buildVegaConfig, resolveTokenRefs } from './lib/style.mjs';
-import { loadConfig, parseArgs, importDep, packageDir, findBrowser, splitFrontMatter, readSheet } from './lib/project.mjs';
+import { loadConfig, parseArgs, importDep, packageDir, findBrowser, splitFrontMatter, splitSlides, readSheet } from './lib/project.mjs';
+import { finishPdf } from './pdf.mjs';
 
 const args = parseArgs(process.argv.slice(2));
 const projectDir = path.resolve(args._[0] || '.');
+if (args.watch) {
+  const { watch } = await import('./preview-server.mjs');
+  await watch(projectDir, process.argv.slice(2).filter((a) => a !== '--watch'));
+  await new Promise(() => {});
+}
 const formats = ['pdf', 'pptx', 'html'].filter((f) => args[f]);
 const only = args.slides ? parseSlideList(String(args.slides)) : null;
 const cfg = await loadConfig(projectDir, { style: args.style, scheme: args.scheme, out: args.out, formats: formats.length ? formats : undefined });
 if (only && !formats.length) cfg.formats = [];
+if (args.preview) cfg.formats = [];
+const changed = args.changed ? new Set(String(args.changed).split('|').map((f) => f.replace(/\\/g, '/'))) : null;
+const styleChanged = !changed || [...changed].some((f) => f.startsWith('styles/') || f === 'slides.json');
+const shouldBuild = (dir, file, output) => styleChanged || changed.has(`${dir}/${file}`) || !existsSync(output);
+const pdfName = `${slug(cfg.name || path.basename(projectDir))}.pdf`;
 
 const log = (...m) => console.log('•', ...m);
 const problems = [];
@@ -44,19 +55,21 @@ log(`style: ${style.name} (${cfg.scheme})`);
 const diagramDir = path.join(projectDir, 'diagrams');
 if (existsSync(diagramDir)) {
   const files = (await readdir(diagramDir)).filter((f) => f.endsWith('.d2') && !f.startsWith('_'));
-  if (files.length) {
+  const todo = files.filter((f) => shouldBuild('diagrams', f, path.join(cfg.outDir, 'diagrams', f.replace(/\.d2$/, '.svg'))));
+  if (todo.length) {
     await mkdir(path.join(cfg.outDir, 'diagrams'), { recursive: true });
     let D2;
     try { ({ D2 } = await importDep('@terrastruct/d2')); } catch (e) { problems.push(e.message); }
     if (D2) {
       const d2 = new D2();
       const headerLines = d2Header.split('\n').length - 1;
-      for (const f of files) {
+      for (const f of todo) {
+        const output = path.join(cfg.outDir, 'diagrams', f.replace(/\.d2$/, '.svg'));
         const src = await readFile(path.join(diagramDir, f), 'utf8');
         try {
           const result = await d2.compile(d2Header + src);
           const svg = await d2.render(result.diagram, result.renderOptions);
-          await writeFile(path.join(cfg.outDir, 'diagrams', f.replace(/\.d2$/, '.svg')), svg);
+          await writeFile(output, svg);
           log(`diagram: ${f}`);
         } catch (e) {
           // D2 reports errors as a JSON array of {range, errmsg}; keep just the messages, with deck line numbers.
@@ -76,12 +89,16 @@ if (existsSync(diagramDir)) {
 const chartDir = path.join(projectDir, 'charts');
 if (existsSync(chartDir)) {
   const files = (await readdir(chartDir)).filter((f) => f.endsWith('.json'));
-  if (files.length) {
+  // A changed CSV or spreadsheet (next to the charts or in data/) can feed any chart, so redraw them all.
+  const dataChanged = changed && [...changed].some((f) => (f.startsWith('charts/') && !f.endsWith('.json')) || f.startsWith('data/'));
+  const todo = files.filter((f) => dataChanged || shouldBuild('charts', f, path.join(cfg.outDir, 'charts', f.replace(/(\.vl)?\.json$/, '.svg'))));
+  if (todo.length) {
     await mkdir(path.join(cfg.outDir, 'charts'), { recursive: true });
     let vega, vl;
     try { vega = await importDep('vega'); vl = await importDep('vega-lite'); } catch (e) { problems.push(e.message); }
     if (vega && vl) {
-      for (const f of files) {
+      for (const f of todo) {
+        const output = path.join(cfg.outDir, 'charts', f.replace(/(\.vl)?\.json$/, '.svg'));
         try {
           const spec = resolveTokenRefs(JSON.parse(await readFile(path.join(chartDir, f), 'utf8')), tokens);
           const inlineExcel = async (node) => {
@@ -105,7 +122,7 @@ if (existsSync(chartDir)) {
           const view = new View(parse(compiled), { renderer: 'none', loader });
           const svg = await view.toSVG();
           view.finalize();
-          await writeFile(path.join(cfg.outDir, 'charts', f.replace(/(\.vl)?\.json$/, '.svg')), svg);
+          await writeFile(output, svg);
           log(`chart: ${f}`);
         } catch (e) {
           problems.push(`charts/${f}: ${e.message || e}`);
@@ -117,13 +134,22 @@ if (existsSync(chartDir)) {
 
 /* 4. Images */
 const imgDir = path.join(projectDir, 'images');
-if (existsSync(imgDir)) await cp(imgDir, path.join(cfg.outDir, 'images'), { recursive: true });
+if (existsSync(imgDir)) {
+  if (!changed || !existsSync(path.join(cfg.outDir, 'images'))) await cp(imgDir, path.join(cfg.outDir, 'images'), { recursive: true });
+  else for (const file of changed) if (file.startsWith('images/') && existsSync(path.join(imgDir, file.slice(7)))) {
+    const output = path.join(cfg.outDir, file);
+    await mkdir(path.dirname(output), { recursive: true });
+    await cp(path.join(projectDir, file), output);
+  }
+}
 
 /* 5. Deck: inline icons, normalise front matter */
 if (!existsSync(cfg.deckPath)) fail(`Deck not found: ${cfg.deckPath} (create one with scripts/new.mjs)`);
 let md = await readFile(cfg.deckPath, 'utf8');
 md = await inlineIcons(md);
 const { front, body } = splitFrontMatter(md);
+const author = /^author:\s*["']?(.+?)["']?\s*$/m.exec(front)?.[1] || cfg.author;
+const titles = splitSlides(md).map((s) => /^#{1,2}\s+(.+)$/m.exec(s.text)?.[1]?.replace(/<[^>]*>/g, '').trim());
 const frontLines = front.split('\n').filter((l) => l.trim() && !/^\s*(theme|marp)\s*:/.test(l));
 md = `---\nmarp: true\ntheme: slide-creator\n${frontLines.join('\n')}\n---\n${body}`;
 const deckOut = path.join(cfg.outDir, 'deck.md');
@@ -141,12 +167,15 @@ if (marpBin) {
     base.push('--config-file', marpConfig);
   }
   const outputs = [];
-  for (const f of cfg.formats) outputs.push([`--${f}`, '-o', path.join(cfg.outDir, `deck.${f}`)]);
+  for (const f of cfg.formats) outputs.push([`--${f}`, '-o', path.join(cfg.outDir, f === 'pdf' ? pdfName : `deck.${f}`)]);
   outputs.push(['--html', '--template', 'bare', '-o', path.join(cfg.outDir, 'inspect.html')]);
   for (const o of outputs) {
     const code = await run(process.execPath, [marpBin, deckOut, ...base, ...o], browser ? { CHROME_PATH: browser } : {});
     if (code !== 0) problems.push(`marp ${o[0]} failed (exit ${code})`);
-    else if (o[1] === '-o') log(`${o[0].slice(2)}: ${path.relative(projectDir, o[2])}`);
+    else if (o[1] === '-o') {
+      if (o[0] === '--pdf') await finishPdf(o[2], cfg.name || path.basename(projectDir), author, titles);
+      log(`${o[0].slice(2)}: ${path.relative(projectDir, o[2])}`);
+    }
   }
 }
 
@@ -155,7 +184,7 @@ if (problems.length) {
 }
 
 /* 7. Inspect */
-if (!args['no-inspect'] && existsSync(path.join(cfg.outDir, 'inspect.html'))) {
+if (!args.preview && !args['no-inspect'] && existsSync(path.join(cfg.outDir, 'inspect.html'))) {
   const { inspect } = await import('./inspect.mjs');
   await inspect(cfg, { buildProblems: problems, only });
 } else if (problems.length) {
@@ -167,6 +196,10 @@ if (!args['no-inspect'] && existsSync(path.join(cfg.outDir, 'inspect.html'))) {
 function fail(message) {
   console.error(`✗ ${message}`);
   process.exit(1);
+}
+
+function slug(value) {
+  return String(value).normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'deck';
 }
 
 /** "3,5-7" → Set {3,5,6,7} */
