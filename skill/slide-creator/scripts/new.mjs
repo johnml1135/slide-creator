@@ -142,4 +142,3 @@ input -> step1 -> step2 -> output {class: link}
 await write('.gitignore', 'build/\n');
 
 console.log(`\nNew ${style} ${isDocument ? 'document' : 'deck'} in ${dir}\nNext: edit deck.md, then  node "${path.join(path.dirname(fileURLToPath(import.meta.url)), 'build.mjs')}" "${dir}"`);
-

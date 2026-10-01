@@ -13,8 +13,8 @@ Use after every build. Two layers:
    | `contrast` | text too faint on its background | style issue — use the right colour role |
    | `small-text` | text below the style's minimum size | less text, not a smaller font |
    | `figure-text` | labels inside a diagram/chart end up too small once scaled to fit | fewer or shorter labels, fewer nodes, or give the figure the full width |
-   | `figure-size` | a diagram/chart uses under 60% of the width it could fill (usually a tall diagram shrunk to fit) | draw it left-to-right, or split it |
-   | `orphan` | a heading of 4+ words ends with one word alone on its last line | reword or shorten the heading |
+   | `figure-size` | a diagram/chart is narrower than 60% of the content width (one column's width on a two-column page); often a tall diagram shrunk to fit | draw it left-to-right, give it more room, or split it |
+   | `orphan` | a heading ends with one word alone on its last line | reword or shorten the heading |
    | `crowded` | too many separate blocks on one slide | one idea per slide |
 2. **Visual** — you look at the images. Open `build/contact-sheet.png` first (whole deck at a glance),
    then each `build/slides/slide-NN.issues.png` from the report, then at least 3 other slides at full size

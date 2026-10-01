@@ -50,7 +50,7 @@ Body…
 | `chart` | one chart fills the slide | kicker, `##` title, `![w:1080](charts/x.svg)`, `<p class="source">` |
 | `summary` | executive summary (best in boardroom) | `##` title + 3–5 bullets each starting with a **bold lead-in** |
 | `dense` | appendix / detail tables | smaller text, higher word limit — use sparingly |
-| `paper` | a body page in a **document** style (`editorial-whitepaper`) | `######` chapter pill, `#` page title, then `##`/`###` sections; text flows down the left column, then the right. Set `class: paper` in the front matter so it is the default. A `<div class="figure">` spans both columns. Other styles don't restyle it — use it only with a document style |
+| `paper` | a body page in a **document** style (`editorial-whitepaper`) | `######` chapter pill, `#` page title, then `##`/`###` sections; text flows down the left column, then the right. Set `class: paper` in the front matter so it is the default. A `<div class="figure">` spans both columns. The column flow works in any style, but only document styles size the type for it |
 | `closing` | last slide | kicker, `#` question or next step |
 
 Combine with a space: `<!-- _class: chart dense -->`.

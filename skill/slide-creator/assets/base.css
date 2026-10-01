@@ -165,6 +165,21 @@ section.dense { font-size: var(--fs-small); }
 section.dense h2 { margin-bottom: calc(var(--u) * 2.5); }
 section.dense li { margin: calc(var(--u) * 0.75) 0; }
 
+/* paper: a body page for document styles. Text runs down the left column, then the right, as in a printed
+   guide; the page title (and its kicker) and a .figure span both columns. Document styles restyle the type. */
+section.paper { display: block; column-count: 2; column-gap: var(--gutter); column-fill: auto; }
+/* With a full-width figure the text below it is short, so share it evenly between the columns. */
+section.paper:has(> .figure) { column-fill: balance; }
+section.paper > h1, section.paper > h6 { column-span: all; }
+section.paper p, section.paper ul, section.paper ol { max-width: none; orphans: 2; widows: 2; }
+section.paper :is(h2, h3) { break-after: avoid; }
+section.paper :is(h2, h3):first-child, section.paper > h1 + :is(h2, h3), section.paper .figure + :is(h2, h3) { margin-top: 0; }
+section.paper p:has(> strong:only-child) { break-after: avoid; } /* a bold lead-in stays with its list */
+section.paper :is(table, pre, .callout, p:has(> img), .figure) { break-inside: avoid; }
+section.paper p > img { display: block; max-width: 100%; max-height: 300px; margin: 0 auto; }
+section.paper .figure { column-span: all; display: block; }
+section.paper .figure p > img { max-height: 280px; }
+
 /* ================= Components (HTML in Markdown, needs --html) ================= */
 
 /* Grids */

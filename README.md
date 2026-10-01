@@ -188,7 +188,6 @@ skill/slide-creator/        ← the skill (this is what gets installed)
   examples/showcase/        one deck using every layout — the test deck for any slide style
   examples/whitepaper/      a 9-page document — the test document for editorial-whitepaper
   samples/                  showcase rendered in each style (light and dark)
-dev/                        maintainer tools (offline preview renderer) — not part of the skill
 ```
 
 ## Status

@@ -83,12 +83,11 @@ Integration facts learned the hard way (keep them):
 
 ## Working on this repo
 
-- Node ESM scripts, no build step. Python only in `scripts/import_style.py` and `dev/`.
+- Node ESM scripts, no build step. Python only in `scripts/import_style.py`.
 - Test a style change quickly: `node skill/slide-creator/scripts/build.mjs skill/slide-creator/examples/showcase --style <name>`
   (`examples/whitepaper` for document styles; `--slides 3,5` for a few slides) then open
   `build/contact-sheet.png`. **Always look at the rendered slides**, not just the report.
 - Before committing style or pipeline changes: `npm run samples` (all styles, light + dark) must report
   0 errors / 0 warnings, and commit the regenerated samples and reference images.
-- Without Marp/D2/Vega available: `python3 dev/preview.py skill/slide-creator/examples/showcase --style <name> --pdf out.pdf`
-  then `node skill/slide-creator/scripts/inspect.mjs skill/slide-creator/examples/showcase`.
+- Re-run only the inspection on an existing build: `node skill/slide-creator/scripts/inspect.mjs <project>`.
 - The user is not a designer: explain design choices in plain words; keep `references/design-basics.md` current.

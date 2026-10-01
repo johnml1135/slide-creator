@@ -23,7 +23,7 @@ export async function inspect(cfg, { buildProblems = [], htmlPath, only } = {}) 
   await mkdir(slidesDir, { recursive: true });
 
   const browser = await launchBrowser();
-  const { width: W, height: H } = tokens.page || { width: 1280, height: 720 };
+  const { width: W, height: H } = tokens.page;
   const page = await browser.newPage({ viewport: { width: W, height: H }, deviceScaleFactor: 1 });
   await page.goto(pathToFileURL(html).href, { waitUntil: 'load' });
   await page.addStyleTag({ content: `html,body{margin:0;padding:0;background:#777;height:auto!important;overflow:visible!important} svg[data-marpit-svg]{display:block;width:${W}px!important;height:${H}px!important;margin:0 0 24px} .marpit > svg + svg{margin-top:0}` });
@@ -39,10 +39,10 @@ export async function inspect(cfg, { buildProblems = [], htmlPath, only } = {}) 
     const s = slides[f.slide - 1];
     if (s) s.issues.push(f); else lint.globalIssues.push(f);
   }
+  if (only) slides = slides.filter((s) => only.has(s.index));
   // Figure labels may sit a notch below body text; default 80% of the body minimum.
   const minFigure = tokens.rules?.minFigureFontPx ?? Math.round((tokens.rules?.minFontPx ?? 14) * 0.8);
   for (const s of slides) s.issues.push(...await checkFigures(s.figures, cfg.outDir, minFigure));
-  if (only) slides = slides.filter((s) => only.has(s.index));
 
   // Screenshots
   for (const s of slides) {
@@ -217,7 +217,7 @@ function measureSlides({ W, H, minFont, maxBlocks }) {
     if (blocksTop > maxBlocks) add('warning', 'crowded', `${blocksTop} top-level blocks (limit ${maxBlocks}); aim for one idea per slide`);
 
     const title = (section.querySelector('h1, h2') || {}).innerText || '';
-    // 8. Orphan: a heading of 4+ words whose last line holds a single word. Measured per word with Ranges, not by counting characters.
+    // 8. Orphan: a heading whose last line holds a single word. Measured per word with Ranges, not by counting characters.
     for (const h of section.querySelectorAll('h1, h2, h3')) {
       if (inChrome(h)) continue;
       const tops = [];
@@ -230,16 +230,23 @@ function measureSlides({ W, H, minFont, maxBlocks }) {
           if (b.width) tops.push(Math.round(b.top));
         }
       }
-      const lines = [...new Set(tops)].sort((a, b) => a - b).filter((t, j, a) => j === 0 || t - a[j - 1] > 2);
+      // Group word tops into lines; compare with the last line kept so a slow 1-2px drift can't chain lines together.
+      const lines = [];
+      for (const t of [...tops].sort((a, b) => a - b)) if (!lines.length || t - lines[lines.length - 1] > 2) lines.push(t);
       const last = lines[lines.length - 1];
-      if (tops.length >= 4 && lines.length > 1 && tops.filter((t) => Math.abs(t - last) <= 2).length === 1) add('warning', 'orphan', 'Heading ends with a single word on its own line; reword or shorten it', h);
+      if (lines.length > 1 && tops.filter((t) => Math.abs(t - last) <= 2).length === 1) add('warning', 'orphan', 'Heading ends with a single word on its own line; reword or shorten it', h);
     }
 
-    // 9. Figures (diagram/chart images): size relative to the space they could fill; text size is checked in Node.
+    // 9. Figures (diagram/chart images): width against the content width (one column's width in a multi-column
+    //    page, unless the figure spans the columns); text size is checked in Node from the SVG source.
+    const scs = getComputedStyle(section);
+    const contentW = W - parseFloat(scs.getPropertyValue('--m-left')) - parseFloat(scs.getPropertyValue('--m-right'));
+    const nCols = parseInt(scs.columnCount, 10) || 1;
+    const columnW = (contentW - (nCols - 1) * (parseFloat(scs.columnGap) || 0)) / nCols;
     const figures = [...section.querySelectorAll('img')].filter((img) => /(^|\/)(diagrams|charts)\//.test(img.getAttribute('src') || '')).map((img) => {
       const r = rel(img.getBoundingClientRect());
-      const container = img.parentElement.closest('p, div, figure, li, td, section');
-      return { src: img.getAttribute('src'), w: r.w, available: container.getBoundingClientRect().width / k, box: { x: Math.round(r.x), y: Math.round(r.y), w: Math.round(r.w), h: Math.round(r.h) } };
+      const spans = nCols > 1 && img.closest('.figure');
+      return { src: decodeURIComponent(img.getAttribute('src')), w: r.w, available: nCols > 1 && !spans ? columnW : contentW, box: { x: Math.round(r.x), y: Math.round(r.y), w: Math.round(r.w), h: Math.round(r.h) } };
     });
 
     return { index: i + 1, title: title.trim(), classes: section.className, figures, rect: { x: S.left + window.scrollX, y: S.top + window.scrollY, width: S.width, height: S.height }, issues };
@@ -260,7 +267,7 @@ async function checkFigures(figures = [], outDir, minFont) {
       const px = Math.min(...sizes) * (f.w / svgWidth);
       if (px < minFont - 0.5) issues.push({ severity: 'warning', check: 'figure-text', message: `Smallest text in ${f.src} renders at ${px.toFixed(1)}px (minimum ${minFont}px); give the figure more width, draw it smaller, or use fewer/shorter labels`, box: f.box });
     }
-    if (f.available && f.w < 0.6 * f.available) issues.push({ severity: 'warning', check: 'figure-size', message: `${f.src} uses only ${Math.round((100 * f.w) / f.available)}% of the width available to it; a tall diagram is probably being shrunk to fit — draw it left-to-right or split it`, box: f.box });
+    if (f.available && f.w < 0.6 * f.available) issues.push({ severity: 'warning', check: 'figure-size', message: `${f.src} uses only ${Math.round((100 * f.w) / f.available)}% of the content width; a tall diagram is probably being shrunk to fit — draw it left-to-right or split it`, box: f.box });
   }
   return issues;
 }

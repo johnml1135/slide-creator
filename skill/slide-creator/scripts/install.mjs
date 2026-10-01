@@ -41,7 +41,16 @@ if (path.resolve(target) === path.resolve(SKILL_DIR)) {
 const SKIP = new Set(['node_modules', '__pycache__', '.DS_Store']);
 const skip = (rel) => rel.split(/[\\/]/).some((p) => SKIP.has(p) || p === 'build' || p.startsWith('build-'));
 
-// Replace everything except node_modules, so an update also removes files deleted upstream.
+// Replace everything except node_modules, so an update also removes files deleted upstream — but only in an
+// empty folder or a previous install of this skill. Never empty a folder of other skills (--to ~/.claude/skills).
+if (existsSync(target) && (await readdir(target)).length) {
+  const prev = path.join(target, 'SKILL.md');
+  const isPrevious = existsSync(prev) && new RegExp(`^name:\\s*${name}\\s*$`, 'm').test(await readFile(prev, 'utf8'));
+  if (!isPrevious) {
+    console.error(`✗ ${target} is not empty and is not a previous ${name} install; refusing to replace its contents.\n  Point --to at the skill's own folder, e.g. ${path.join(target, name)}`);
+    process.exit(2);
+  }
+}
 await mkdir(target, { recursive: true });
 for (const e of await readdir(target)) if (e !== 'node_modules') await rm(path.join(target, e), { recursive: true, force: true });
 await cp(SKILL_DIR, target, { recursive: true, filter: (src) => !skip(path.relative(SKILL_DIR, src)) });

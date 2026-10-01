@@ -114,6 +114,9 @@ export function resolveTokens(style, scheme = 'default', override = {}) {
   // In a dark scheme ink is light, so the dark candidate for text on a fill is whichever of ink/bg is darker.
   const deep = contrast(c.ink, '#000000') < contrast(c.bg, '#000000') ? c.ink : c.bg;
   c.onPrimary = c.onPrimary || onColor(c.primary, '#FFFFFF', deep);
+  // Diagram box labels: a literal nodeFill can clash with a scheme (e.g. white boxes in dark mode).
+  const nodeFill = colorRef(t, t.diagram?.nodeFill) || '#FFFFFF';
+  c.onNode = contrast(nodeFill, c.ink) >= 4.5 ? c.ink : onColor(nodeFill, '#FFFFFF', deep);
   c.onAccent = c.onAccent || onColor(c.accent, '#FFFFFF', '#111111');
   for (const s of ['good', 'warn', 'bad', 'info']) c['on' + s[0].toUpperCase() + s.slice(1)] = onColor(c[s], '#FFFFFF', '#111111');
   // Accent/warn used as TEXT must read on both the page and the surface panels.
@@ -196,8 +199,6 @@ export function buildD2Header(style, t) {
   const c = t.colors, d = t.diagram, ty = t.type;
   const fill = colorRef(t, d.nodeFill) || '#FFFFFF';
   const nodeStroke = colorRef(t, d.nodeStroke) || c.ink;
-  // A literal nodeFill can clash with a scheme (e.g. white boxes in dark mode); keep labels readable regardless.
-  const nodeText = contrast(fill, c.ink) >= 4.5 ? c.ink : onColor(fill, '#FFFFFF', '#111111');
   const groupStroke = colorRef(t, d.groupStroke) || c.surface;
   const fs = d.fontSize || 18;
   // D2 only accepts whole-number stroke widths (0-15).
@@ -235,7 +236,7 @@ classes: {
       stroke: "${nodeStroke}"
       stroke-width: ${sw}
       border-radius: ${d.radius}
-      font-color: "${nodeText}"
+      font-color: "${c.onNode}"
       font-size: ${fs}
     }
   }

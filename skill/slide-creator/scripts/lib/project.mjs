@@ -58,11 +58,6 @@ export async function importDep(name, fallbacks = []) {
   throw new Error(`Missing dependency "${name}". Run: npm install --prefix "${SKILL_DIR}"`);
 }
 
-export function resolveDepFile(spec) {
-  const req = createRequire(path.join(SKILL_DIR, 'package.json'));
-  return req.resolve(spec);
-}
-
 /** Folder of an installed package. Unlike resolving "<pkg>/package.json", this works when the
  *  package's "exports" map hides package.json (d2, vega, vega-lite do). Throws if not installed. */
 export function packageDir(name) {

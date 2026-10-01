@@ -126,8 +126,9 @@ export async function runLint(cfg, tokens) {
       const hex = JSON.stringify(spec).match(HEX);
       if (hex) add('error', 'raw-colour', `Literal colour ${hex.join(', ')}; use "$accent", "$muted", "$cat1"… instead`);
       if (!spec.title) add('warning', 'chart-title', 'No title; state the takeaway in the chart title or the slide title');
-      const maxW = (tokens?.page?.width ?? 1280) - 130;
-      if (spec.width && spec.width > maxW) add('warning', 'chart-size', `Width over ${maxW}px will not fit the page`);
+      const [, mRight, , mLeft] = tokens.space.margin;
+      const contentWidth = tokens.page.width - mLeft - mRight;
+      if (spec.width && spec.width > contentWidth) add('warning', 'chart-size', `Width over ${contentWidth}px (the content width) will not fit the page`);
     }
   }
 

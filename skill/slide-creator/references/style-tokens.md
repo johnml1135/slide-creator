@@ -15,6 +15,7 @@
   "label": "Boardroom",
   "summary": "One or two sentences on the look.",
   "bestFor": ["…"],
+  "kind": "document",                         // optional: "document" (read, e.g. whitepaper) vs slides (default); new.mjs picks the starter from it
   "page": { "width": 1280, "height": 720 },   // optional page size in px (96 per inch); 1056 × 816 = US Letter landscape
   "markdown": { "breaks": false },            // optional markdown-it options; breaks:false lets wrapped prose reflow
   "samples": { "example": "showcase", "reference": [1, 3, 4, 5, 7, 8] },  // optional: which example + pages samples.mjs uses
@@ -65,6 +66,7 @@ Units: px on the page (1280×720 unless `page` says otherwise). `chart.width` / 
 | `onPrimary`, `onAccent`, `onGood` … | white or near-black, whichever contrasts more with the fill |
 | `accentText`, `warnText`, `goodText`, `badText`, `infoText` | the colour itself if it reaches 4.5:1 on `bg` and `surface`, else darkened toward `ink` until it does |
 | `accentSoft` | accent at 28% opacity (highlighter) |
+| `onNode` | diagram box label colour: `ink` if it reads on `diagram.nodeFill`, else white or the darker of `ink`/`bg` |
 
 ## CSS variables available to style.css
 
