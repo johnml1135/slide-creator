@@ -228,8 +228,13 @@ function measureSlides({ W, H, minFont, maxBlocks }) {
       const body = [...section.children].filter((el) => !['H1', 'H2', 'H6', 'HEADER', 'FOOTER'].includes(el.tagName)
         && !el.matches('.source, .tracker, .brand-logo-slot') && getComputedStyle(el).display !== 'none');
       if (body.length && section.querySelector('.kpis, .cols, .cols3, .cols4, .cols-wide-left, .cols-wide-right, ol.steps, ol.timeline, table, .do, .dont, .card')) {
-        const bottom = Math.max(...body.map((el) => rel(el.getBoundingClientRect()).y + rel(el.getBoundingClientRect()).h));
-        if (bottom < H * 0.55) add('warning', 'top-heavy', `Content ends at ${Math.round(bottom / H * 100)}% of the page; center or spread the body below the title`);
+        // Hugging the title = far more empty space below the body than between the title and the body.
+        const boxes = body.map((el) => rel(el.getBoundingClientRect()));
+        const top = Math.min(...boxes.map((r) => r.y)), bottom = Math.max(...boxes.map((r) => r.y + r.h));
+        const heading = section.querySelector(':scope > h2, :scope > h1');
+        const above = top - (heading ? rel(heading.getBoundingClientRect()).y + rel(heading.getBoundingClientRect()).h : 0);
+        const below = H - parseFloat(getComputedStyle(section).paddingBottom) - bottom;
+        if (below > Math.max(3 * above, 0.3 * H)) add('warning', 'top-heavy', `Content hugs the title and leaves ${Math.round(below / H * 100)}% of the page empty below; let it centre in the space`);
       }
     }
     // 8. Orphan: a heading whose last line holds a single word. Measured per word with Ranges, not by counting characters.

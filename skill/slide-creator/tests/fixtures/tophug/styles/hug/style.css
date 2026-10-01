@@ -1,0 +1,36 @@
+/* Editorial personality — appended after base.css. Variables only, no literal colours. */
+
+section { --bullet: '–'; }
+
+/* Titles sit on a hairline, like a chapter heading in a printed guide */
+h2 { padding-bottom: calc(var(--u) * 2.5); border-bottom: var(--rule-w) solid var(--rule); }
+
+/* Kicker in sentence case reads more literary than shouty labels */
+h6, .kicker { color: var(--accent-text); }
+
+/* Cover: large serif title set low, quiet subtitle */
+section.cover h1 { line-height: 1.04; }
+section.cover h6 { margin-bottom: calc(var(--u) * 3); }
+
+/* Chapter divider: soft paper panel, big serif, nothing else */
+section.chapter h6 { margin-bottom: calc(var(--u) * 2); }
+
+/* Statement: serif, no accent colour unless <strong> */
+section.statement { background: var(--surface); }
+
+/* KPI tiles and cards: hairline top rule, no heavy blocks */
+.kpi { border-top-width: var(--rule-w); }
+.kpi.key { border-top-width: var(--rule-w-strong); }
+.card { background: var(--surface); }
+
+/* Callout: soft panel with a thin accent edge */
+.callout { border-left-width: 3px; }
+
+/* Tables: ink rule under header, hairlines between rows */
+th { border-bottom-width: var(--rule-w); }
+
+/* Agenda: dotted leaders to page numbers like a table of contents */
+section.agenda ol > li { border-bottom: none; padding: var(--u) 0; grid-template-columns: 2.2em auto 1fr auto; }
+section.agenda ol > li::after { content: ''; border-bottom: 2px dotted var(--rule); margin: 0 calc(var(--u) * 1.5) 0.35em; grid-column: 3; grid-row: 1; align-self: end; }
+section.agenda ol > li em { grid-column: 4; }
+section.agenda ol > li::before { font-family: var(--font-heading); font-weight: 400; font-size: var(--fs-body); }

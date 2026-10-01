@@ -167,14 +167,15 @@ section.closing { justify-content: center; }
 section.closing h1 { font-size: var(--fs-display); }
 section.closing::after { display: none; }
 
-/* Center a short body within the space after the title. Source lines stay at the foot. */
-section:not(.cover, .chapter, .statement, .closing, .paper, .diagram, .chart, .dense, .agenda) > :is(.kpis, .cols, .cols3, .cols4, .cols-wide-left, .cols-wide-right, ol.steps) {
-  margin-top: var(--content-gap); margin-bottom: var(--content-gap);
+/* Center a short body of visual blocks within the space after the title, as ONE group: space before the first
+   block and after the last body element, so a callout or checklist stays with the block above it.
+   Source lines stay at the foot. */
+section:not(.cover, .chapter, .statement, .closing, .paper, .diagram, .chart, .dense, .agenda) > :is(.kpis, .cols, .cols3, .cols4, .cols-wide-left, .cols-wide-right, ol.steps, ol.timeline, table):not(:is(.kpis, .cols, .cols3, .cols4, .cols-wide-left, .cols-wide-right, ol.steps, ol.timeline, table, p, ul, .callout) ~ *) {
+  margin-top: var(--content-gap);
 }
-section:not(.cover, .chapter, .statement, .closing, .paper, .diagram, .chart, .dense, .agenda):has(> .source) > .kpis { margin-bottom: 0; }
-section:not(.cover, .chapter, .statement, .closing, .paper, .diagram, .chart, .dense, .agenda) > table { margin-top: var(--content-gap); margin-bottom: var(--content-gap); }
-section:not(.cover, .chapter, .statement, .closing, .paper, .diagram, .chart, .dense, .agenda) > ol.timeline { margin-top: var(--content-gap); }
-section:not(.cover, .chapter, .statement, .closing, .paper, .diagram, .chart, .dense, .agenda) > ol.timeline + ul.check { margin-bottom: var(--content-gap); }
+section:not(.cover, .chapter, .statement, .closing, .paper, .diagram, .chart, .dense, .agenda):has(> :is(.kpis, .cols, .cols3, .cols4, .cols-wide-left, .cols-wide-right, ol.steps, ol.timeline, table)) > :nth-last-child(1 of :not(header, footer, .source, .brand-logo-slot)) {
+  margin-bottom: var(--content-gap);
+}
 
 /* dense: tables or detail slides that need more room */
 section.dense { font-size: var(--fs-small); }

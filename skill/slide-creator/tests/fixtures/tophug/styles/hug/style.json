@@ -1,0 +1,169 @@
+{
+  "name": "hug",
+  "label": "Editorial",
+  "summary": "A calm, book-like guide: warm paper, serif titles, hairline rules, generous whitespace and one quiet accent. Inspired by long-form technical guides such as Anthropic's 'Complete Guide to Building Skills for Claude'.",
+  "bestFor": [
+    "explainers and how-to guides",
+    "strategy narratives",
+    "training material",
+    "pre-reads people will study"
+  ],
+  "schemes": {
+    "default": {
+      "bg": "#FAF9F5",
+      "surface": "#F0EEE6",
+      "ink": "#141413",
+      "muted": "#6B6A64",
+      "rule": "#D9D7CE",
+      "primary": "#141413",
+      "accent": "#D97757",
+      "good": "#4F7A4A",
+      "warn": "#C08A2E",
+      "bad": "#B5483B",
+      "info": "#5B7A99",
+      "categorical": [
+        "#D97757",
+        "#141413",
+        "#8A8880",
+        "#5B7A99",
+        "#C08A2E",
+        "#4F7A4A"
+      ],
+      "sequential": [
+        "#F0EEE6",
+        "#D97757"
+      ]
+    },
+    "dark": {
+      "bg": "#1F1E1D",
+      "surface": "#2B2A27",
+      "ink": "#F0EEE6",
+      "muted": "#A8A69E",
+      "rule": "#3E3D39",
+      "primary": "#F0EEE6",
+      "accent": "#E08A6D",
+      "good": "#8DB384",
+      "warn": "#E0B062",
+      "bad": "#E07A6D",
+      "info": "#8FAAC7",
+      "categorical": [
+        "#E08A6D",
+        "#F0EEE6",
+        "#8A8880",
+        "#8FAAC7",
+        "#E0B062",
+        "#8DB384"
+      ],
+      "sequential": [
+        "#2B2A27",
+        "#E08A6D"
+      ]
+    }
+  },
+  "type": {
+    "heading": {
+      "family": [
+        "Georgia",
+        "Cambria",
+        "Tiempos Text",
+        "Times New Roman",
+        "serif"
+      ],
+      "weight": 400,
+      "tracking": "-0.01em",
+      "case": "none"
+    },
+    "body": {
+      "family": [
+        "Segoe UI",
+        "Aptos",
+        "Inter",
+        "Helvetica Neue",
+        "Arial",
+        "sans-serif"
+      ],
+      "weight": 400
+    },
+    "mono": {
+      "family": [
+        "Cascadia Mono",
+        "Consolas",
+        "JetBrains Mono",
+        "Menlo",
+        "monospace"
+      ]
+    },
+    "label": {
+      "font": "body",
+      "weight": 600,
+      "tracking": "0.08em",
+      "case": "uppercase"
+    },
+    "scale": {
+      "display": 84,
+      "h1": 64,
+      "h2": 42,
+      "h3": 26,
+      "body": 26,
+      "small": 21,
+      "caption": 17,
+      "label": 16
+    },
+    "lineHeight": {
+      "tight": 1.12,
+      "body": 1.55
+    },
+    "measure": "30em"
+  },
+  "space": {
+    "unit": 8,
+    "margin": [
+      80,
+      96,
+      96,
+      96
+    ],
+    "gutter": 56,
+    "safe": 40
+  },
+  "logo": {
+    "position": "top-right",
+    "height": 42
+  },
+  "content": "top",
+  "shape": {
+    "radius": 8,
+    "radiusLarge": 12,
+    "rule": 1,
+    "ruleStrong": 2,
+    "shadow": "none"
+  },
+  "diagram": {
+    "layoutEngine": "elk",
+    "pad": 32,
+    "fontSize": 18,
+    "stroke": 1,
+    "radius": 8,
+    "nodeFill": "bg",
+    "groupStroke": "surface",
+    "sketch": false,
+    "labelCase": "Sentence case for nodes; UPPERCASE for group labels"
+  },
+  "chart": {
+    "grid": "y",
+    "fontSize": 15,
+    "barRadius": 2,
+    "lineWidth": 2.5,
+    "emphasis": "accent",
+    "deemphasis": "muted"
+  },
+  "rules": {
+    "maxWords": 50,
+    "maxBullets": 5,
+    "maxAccentsPerSlide": 2,
+    "minFontPx": 15,
+    "titleStyle": "phrase",
+    "photos": "rare; only full-bleed, calm, desaturated; never stock clichés",
+    "icons": "rare; 1.5px outline icons in muted ink, never as decoration"
+  }
+}

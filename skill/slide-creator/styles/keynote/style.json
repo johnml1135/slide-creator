@@ -99,11 +99,11 @@
       "display": 104,
       "h1": 72,
       "h2": 52,
-      "h3": 28,
-      "body": 26,
-      "small": 20,
-      "caption": 16,
-      "label": 16
+      "h3": 36,
+      "body": 32,
+      "small": 24,
+      "caption": 18,
+      "label": 17
     },
     "lineHeight": {
       "tight": 1.04,
@@ -150,7 +150,7 @@
     "deemphasis": "rule"
   },
   "rules": {
-    "maxWords": 65,
+    "maxWords": 40,
     "maxBullets": 5,
     "maxAccentsPerSlide": 2,
     "minFontPx": 15,
