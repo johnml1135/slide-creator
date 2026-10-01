@@ -269,7 +269,7 @@ classes: {
       stroke-dash: ${d.groupDash ?? 0}
       border-radius: ${t.shape.radiusLarge ?? d.radius}
       font-color: "${c.muted}"
-      font-size: ${Math.max(12, fs - 4)}
+      font-size: ${Math.max(12, fs - 2)}
       bold: true${mono}
     }
   }
@@ -278,14 +278,14 @@ classes: {
       stroke: "${c.ink}"
       stroke-width: ${sw}
       font-color: "${c.muted}"
-      font-size: ${Math.max(12, fs - 4)}
+      font-size: ${Math.max(12, fs - 2)}
     }
   }
   note: {
     shape: text
     style: {
       font-color: "${c.muted}"
-      font-size: ${Math.max(12, fs - 3)}
+      font-size: ${Math.max(12, fs - 1)}
       italic: true
     }
   }

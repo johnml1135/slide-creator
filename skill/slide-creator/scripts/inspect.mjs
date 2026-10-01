@@ -14,7 +14,8 @@ import { pathToFileURL, fileURLToPath } from 'node:url';
 import { launchBrowser, loadConfig, parseArgs } from './lib/project.mjs';
 import { runLint } from './lint.mjs';
 
-export async function inspect(cfg, { buildProblems = [], htmlPath } = {}) {
+/** only: optional Set of slide numbers to check and screenshot (build.mjs --slides); numbering is kept. */
+export async function inspect(cfg, { buildProblems = [], htmlPath, only } = {}) {
   const html = htmlPath || path.join(cfg.outDir, 'inspect.html');
   const tokens = JSON.parse(await readFile(path.join(cfg.outDir, 'tokens.json'), 'utf8'));
   const slidesDir = path.join(cfg.outDir, 'slides');
@@ -33,11 +34,15 @@ export async function inspect(cfg, { buildProblems = [], htmlPath } = {}) {
   const lint = await runLint(cfg, tokens);
 
   // Merge findings per slide
-  const slides = domFindings.map((s) => ({ index: s.index, rect: s.rect, issues: s.issues, classes: s.classes, title: s.title }));
+  let slides = domFindings.map((s) => ({ index: s.index, rect: s.rect, issues: s.issues, classes: s.classes, title: s.title, figures: s.figures }));
   for (const f of lint.slideIssues) {
     const s = slides[f.slide - 1];
     if (s) s.issues.push(f); else lint.globalIssues.push(f);
   }
+  // Figure labels may sit a notch below body text; default 80% of the body minimum.
+  const minFigure = tokens.rules?.minFigureFontPx ?? Math.round((tokens.rules?.minFontPx ?? 14) * 0.8);
+  for (const s of slides) s.issues.push(...await checkFigures(s.figures, cfg.outDir, minFigure));
+  if (only) slides = slides.filter((s) => only.has(s.index));
 
   // Screenshots
   for (const s of slides) {
@@ -82,10 +87,10 @@ export async function inspect(cfg, { buildProblems = [], htmlPath } = {}) {
   const all = [...buildProblems.map((m) => ({ severity: 'error', check: 'build', message: m })), ...lint.globalIssues, ...slides.flatMap((s) => s.issues.map((i) => ({ ...i, slide: s.index })))];
   const errors = all.filter((i) => i.severity === 'error').length;
   const warnings = all.filter((i) => i.severity === 'warning').length;
-  const report = { style: tokens.name, scheme: tokens.scheme, slideCount: slides.length, errors, warnings, global: [...buildProblems.map((m) => ({ severity: 'error', check: 'build', message: m })), ...lint.globalIssues], slides };
+  const report = { style: tokens.name, scheme: tokens.scheme, slideCount: slides.length, partial: only ? [...only] : undefined, errors, warnings, global: [...buildProblems.map((m) => ({ severity: 'error', check: 'build', message: m })), ...lint.globalIssues], slides };
   await writeFile(path.join(cfg.outDir, 'report.json'), JSON.stringify(report, null, 2));
   await writeFile(path.join(cfg.outDir, 'report.md'), toMarkdown(report, cfg));
-  console.log(`\nInspection: ${slides.length} slides · ${errors} errors · ${warnings} warnings`);
+  console.log(`\nInspection: ${slides.length}${only ? ` of ${domFindings.length}` : ''} slides · ${errors} errors · ${warnings} warnings`);
   console.log(`  report:        ${path.relative(cfg.projectDir, path.join(cfg.outDir, 'report.md'))}`);
   console.log(`  contact sheet: ${path.relative(cfg.projectDir, path.join(cfg.outDir, 'contact-sheet.png'))}`);
   if (errors) process.exitCode = 1;
@@ -212,14 +217,58 @@ function measureSlides({ W, H, minFont, maxBlocks }) {
     if (blocksTop > maxBlocks) add('warning', 'crowded', `${blocksTop} top-level blocks (limit ${maxBlocks}); aim for one idea per slide`);
 
     const title = (section.querySelector('h1, h2') || {}).innerText || '';
-    return { index: i + 1, title: title.trim(), classes: section.className, rect: { x: S.left + window.scrollX, y: S.top + window.scrollY, width: S.width, height: S.height }, issues };
+    // 8. Orphan: a heading of 4+ words whose last line holds a single word. Measured per word with Ranges, not by counting characters.
+    for (const h of section.querySelectorAll('h1, h2, h3')) {
+      if (inChrome(h)) continue;
+      const tops = [];
+      const tw = document.createTreeWalker(h, NodeFilter.SHOW_TEXT);
+      for (let n = tw.nextNode(); n; n = tw.nextNode()) {
+        for (const m of n.textContent.matchAll(/\S+/g)) {
+          const r = document.createRange();
+          r.setStart(n, m.index); r.setEnd(n, m.index + m[0].length);
+          const b = r.getBoundingClientRect();
+          if (b.width) tops.push(Math.round(b.top));
+        }
+      }
+      const lines = [...new Set(tops)].sort((a, b) => a - b).filter((t, j, a) => j === 0 || t - a[j - 1] > 2);
+      const last = lines[lines.length - 1];
+      if (tops.length >= 4 && lines.length > 1 && tops.filter((t) => Math.abs(t - last) <= 2).length === 1) add('warning', 'orphan', 'Heading ends with a single word on its own line; reword or shorten it', h);
+    }
+
+    // 9. Figures (diagram/chart images): size relative to the space they could fill; text size is checked in Node.
+    const figures = [...section.querySelectorAll('img')].filter((img) => /(^|\/)(diagrams|charts)\//.test(img.getAttribute('src') || '')).map((img) => {
+      const r = rel(img.getBoundingClientRect());
+      const container = img.parentElement.closest('p, div, figure, li, td, section');
+      return { src: img.getAttribute('src'), w: r.w, available: container.getBoundingClientRect().width / k, box: { x: Math.round(r.x), y: Math.round(r.y), w: Math.round(r.w), h: Math.round(r.h) } };
+    });
+
+    return { index: i + 1, title: title.trim(), classes: section.className, figures, rect: { x: S.left + window.scrollX, y: S.top + window.scrollY, width: S.width, height: S.height }, issues };
   });
+}
+
+/** Figure checks that need the SVG source: smallest text after scaling, and width used. */
+async function checkFigures(figures = [], outDir, minFont) {
+  const issues = [];
+  for (const f of figures) {
+    const file = path.join(outDir, f.src);
+    if (!f.w || !existsSync(file)) continue;
+    const svg = await readFile(file, 'utf8');
+    const vb = /viewBox="\s*[-\d.]+[\s,]+[-\d.]+[\s,]+([\d.]+)/.exec(svg);
+    const svgWidth = vb ? +vb[1] : +(/<svg[^>]*\swidth="([\d.]+)/.exec(svg)?.[1] || 0);
+    const sizes = [...svg.matchAll(/font-size(?:="|:\s*)([\d.]+)/g)].map((m) => +m[1]).filter((x) => x > 0);
+    if (svgWidth && sizes.length) {
+      const px = Math.min(...sizes) * (f.w / svgWidth);
+      if (px < minFont - 0.5) issues.push({ severity: 'warning', check: 'figure-text', message: `Smallest text in ${f.src} renders at ${px.toFixed(1)}px (minimum ${minFont}px); give the figure more width, draw it smaller, or use fewer/shorter labels`, box: f.box });
+    }
+    if (f.available && f.w < 0.6 * f.available) issues.push({ severity: 'warning', check: 'figure-size', message: `${f.src} uses only ${Math.round((100 * f.w) / f.available)}% of the width available to it; a tall diagram is probably being shrunk to fit — draw it left-to-right or split it`, box: f.box });
+  }
+  return issues;
 }
 
 function toMarkdown(r, cfg) {
   const lines = [];
   lines.push(`# Inspection report`, '');
-  lines.push(`Style **${r.style}** (${r.scheme}) · ${r.slideCount} slides · **${r.errors} errors** · ${r.warnings} warnings`, '');
+  lines.push(`Style **${r.style}** (${r.scheme}) · ${r.slideCount} slides${r.partial ? ` (partial build: ${r.partial.join(', ')})` : ''} · **${r.errors} errors** · ${r.warnings} warnings`, '');
   lines.push('Open `contact-sheet.png` first, then any `slides/slide-NN.issues.png` listed below.', '');
   if (r.global.length) {
     lines.push('## Deck-wide', '');

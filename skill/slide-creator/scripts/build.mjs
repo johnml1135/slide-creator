@@ -3,6 +3,7 @@
 // then run inspection (screenshots + checks) unless --no-inspect.
 //
 // Usage: node <skill>/scripts/build.mjs [projectDir] [--style name] [--scheme name] [--pdf] [--pptx] [--html] [--no-inspect]
+//        [--slides 3,5-7]   quick check: inspect only those slides and skip the PDF unless --pdf/--pptx is given
 
 import { readFile, writeFile, mkdir, readdir, cp } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
@@ -14,7 +15,9 @@ import { loadConfig, parseArgs, importDep, packageDir, findBrowser, splitFrontMa
 const args = parseArgs(process.argv.slice(2));
 const projectDir = path.resolve(args._[0] || '.');
 const formats = ['pdf', 'pptx', 'html'].filter((f) => args[f]);
+const only = args.slides ? parseSlideList(String(args.slides)) : null;
 const cfg = await loadConfig(projectDir, { style: args.style, scheme: args.scheme, out: args.out, formats: formats.length ? formats : undefined });
+if (only && !formats.length) cfg.formats = [];
 
 const log = (...m) => console.log('•', ...m);
 const problems = [];
@@ -138,12 +141,22 @@ if (problems.length) {
 /* 7. Inspect */
 if (!args['no-inspect'] && existsSync(path.join(cfg.outDir, 'inspect.html'))) {
   const { inspect } = await import('./inspect.mjs');
-  await inspect(cfg, { buildProblems: problems });
+  await inspect(cfg, { buildProblems: problems, only });
 } else if (problems.length) {
   process.exitCode = 1;
 }
 
 /* ---------- helpers ---------- */
+/** "3,5-7" → Set {3,5,6,7} */
+function parseSlideList(text) {
+  const set = new Set();
+  for (const part of text.split(',').map((p) => p.trim()).filter(Boolean)) {
+    const m = /^(\d+)(?:-(\d+))?$/.exec(part);
+    if (!m) throw new Error(`--slides: can't read "${part}"; use e.g. 3,5-7`);
+    for (let i = +m[1]; i <= +(m[2] || m[1]); i++) set.add(i);
+  }
+  return set;
+}
 async function marpCliPath() {
   let pkgPath;
   try { pkgPath = path.join(packageDir('@marp-team/marp-cli'), 'package.json'); }

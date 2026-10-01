@@ -56,7 +56,7 @@
 }
 ```
 
-Units: px on the page (1280×720 unless `page` says otherwise). `chart.width` / `chart.height` set the default chart size (default 1000×420); `rules.maxBlocks` the crowding limit (default 7). `diagram.stroke` must be a whole number (D2 rejects fractions; it is rounded). Colour-role names (`"surface"`, `"rule"`) are accepted wherever a colour is.
+Units: px on the page (1280×720 unless `page` says otherwise). `chart.width` / `chart.height` set the default chart size (default 1000×420); `rules.maxBlocks` the crowding limit (default 7); `rules.minFigureFontPx` the smallest text allowed inside a diagram or chart after scaling (default 80% of `minFontPx`). `diagram.stroke` must be a whole number (D2 rejects fractions; it is rounded). Colour-role names (`"surface"`, `"rule"`) are accepted wherever a colour is.
 
 ## Derived automatically (don't add unless overriding)
 

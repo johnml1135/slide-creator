@@ -46,6 +46,8 @@ path of `msedge.exe` or `chrome.exe`. For style import also run `pip install -r 
    node <skill>/scripts/build.mjs <folder>
    ```
    Produces `build/deck.pdf`, `build/slides/slide-NN.png`, `build/contact-sheet.png` and `build/report.md`.
+   While fixing a few slides, `--slides 3,5-7` re-checks only those (about twice as fast, no PDF); do a
+   full build before delivering.
 7. **Assess** (`references/assessment-rubric.md`):
    - Fix every ✗ error in `report.md`.
    - Open `build/contact-sheet.png`, then every `build/slides/slide-NN.issues.png` named in the report,

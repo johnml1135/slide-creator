@@ -3,7 +3,19 @@
 Use after every build. Two layers:
 
 1. **Automatic** — `build/report.md`. Every ✗ error must be fixed. ! warnings are judgement calls:
-   fix them unless there is a reason (state it).
+   fix them unless there is a reason (state it). What the checks mean:
+
+   | Check | Meaning | Usual fix |
+   |---|---|---|
+   | `overflow` | text runs past the bottom (or, in two-column pages, into a third column) | cut text or split the slide/page |
+   | `off-slide` | an element crosses the safe margin | shorten it, or use a layout that fits |
+   | `clipped` | text cut off inside a box, table cell or code block | shorter text or wider column |
+   | `contrast` | text too faint on its background | style issue — use the right colour role |
+   | `small-text` | text below the style's minimum size | less text, not a smaller font |
+   | `figure-text` | labels inside a diagram/chart end up too small once scaled to fit | fewer or shorter labels, fewer nodes, or give the figure the full width |
+   | `figure-size` | a diagram/chart uses under 60% of the width it could fill (usually a tall diagram shrunk to fit) | draw it left-to-right, or split it |
+   | `orphan` | a heading of 4+ words ends with one word alone on its last line | reword or shorten the heading |
+   | `crowded` | too many separate blocks on one slide | one idea per slide |
 2. **Visual** — you look at the images. Open `build/contact-sheet.png` first (whole deck at a glance),
    then each `build/slides/slide-NN.issues.png` from the report, then at least 3 other slides at full size
    (the cover, the busiest slide, a diagram or chart slide). Compare with the style's `reference/` images.

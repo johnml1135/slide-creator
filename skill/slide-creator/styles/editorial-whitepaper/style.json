@@ -53,7 +53,7 @@
   "diagram": {
     "layoutEngine": "elk",
     "pad": 12,
-    "fontSize": 13,
+    "fontSize": 16,
     "stroke": 1,
     "radius": 4,
     "nodeFill": "bg",
