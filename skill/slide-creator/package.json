@@ -5,7 +5,9 @@
   "license": "MIT",
   "description": "Agent skill: styled Marp slide decks with D2 diagrams, Vega-Lite charts, inspection and style import.",
   "type": "module",
-  "engines": { "node": ">=18" },
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
     "doctor": "node scripts/doctor.mjs",
     "showcase": "node scripts/build.mjs examples/showcase",
@@ -16,7 +18,9 @@
     "@marp-team/marp-cli": "^4.1.0",
     "@terrastruct/d2": ">=0.1.33 <1",
     "lucide-static": ">=0.460.0 <1",
+    "pdf-lib": "^1.17.1",
     "playwright-core": "^1.50.0",
+    "read-excel-file": "^9.3.10",
     "vega": "^6.1.0",
     "vega-lite": "^6.1.0"
   }
