@@ -11,11 +11,11 @@ h2 { color: var(--primary); font-size: var(--fs-h2); max-width: 30em; margin-bot
 h6, .kicker { color: var(--muted); }
 
 /* Cover: colour block on the left third */
-section.cover { background: linear-gradient(90deg, var(--primary) 0 34%, var(--bg) 34%); padding-left: calc(1280px * 0.34 + var(--u) * 7); justify-content: center; }
+section.cover { background: linear-gradient(90deg, var(--primary) 0 34%, var(--bg) 34%); padding-left: calc(var(--page-w) * 0.34 + var(--u) * 7); justify-content: center; }
 section.cover::before { display: none; }
 section.cover h1 { font-size: var(--fs-display); color: var(--primary); }
 section.cover h6 { color: var(--accent-text); }
-section.cover footer, section.cover header { left: calc(1280px * 0.34 + var(--u) * 7); }
+section.cover footer, section.cover header { left: calc(var(--page-w) * 0.34 + var(--u) * 7); }
 
 /* Chapter divider: full primary background, white type */
 section.chapter { background: var(--primary); color: var(--on-primary); }

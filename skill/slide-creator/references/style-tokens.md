@@ -59,6 +59,25 @@
 
 Units: px on the page (1280×720 unless `page` says otherwise). `chart.width` / `chart.height` set the default chart size (default 1000×420); `rules.maxBlocks` the crowding limit (default 7); `rules.minFigureFontPx` the smallest text allowed inside a diagram or chart after scaling (default 80% of `minFontPx`). `diagram.stroke` must be a whole number (D2 rejects fractions; it is rounded). Colour-role names (`"surface"`, `"rule"`) are accepted wherever a colour is.
 
+## Deck knobs
+
+Set these in `slides.json`:
+
+```json
+{
+  "density": "roomy",
+  "page": "4:3",
+  "logo": "images/logo.svg",
+  "logoDark": "images/logo-dark.svg"
+}
+```
+
+`density` defaults to `standard`. `roomy` makes type 8% larger, unit/gutter 15% wider, the word limit 10% lower and the bullet limit 20% lower. `compact` makes type 9% smaller, unit/gutter 14% tighter and the limits 20% higher. Margins move only a little. These values are derived together by `resolveTokens()` so a deck stays consistent. Compact is for more data per slide; roomy is for a talk with little text. The style's original values are the standard setting.
+
+`page` accepts `16:9` (1280×720), `4:3` (1280×960), `letter` (1056×816), `a4` (1123×794), `letter-portrait` (816×1056), `a4-portrait` (794×1123), or `{ "width": 900, "height": 600 }` in CSS pixels. The presets use 96 pixels per inch. A style's own page is used when the deck omits this knob. Use slide styles on 16:9 or 4:3, and document styles on letter or A4.
+
+`logo` is a local SVG or PNG; `logoDark` is the light artwork for a dark cover. The builder embeds both locally on cover and closing pages. Each style sets `"logo": { "position": "top-right", "height": 42 }` and may choose top/bottom and left/right. A style may set `"content": "top" | "center"`; center spreads short KPI, steps, timeline and comparison bodies into the space below the title. The inspector warns `top-heavy` if body content ends above roughly 55% of a content slide.
+
 ## Derived automatically (don't add unless overriding)
 
 | Token | Rule |

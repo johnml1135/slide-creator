@@ -61,13 +61,13 @@ Changeovers were the largest single source of lost capacity.
 ## A four-step method made the gain repeatable
 
 <ol class="steps">
-<li><b>Film</b>Record three real changeovers end to end.</li>
+<li><b>Film</b>Record three changeovers.</li>
 <li><b>Split</b>Mark each task internal or external.</li>
-<li class="on"><b>Shift</b>Move external tasks before the stop.</li>
+<li class="on"><b>Shift</b>Move external tasks ahead of the stop.</li>
 <li><b>Standardise</b>Kit carts, checklists, quick clamps.</li>
 </ol>
 
-<div class="callout"><b>Lesson</b>The biggest gain came from kitting, not from new tooling.</div>
+<div class="callout"><b>Lesson</b>Kitting delivered the biggest gain.</div>
 
 ---
 
@@ -83,13 +83,13 @@ Changeovers were the largest single source of lost capacity.
 ---
 
 ###### 03 · Results
-## Every line is improving except Line 5
+## Only Line 5 still worsens
 
 | Line | Before | Now | Change | Status |
 |---|---|---|---|---|
 | Line 2 | 88 min | 71 min | −19% | <span class="tag warn">Watch</span> |
 | Line 3 | 102 min | 84 min | −18% | <span class="tag warn">Watch</span> |
-| **Line 4** | **94 min** | **55 min** | **−41%** | <span class="tag good">On track</span> |
+| **Line 4** | **94 min** | **55 min** | **−41%** | <span class="tag good">Good</span> |
 | Line 5 | 79 min | 81 min | +3% | <span class="tag bad">Off track</span> |
 
 ---
@@ -123,7 +123,7 @@ Tighten the clamps properly before restarting.
 ---
 
 ###### 04 · Decision
-## Roll out to Lines 2, 3 and 5 by Q3
+## Expand to three lines by Q3
 
 <ol class="timeline">
 <li class="done"><b>Q1</b>Line 4 pilot</li>

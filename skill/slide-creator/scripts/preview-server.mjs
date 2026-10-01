@@ -13,7 +13,7 @@ const mime = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=u
 export async function watch(projectDir, argv = []) {
   const args = parseArgs(argv);
   let cfg, startupError;
-  try { cfg = await loadConfig(projectDir, { style: args.style, scheme: args.scheme, out: args.out }); }
+  try { cfg = await loadConfig(projectDir, { style: args.style, scheme: args.scheme, out: args.out, density: args.density, page: args.page }); }
   catch (e) {
     startupError = e.message;
     cfg = { style: args.style || 'editorial', outDir: path.resolve(projectDir, args.out || 'build') };
@@ -59,10 +59,10 @@ export async function watch(projectDir, argv = []) {
     const batch = [...changed];
     changed.clear();
     try {
-      cfg = await loadConfig(projectDir, { style: args.style, scheme: args.scheme, out: args.out });
+      cfg = await loadConfig(projectDir, { style: args.style, scheme: args.scheme, out: args.out, density: args.density, page: args.page });
       attach();
       const buildArgs = [path.join(SKILL_DIR, 'scripts', 'build.mjs'), projectDir, '--preview'];
-      for (const key of ['style', 'scheme', 'out']) if (args[key]) buildArgs.push(`--${key}`, String(args[key]));
+      for (const key of ['style', 'scheme', 'out', 'density', 'page']) if (args[key]) buildArgs.push(`--${key}`, String(args[key]));
       if (batch.length) buildArgs.push('--changed', batch.join('|'));
       const output = await new Promise((resolve) => {
         const child = spawn(process.execPath, buildArgs, { cwd: SKILL_DIR, stdio: ['ignore', 'pipe', 'pipe'] });

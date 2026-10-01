@@ -2,6 +2,9 @@
   "deck": "deck.md",
   "style": "editorial",
   "scheme": "default",
+  "density": "standard",
+  "logo": "images/logo.svg",
+  "logoDark": "images/logo-dark.svg",
   "out": "build",
   "formats": ["pdf"]
 }

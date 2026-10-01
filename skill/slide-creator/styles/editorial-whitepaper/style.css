@@ -8,12 +8,12 @@ section.paper > h1 { font-size: var(--fs-h1); margin-bottom: calc(var(--u) * 7);
 section.paper > h6 + h1 { margin-top: calc(var(--u) * 3); }
 
 h2, h3 { font-family: var(--font-label); letter-spacing: 0; }
-h2 { font-size: var(--fs-h2); font-weight: 600; margin: calc(var(--u) * 5) 0 calc(var(--u) * 2.5); }
+h2 { font-size: var(--fs-h2); font-weight: 600; margin: calc(var(--u) * 4) 0 calc(var(--u) * 2); }
 h3 { font-size: var(--fs-h3); font-weight: 400; margin: calc(var(--u) * 4) 0 calc(var(--u) * 2); }
 p { margin-bottom: calc(var(--u) * 2.5); }
 p:has(> strong:only-child) { margin-bottom: calc(var(--u) * 1.5); } /* a lead-in sits close to its list */
 ul, ol { margin-bottom: calc(var(--u) * 2.5); }
-li { margin: calc(var(--u) * 1.2) 0; }
+li { margin: calc(var(--u) * 0.7) 0; }
 ol > li::marker { color: var(--ink); font-weight: 400; }
 a { color: var(--ink); text-decoration: underline; text-underline-offset: 2px; }
 
@@ -27,7 +27,7 @@ h6, .kicker { display: block; width: fit-content; font-family: var(--font-label)
   border: var(--rule-w) solid currentColor; border-radius: 999px; padding: 0.2em 0.85em; margin: 0 0 calc(var(--u) * 2); letter-spacing: 0; text-transform: none; }
 
 /* Tables: thin ink grid, tinted header row, small sans text */
-table { font-family: var(--font-label); font-size: var(--fs-caption); line-height: 1.35; margin: calc(var(--u) * 2) 0 calc(var(--u) * 4); }
+table { font-family: var(--font-label); font-size: var(--fs-caption); line-height: 1.35; margin: calc(var(--u) * 2) 0 calc(var(--u) * 2); }
 th, td { border: var(--rule-w) solid var(--ink); padding: calc(var(--u) * 1.8) calc(var(--u) * 2); }
 th { background: var(--surface); color: var(--ink); font-size: var(--fs-caption); font-weight: 600; letter-spacing: 0; text-transform: none; }
 
@@ -43,6 +43,8 @@ section.cover { background: var(--accent); color: var(--on-accent); justify-cont
 section.cover h1 { font-size: var(--fs-display); line-height: 1.05; letter-spacing: -0.02em; max-width: 13em; color: var(--on-accent); }
 section.cover p { color: var(--on-accent); font-size: calc(var(--fs-body) * 1.3); max-width: 30em; }
 section.cover h6 { color: var(--on-accent); }
+section.cover > .brand-logo-slot img.light { display: none; }
+section.cover > .brand-logo-slot img.dark { display: block; }
 section.cover p:last-child { margin-top: auto; font-family: var(--font-label); font-size: var(--fs-small); }
 
 /* ---------- Contents: plain list, page numbers right-aligned in a narrow column ---------- */

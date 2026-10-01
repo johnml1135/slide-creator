@@ -222,6 +222,15 @@ function measureSlides({ W, H, minFont, maxBlocks }) {
     if (blocksTop > maxBlocks) add('warning', 'crowded', `${blocksTop} top-level blocks (limit ${maxBlocks}); aim for one idea per slide`);
 
     const title = (section.querySelector('h1, h2') || {}).innerText || '';
+    // Sparse content should use the body area, rather than ending immediately below its title.
+    if (![...section.classList].some((c) => ['cover', 'agenda', 'chapter', 'statement', 'closing', 'paper', 'diagram', 'chart', 'dense'].includes(c))) {
+      const body = [...section.children].filter((el) => !['H1', 'H2', 'H6', 'HEADER', 'FOOTER'].includes(el.tagName)
+        && !el.matches('.source, .tracker, .brand-logo-slot') && getComputedStyle(el).display !== 'none');
+      if (body.length) {
+        const bottom = Math.max(...body.map((el) => rel(el.getBoundingClientRect()).y + rel(el.getBoundingClientRect()).h));
+        if (bottom < H * 0.55) add('warning', 'top-heavy', `Content ends at ${Math.round(bottom / H * 100)}% of the page; center or spread the body below the title`);
+      }
+    }
     // 8. Orphan: a heading whose last line holds a single word. Measured per word with Ranges, not by counting characters.
     for (const h of section.querySelectorAll('h1, h2, h3')) {
       if (inChrome(h)) continue;

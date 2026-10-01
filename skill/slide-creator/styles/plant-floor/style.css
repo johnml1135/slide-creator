@@ -33,6 +33,8 @@ section.cover p { opacity: 0.8; }
 section.cover h6 { color: var(--accent); }
 section.cover h6::before { content: ''; }
 section.cover header, section.cover footer { color: var(--on-primary); }
+section.cover > .brand-logo-slot img.light { display: none; }
+section.cover > .brand-logo-slot img.dark { display: block; }
 
 /* Chapter: big section number on dark */
 section.chapter { background: var(--primary); color: var(--on-primary); }

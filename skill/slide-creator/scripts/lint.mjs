@@ -15,6 +15,7 @@ export const COMPONENT_CLASSES = [
   'kpis', 'kpi', 'key', 'stat', 'label', 'do', 'dont', 'check', 'done', 'steps', 'on', 'timeline', 'tag', 'accent',
   'source', 'tracker', 'figure', 'caption', 'icon', 'lg', 'center', 'right', 'grow', 'mt', 'muted', 'lede', 'small',
   'hl', 'num', 'total', 'kicker',
+  'brand-logo-slot',
 ];
 const NO_TITLE_OK = ['cover', 'statement', 'chapter', 'closing'];
 const HEX = /(?<![\w&/])#(?:[0-9a-fA-F]{3}){1,2}\b(?![\w-])/g;

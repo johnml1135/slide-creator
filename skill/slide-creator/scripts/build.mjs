@@ -10,7 +10,7 @@ import { existsSync } from 'node:fs';
 import path from 'node:path';
 import { spawn } from 'node:child_process';
 import { SKILL_DIR, loadStyle, resolveTokens, buildCss, buildD2Header, buildVegaConfig, resolveTokenRefs } from './lib/style.mjs';
-import { loadConfig, parseArgs, importDep, packageDir, findBrowser, splitFrontMatter, splitSlides, readSheet } from './lib/project.mjs';
+import { loadConfig, parseArgs, importDep, packageDir, findBrowser, splitFrontMatter, splitSlides, readSheet, injectLogos } from './lib/project.mjs';
 import { finishPdf } from './pdf.mjs';
 
 const args = parseArgs(process.argv.slice(2));
@@ -22,7 +22,7 @@ if (args.watch) {
 }
 const formats = ['pdf', 'pptx', 'html'].filter((f) => args[f]);
 const only = args.slides ? parseSlideList(String(args.slides)) : null;
-const cfg = await loadConfig(projectDir, { style: args.style, scheme: args.scheme, out: args.out, formats: formats.length ? formats : undefined });
+const cfg = await loadConfig(projectDir, { style: args.style, scheme: args.scheme, out: args.out, density: args.density, page: args.page, formats: formats.length ? formats : undefined });
 if (only && !formats.length) cfg.formats = [];
 if (args.preview) cfg.formats = [];
 const changed = args.changed ? new Set(String(args.changed).split('|').map((f) => f.replace(/\\/g, '/'))) : null;
@@ -147,6 +147,7 @@ if (existsSync(imgDir)) {
 if (!existsSync(cfg.deckPath)) fail(`Deck not found: ${cfg.deckPath} (create one with scripts/new.mjs)`);
 let md = await readFile(cfg.deckPath, 'utf8');
 md = await inlineIcons(md);
+md = await injectLogos(md, cfg);
 const { front, body } = splitFrontMatter(md);
 const author = /^author:\s*["']?(.+?)["']?\s*$/m.exec(front)?.[1] || cfg.author;
 const titles = splitSlides(md).map((s) => /^#{1,2}\s+(.+)$/m.exec(s.text)?.[1]?.replace(/<[^>]*>/g, '').trim());

@@ -127,6 +127,13 @@ section.cover { justify-content: flex-end; padding-bottom: calc(var(--m-bottom) 
 section.cover h1 { font-size: var(--fs-display); max-width: 14em; }
 section.cover p { font-size: calc(var(--fs-body) * 1.15); color: var(--muted); }
 section.cover::after { display: none; }
+section:is(.cover, .closing) > .brand-logo-slot {
+  position: absolute; top: var(--logo-top); bottom: var(--logo-bottom);
+  left: var(--logo-left); right: var(--logo-right);
+  height: var(--logo-height); max-width: 24%;
+}
+section:is(.cover, .closing) > .brand-logo-slot img { display: block; height: 100%; width: auto; max-width: 100%; object-fit: contain; }
+section:is(.cover, .closing) > .brand-logo-slot img.dark { display: none; }
 
 /* agenda: numbered list of sections; mark the current one with <strong> */
 section.agenda ol { list-style: none; padding: 0; counter-reset: ag; max-width: none; }
@@ -159,6 +166,15 @@ section.diagram p > img, section.chart p > img { max-height: 100%; max-width: 10
 section.closing { justify-content: center; }
 section.closing h1 { font-size: var(--fs-display); }
 section.closing::after { display: none; }
+
+/* Center a short body within the space after the title. Source lines stay at the foot. */
+section:not(.cover, .chapter, .statement, .closing, .paper, .diagram, .chart, .dense, .agenda) > :is(.kpis, .cols, .cols3, .cols4, .cols-wide-left, .cols-wide-right, ol.steps) {
+  margin-top: var(--content-gap); margin-bottom: var(--content-gap);
+}
+section:not(.cover, .chapter, .statement, .closing, .paper, .diagram, .chart, .dense, .agenda):has(> .source) > .kpis { margin-bottom: 0; }
+section:not(.cover, .chapter, .statement, .closing, .paper, .diagram, .chart, .dense, .agenda) > table { margin-top: var(--content-gap); margin-bottom: var(--content-gap); }
+section:not(.cover, .chapter, .statement, .closing, .paper, .diagram, .chart, .dense, .agenda) > ol.timeline { margin-top: var(--content-gap); }
+section:not(.cover, .chapter, .statement, .closing, .paper, .diagram, .chart, .dense, .agenda) > ol.timeline + ul.check { margin-bottom: var(--content-gap); }
 
 /* dense: tables or detail slides that need more room */
 section.dense { font-size: var(--fs-small); }
