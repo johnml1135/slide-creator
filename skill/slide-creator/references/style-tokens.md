@@ -18,7 +18,7 @@
   "kind": "document",                         // optional: "document" (read, e.g. whitepaper) vs slides (default); new.mjs picks the starter from it
   "page": { "width": 1280, "height": 720 },   // optional page size in px (96 per inch); 1056 × 816 = US Letter landscape
   "markdown": { "breaks": false },            // optional markdown-it options; breaks:false lets wrapped prose reflow
-  "samples": { "example": "showcase", "reference": [1, 3, 4, 5, 7, 8] },  // optional: which example + pages samples.mjs uses
+  "samples": { "example": "showcase", "reference": [1, 3, 4, 5, 7, 8] },  // optional, maintainers: example + pages for the repo gallery
   "schemes": {                         // one or more colour schemes; "default" is required
     "default": {
       "bg": "#FFFFFF",      // page

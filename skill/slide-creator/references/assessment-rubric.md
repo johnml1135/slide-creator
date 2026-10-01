@@ -19,7 +19,7 @@ Use after every build. Two layers:
    | `crowded` | too many separate blocks on one slide | one idea per slide |
 2. **Visual** — you look at the images. Open `build/contact-sheet.png` first (whole deck at a glance),
    then each `build/slides/slide-NN.issues.png` from the report, then at least 3 other slides at full size
-   (the cover, the busiest slide, a diagram or chart slide). Compare with the style's `reference/` images.
+   (the cover, the busiest slide, a diagram or chart slide). Compare with the style's example rendered in that style (SKILL.md step 2).
 
 Score each criterion 1–5 and write the scores into the table at the end of `report.md`.
 **Anything under 4 gets a fix, then rebuild.** Stop after 3 rounds; report what remains.

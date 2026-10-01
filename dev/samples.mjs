@@ -1,28 +1,28 @@
 #!/usr/bin/env node
-// Rebuild the published samples for every built-in style from its example project (examples/showcase, or the
-// one named in style.json "samples.example", e.g. a document style uses examples/whitepaper):
-//   samples/<style>.pdf, samples/<style>.png (contact sheet), samples/<style>-<scheme>.pdf for each extra scheme,
-//   styles/<style>/reference/<example>-NN.png (the pages agents compare against),
-//   samples/<style>-hero.png (README showcase: name, use cases, cover and three pages, in the style's own look).
+// Maintainer tool (not part of the installed skill): rebuild the repo's gallery/ for every built-in style from
+// its example project (examples/showcase, or the one named in style.json "samples.example"):
+//   gallery/<style>.pdf, gallery/<style>-<scheme>.pdf for each extra scheme,
+//   gallery/<style>.png (contact sheet: every page), gallery/<style>-hero.png (README image).
 // Fails (exit 1) if any build reports an error or warning: published samples must be clean.
-// Usage: node <skill>/scripts/samples.mjs [style ...]
+// Usage (repo root): npm run samples [-- style ...]
 
-import { readdir, readFile, mkdir, copyFile, rm, rename } from 'node:fs/promises';
+import { readdir, readFile, mkdir, copyFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
-import { SKILL_DIR, loadStyle } from './lib/style.mjs';
-import { launchBrowser } from './lib/project.mjs';
+import { fileURLToPath } from 'node:url';
+import { SKILL_DIR, loadStyle } from '../skill/slide-creator/scripts/lib/style.mjs';
+import { launchBrowser } from '../skill/slide-creator/scripts/lib/project.mjs';
 
-// Cover, chapter, KPIs, diagram, chart, table: one of each kind of slide a style has to get right.
+// Pages for the hero image: the cover, then the last three (a diagram, a chart, a table in the showcase).
 // A style can name its own list in style.json "samples.reference".
 const REFERENCE_SLIDES = [1, 3, 4, 5, 7, 8];
 
 const wanted = process.argv.slice(2);
 const stylesDir = path.join(SKILL_DIR, 'styles');
 const styles = wanted.length ? wanted : (await readdir(stylesDir)).filter((s) => existsSync(path.join(stylesDir, s, 'style.json')));
-const samplesDir = path.join(SKILL_DIR, 'samples');
-await mkdir(samplesDir, { recursive: true });
+const galleryDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', 'gallery');
+await mkdir(galleryDir, { recursive: true });
 const failures = [];
 
 /** Build one style/scheme; returns the build folder, or null (and records why) if it isn't clean. */
@@ -32,7 +32,7 @@ async function build(style, scheme, out, project) {
   spawnSync(process.execPath, [path.join(SKILL_DIR, 'scripts', 'build.mjs'), project, '--style', style, '--scheme', scheme, '--out', out], { stdio: 'inherit' });
   const dir = path.join(project, out);
   const config = JSON.parse(await readFile(path.join(project, 'slides.json'), 'utf8'));
-  const pdfName = `${String(config.name || path.basename(project)).normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'deck'}.pdf`;
+  const pdfName = `${String(config.name || path.basename(project)).normalize('NFKD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'deck'}.pdf`;
   const reportPath = path.join(dir, 'report.json');
   if (!existsSync(path.join(dir, pdfName)) || !existsSync(reportPath)) { failures.push(`${label}: no PDF or report produced`); return null; }
   const { errors, warnings } = JSON.parse(await readFile(reportPath, 'utf8'));
@@ -50,28 +50,18 @@ for (const s of styles) {
     if (!built) continue;
     const { dir: out, pdfName } = built;
     try {
-      await copyFile(path.join(out, pdfName), path.join(samplesDir, `${s}${suffix}.pdf`));
-      console.log(`→ samples/${s}${suffix}.pdf`);
+      await copyFile(path.join(out, pdfName), path.join(galleryDir, `${s}${suffix}.pdf`));
+      console.log(`→ gallery/${s}${suffix}.pdf`);
       if (scheme !== 'default') continue;
-      await copyFile(path.join(out, 'contact-sheet.png'), path.join(samplesDir, `${s}.png`));
-      // Stage the new reference images first, so a missing slide can't leave the style with none.
-      const refDir = path.join(stylesDir, s, 'reference');
-      const staged = `${refDir}.new`;
-      await rm(staged, { recursive: true, force: true });
-      await mkdir(staged, { recursive: true });
-      for (const n of refs.map((i) => String(i).padStart(2, '0'))) {
-        await copyFile(path.join(out, 'slides', `slide-${n}.png`), path.join(staged, `${path.basename(example)}-${n}.png`));
-      }
-      await rm(refDir, { recursive: true, force: true });
-      await rename(staged, refDir);
-      console.log(`→ styles/${s}/reference/ (${refs.length} pages)`);
-      await hero(style, out, refs, path.join(samplesDir, `${s}-hero.png`));
-      console.log(`→ samples/${s}-hero.png`);
+      await copyFile(path.join(out, 'contact-sheet.png'), path.join(galleryDir, `${s}.png`));
+      await hero(style, out, refs, path.join(galleryDir, `${s}-hero.png`));
+      console.log(`→ gallery/${s}.png, gallery/${s}-hero.png`);
     } catch (e) {
       failures.push(`${s}${suffix}: ${e.message}`);
     }
   }
 }
+
 
 /** README showcase image: the cover large, three content pages beside it, on the style's own colours. */
 async function hero(style, buildDir, refs, file) {

@@ -52,13 +52,19 @@ Key invariants — keep them:
 ## Status (v0.1, 2026-10-01)
 
 **Runs end to end on Windows + Edge**: Marp (PDF + `--template bare` inspection HTML), D2 WASM, Vega 6 /
-Vega-Lite 6, Lucide inlining, inspector, linter. Samples (`samples/`, light + dark) and every style's
-`reference/` images are real renders from `npm run samples`. `scripts/install.mjs` installs the skill into a
-repo (`.github/skills/`), `~/.copilot/skills/` or any folder, optionally with `copilot-setup-steps.yml`.
+Vega-Lite 6 (inline, CSV or .xlsx data), Lucide inlining, inspector, linter, live preview (`--watch`).
+`build()` is a module (`scripts/build.mjs`); the CLI is a thin adapter. PDFs are named after the deck and get
+bookmarks + metadata (`scripts/pdf.mjs`). `scripts/install.mjs` installs the skill into a repo
+(`.github/skills/`, plus VS Code tasks and Copilot prompt files) or `~/.copilot/skills/`.
 
-Styles: `editorial`, `boardroom`, `plant-floor` (16:9 slides) and `editorial-whitepaper` (a **document**
-style: US Letter landscape pages, `paper` two-column layout, `kind: "document"`, own example
-`examples/whitepaper`).
+Styles: slides `editorial`, `boardroom`, `plant-floor`, `keynote`, `minimal`; documents (`kind: "document"`)
+`editorial-whitepaper` (Letter landscape, two-column `paper` layout) and `report` (Letter portrait).
+Deck knobs in slides.json: `density`, `page`, `logo`/`logoDark`. Examples: showcase, whitepaper, report,
+exec-summary.
+
+Repo layout: `skill/slide-creator/` is ONLY what gets installed (no PDFs or images). `gallery/` holds the
+rendered PDFs, contact sheets and README hero images; `dev/` holds maintainer tools (`samples.mjs`, `tests/`),
+run from the repo root with `npm run samples` and `npm test`.
 
 Integration facts learned the hard way (keep them):
 - Marp's bare template clamps `html/body` height; the inspector un-clamps it or every slide after the first
@@ -75,13 +81,11 @@ Integration facts learned the hard way (keep them):
 
 ## Next steps (suggested order)
 
-1. The edit loop: `--watch` with an auto-refreshing preview; name the PDF after the deck; logo slot; PDF bookmarks
-   from page titles. Then deck-level `density` and `page` presets, and a JSON Schema for `style.json`.
-   (Full review with diagrams: the "slide-creator review" Claude Design canvas, 2026-10-01.)
-2. More example decks to test styles against (A3 report-out, exec summary); a document-style variant of
-   boardroom if users want branded reports.
-3. `--watch` mode (`--slides` partial builds exist).
-4. Check fonts/rendering on the Linux runner used by Copilot cloud agent (Chrome, no Windows fonts).
+1. Try it in a real GitHub Copilot session in VS Code on a locked-down PC, and on the cloud agent's Linux runner
+   (Chrome, no Windows fonts); fix what breaks.
+2. A check registry in inspect.mjs (one entry per check) so checks can be tuned per style.
+3. Denser report example pages (content pages end half-way down); a JSON Schema for `style.json`.
+   (Review canvas with diagrams: "slide-creator review" in Claude Design, 2026-10-01.)
 
 ## Working on this repo
 
@@ -91,7 +95,7 @@ Integration facts learned the hard way (keep them):
   `build/contact-sheet.png`. **Always look at the rendered slides**, not just the report.
 - While editing `deck.md`, run `node skill/slide-creator/scripts/build.mjs <project> --watch` and open the
   printed local URL. Saves refresh the HTML preview and show lint findings; run a full build for the PDF.
-- Before committing style or pipeline changes: `npm run samples` (all styles, light + dark) must report
-  0 errors / 0 warnings, and commit the regenerated samples and reference images.
+- Before committing style or pipeline changes, from the repo root: `npm test` must pass and `npm run samples`
+  (all styles, light + dark) must end "All samples clean"; commit the regenerated `gallery/` files.
 - Re-run only the inspection on an existing build: `node skill/slide-creator/scripts/inspect.mjs <project>`.
 - The user is not a designer: explain design choices in plain words; keep `references/design-basics.md` current.

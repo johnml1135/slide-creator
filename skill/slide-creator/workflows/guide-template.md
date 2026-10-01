@@ -1,7 +1,7 @@
 # {{name}} — style guide
 
 > Draft created by `import_style.py` from **{{source}}** (structure copied from `{{base}}`).
-> Replace every TODO after looking at `reference/*.png`. Delete this note when done.
+> Replace every TODO after looking at the source pages in `reference/*.png` (written by the importer) and the showcase rendered in this style. Delete this note when done.
 
 ## The look in one paragraph
 

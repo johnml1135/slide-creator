@@ -2,7 +2,7 @@
 // Fixture tests for the checks: every folder in tests/fixtures is a small deck plus expect.json, which lists, per
 // slide, exactly which checks must fire ([] = the slide must stay clean) and optionally deck-wide "global" checks.
 // The real build runs on each fixture (HTML only, no PDF), so this tests the checks through their real interface.
-// Usage: npm test   (or node tests/run.mjs [fixture ...])
+// Usage (repo root): npm test   (or node dev/tests/run.mjs [fixture ...])
 
 import { readdir, readFile, rm } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
@@ -12,7 +12,7 @@ import { fileURLToPath } from 'node:url';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const fixturesDir = path.join(here, 'fixtures');
-const build = path.join(here, '..', 'scripts', 'build.mjs');
+const build = path.join(here, '..', '..', 'skill', 'slide-creator', 'scripts', 'build.mjs');
 const wanted = process.argv.slice(2);
 const names = wanted.length ? wanted : (await readdir(fixturesDir)).filter((n) => existsSync(path.join(fixturesDir, n, 'expect.json')));
 let failed = 0;

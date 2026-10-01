@@ -62,4 +62,4 @@ the one highlighted bar or diagram node), sage `primary` (chapter pages). Body t
 
 ## Example
 
-`examples/whitepaper/` — build it with `npm run whitepaper` and compare with `reference/`.
+`examples/whitepaper/` — build it with `npm run whitepaper` and look at its contact sheet: that is the target.

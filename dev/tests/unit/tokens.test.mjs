@@ -1,10 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import path from 'node:path';
-import { loadConfig, injectLogos } from '../../scripts/lib/project.mjs';
-import { loadStyle, resolveTokens } from '../../scripts/lib/style.mjs';
+import { loadConfig, injectLogos } from '../../../skill/slide-creator/scripts/lib/project.mjs';
+import { SKILL_DIR, loadStyle, resolveTokens } from '../../../skill/slide-creator/scripts/lib/style.mjs';
 
-const showcase = path.resolve('examples/showcase');
+const showcase = path.join(SKILL_DIR, 'examples', 'showcase');
 
 test('density changes type, spacing and writing limits together', async () => {
   const style = await loadStyle('editorial');
@@ -39,7 +39,7 @@ test('loadConfig passes deck knobs into token overrides', async () => {
 
 test('dark scheme displays the light logo artwork', async () => {
   const style = await loadStyle('editorial');
-  const css = (await import('../../scripts/lib/style.mjs')).buildCss(style, resolveTokens(style, 'dark'), '');
+  const css = (await import('../../../skill/slide-creator/scripts/lib/style.mjs')).buildCss(style, resolveTokens(style, 'dark'), '');
   assert.match(css, /brand-logo-slot img\.dark \{ display: block; \}/);
 });
 

@@ -1,0 +1,11 @@
+{
+  "name": "slide-creator-repo",
+  "private": true,
+  "description": "Maintainer scripts for the slide-creator skill (the skill itself is skill/slide-creator).",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "samples": "node dev/samples.mjs",
+    "test": "node --test dev/tests/unit/*.test.mjs && node dev/tests/run.mjs"
+  }
+}

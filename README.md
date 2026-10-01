@@ -19,39 +19,39 @@ the **Edge or Chrome you already have**, and runs offline — nothing is sent to
 
 Each style below is rendered from its example project by `npm run samples`.
 
-![Editorial style: a calm, book-like serif deck](skill/slide-creator/samples/editorial-hero.png)
+![Editorial style: a calm, book-like serif deck](gallery/editorial-hero.png)
 
 **editorial** — calm and book-like: serif titles, warm paper, one clay accent. For explainers, training and
-strategy narratives. [PDF](skill/slide-creator/samples/editorial.pdf) · [dark](skill/slide-creator/samples/editorial-dark.pdf) · [all slides](skill/slide-creator/samples/editorial.png)
+strategy narratives. [PDF](gallery/editorial.pdf) · [dark](gallery/editorial-dark.pdf) · [all slides](gallery/editorial.png)
 
-![Boardroom style: navy and teal executive deck](skill/slide-creator/samples/boardroom-hero.png)
+![Boardroom style: navy and teal executive deck](gallery/boardroom-hero.png)
 
 **boardroom** — consulting / executive: white, navy, action titles, a strict grid. For leadership updates,
-business cases and reviews read without a presenter. [PDF](skill/slide-creator/samples/boardroom.pdf) · [dark](skill/slide-creator/samples/boardroom-dark.pdf) · [all slides](skill/slide-creator/samples/boardroom.png)
+business cases and reviews read without a presenter. [PDF](gallery/boardroom.pdf) · [dark](gallery/boardroom-dark.pdf) · [all slides](gallery/boardroom.png)
 
-![Plant Floor style: industrial deck with a header bar and hazard stripe](skill/slide-creator/samples/plant-floor-hero.png)
+![Plant Floor style: industrial deck with a header bar and hazard stripe](gallery/plant-floor-hero.png)
 
 **plant-floor** — industrial: header bar, condensed headings, mono labels, safety colours. For operations,
-CI/A3, engineering and project status. [PDF](skill/slide-creator/samples/plant-floor.pdf) · [dark](skill/slide-creator/samples/plant-floor-dark.pdf) · [all slides](skill/slide-creator/samples/plant-floor.png)
+CI/A3, engineering and project status. [PDF](gallery/plant-floor.pdf) · [dark](gallery/plant-floor-dark.pdf) · [all slides](gallery/plant-floor.png)
 
-![Editorial whitepaper style: two-column US Letter document](skill/slide-creator/samples/editorial-whitepaper-hero.png)
+![Editorial whitepaper style: two-column US Letter document](gallery/editorial-whitepaper-hero.png)
 
 **editorial-whitepaper** — for documents people **read** rather than watch: whitepapers, playbooks,
 pre-reads, handouts. The editorial look set as a printed guide: US Letter landscape pages, serif body text in
 two columns, sans subheads, tables, full-width figures, colour cover and chapter pages; ~350–550 words a page.
-[PDF](skill/slide-creator/samples/editorial-whitepaper.pdf) · [dark](skill/slide-creator/samples/editorial-whitepaper-dark.pdf) · [all pages](skill/slide-creator/samples/editorial-whitepaper.png) · [source](skill/slide-creator/examples/whitepaper/deck.md)
+[PDF](gallery/editorial-whitepaper.pdf) · [dark](gallery/editorial-whitepaper-dark.pdf) · [all pages](gallery/editorial-whitepaper.png) · [source](skill/slide-creator/examples/whitepaper/deck.md)
 
-![Report style: formal portrait pages](skill/slide-creator/samples/report-hero.png)
+![Report style: formal portrait pages](gallery/report-hero.png)
 
-**report** — formal US Letter portrait pages with numbered sections, a running header, tables and captioned figures. For quarterly reports, specifications and audits. [PDF](skill/slide-creator/samples/report.pdf) · [dark](skill/slide-creator/samples/report-dark.pdf) · [all pages](skill/slide-creator/samples/report.png) · [source](skill/slide-creator/examples/report/deck.md)
+**report** — formal US Letter portrait pages with numbered sections, a running header, tables and captioned figures. For quarterly reports, specifications and audits. [PDF](gallery/report.pdf) · [dark](gallery/report-dark.pdf) · [all pages](gallery/report.png) · [source](skill/slide-creator/examples/report/deck.md)
 
-![Keynote style: large type and broad colour](skill/slide-creator/samples/keynote-hero.png)
+![Keynote style: large type and broad colour](gallery/keynote-hero.png)
 
-**keynote** — dark-first, large type and full-colour section pages for talks, town halls and announcements. [PDF](skill/slide-creator/samples/keynote.pdf) · [light](skill/slide-creator/samples/keynote-light.pdf) · [all slides](skill/slide-creator/samples/keynote.png)
+**keynote** — dark-first, large type and full-colour section pages for talks, town halls and announcements. [PDF](gallery/keynote.pdf) · [light](gallery/keynote-light.pdf) · [all slides](gallery/keynote.png)
 
-![Minimal style: black on white with one accent](skill/slide-creator/samples/minimal-hero.png)
+![Minimal style: black on white with one accent](gallery/minimal-hero.png)
 
-**minimal** — black on white, strict grid, Aptos/Segoe type and one restrained accent. A safe corporate default. [PDF](skill/slide-creator/samples/minimal.pdf) · [dark](skill/slide-creator/samples/minimal-dark.pdf) · [all slides](skill/slide-creator/samples/minimal.png)
+**minimal** — black on white, strict grid, Aptos/Segoe type and one restrained accent. A safe corporate default. [PDF](gallery/minimal.pdf) · [dark](gallery/minimal-dark.pdf) · [all slides](gallery/minimal.png)
 
 Slide samples come from one 12-slide showcase deck ([source](skill/slide-creator/examples/showcase/deck.md)).
 The seven-slide [executive summary](skill/slide-creator/examples/exec-summary/deck.md) is another starting point and builds in every slide style.
@@ -212,22 +212,26 @@ author metadata (`author` in the deck front matter or `slides.json`).
 ```
 skill/slide-creator/        ← the skill (this is what gets installed)
   SKILL.md                  agent instructions
-  styles/                   seven built-in slide and document style packs (style.json, style.css, guide.md, reference/)
+  styles/                   seven built-in slide and document style packs (style.json, style.css, guide.md)
   assets/base.css           shared layouts and components
-  scripts/                  install, doctor, new, build, inspect, lint, samples, import_style.py
+  scripts/                  install, doctor, new, build (+ watch preview), inspect, lint, import_style.py
   references/               layouts, tokens, diagrams, charts, rubric, design basics
   workflows/new-style.md    create / import / change a style
   examples/showcase/        one deck using every layout — the test deck for any slide style
   examples/whitepaper/      a 9-page document — the test document for editorial-whitepaper
   examples/report/          a 9-page portrait operations report
   examples/exec-summary/    a 7-slide executive summary for every slide style
-  samples/                  showcase rendered in each style (light and dark)
+gallery/                    every style rendered: PDFs (light and dark), all-pages sheets, the images above
+dev/                        maintainer tools, not installed: samples.mjs (rebuilds gallery/), tests/ (npm test)
 ```
+
+The skill folder holds only what an agent needs; the rendered examples live in `gallery/` here on GitHub.
+Maintainers: `npm run samples` (must end "All samples clean") and `npm test` from the repo root.
 
 ## Status
 
 Version 0.1. The full pipeline (Marp, D2, Vega-Lite, inspection) runs end to end on Windows with Edge;
-the samples and style reference images are real renders. Output is PDF only, by design: the Markdown
+the gallery images and PDFs are real renders. Output is PDF only, by design: the Markdown
 is the editable source.
 
 ## License

@@ -32,8 +32,11 @@ path of `msedge.exe` or `chrome.exe`. For style import also run `pip install -r 
    - `report` — a **document** for formal reports, specifications and audits: US Letter portrait, one column, numbered sections, running header and page numbers.
    - `keynote` — dark-first slides for live talks, town halls and announcements: very large type and one idea per slide; use `light` for a pale scheme.
    - `minimal` — a safe corporate slide default: black on white, strict grid, Aptos/Segoe type and one accent.
-   Look at `<skill>/samples/<style>.pdf` if you need to show the user the options.
-2. **Read the style.** `<skill>/styles/<style>/guide.md`, and look at 2–3 images in its `reference/` folder.
+   To show the user the options, point them to the gallery in the skill's GitHub repo (`gallery/`).
+2. **Read the style and see it.** Read `<skill>/styles/<style>/guide.md`, then render its example once and look
+   at 2–3 slides — that is what "on-style" looks like:
+   `node <skill>/scripts/build.mjs <skill>/examples/showcase --style <style> --out build-<style> --html`
+   (document styles: `examples/whitepaper` or `examples/report`). Open `build-<style>/contact-sheet.png`.
 3. **Create the project** (skip if it exists):
    ```
    node <skill>/scripts/new.mjs <folder> --style <style>
@@ -88,7 +91,7 @@ path of `msedge.exe` or `chrome.exe`. For style import also run `pip install -r 
 
 | Path | What |
 |---|---|
-| `styles/<name>/` | style packs: `style.json` tokens, `style.css` personality, `guide.md`, `reference/` |
+| `styles/<name>/` | style packs: `style.json` tokens, `style.css` personality, `guide.md` |
 | `assets/base.css` | shared layouts and components (all styles) |
 | `scripts/build.mjs` | full build: style → theme, D2, charts, icons, Marp, inspection |
 | `scripts/inspect.mjs` / `lint.mjs` | inspection and checks only |
@@ -100,4 +103,3 @@ path of `msedge.exe` or `chrome.exe`. For style import also run `pip install -r 
 | `examples/showcase/` | one deck that uses every layout — the test deck for any style |
 | `examples/exec-summary/` | seven-slide example that builds in every slide style |
 | `examples/report/` | nine-page portrait report for the report style |
-| `samples/` | showcase rendered in each built-in style |

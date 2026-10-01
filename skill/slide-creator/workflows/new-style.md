@@ -8,7 +8,7 @@ styles/<name>/
 ├── style.json      tokens: colour schemes, type, spacing, shape, diagram, chart, rules   (REQUIRED)
 ├── style.css       personality: the few CSS rules that make it recognisable           (REQUIRED, may be short)
 ├── guide.md        the rules in words, for people and agents                           (REQUIRED)
-├── reference/      PNGs of what "correct" looks like                                   (strongly recommended)
+├── reference/      the source pages the importer rendered (imported styles only)         (optional)
 └── extraction.json raw measurements from import (only for imported styles)
 ```
 
@@ -114,8 +114,9 @@ Don't add new class names; if a genuinely new component is needed, add it to `as
 4. **Check both schemes** if the style has `dark`: `--scheme dark`.
 5. **Write `guide.md`** — replace every TODO. Agents read this before making slides, so state rules
    plainly ("accent only on the single most important number").
-6. **Save reference images**: copy the 4–6 best showcase slides into `reference/` as
-   `showcase-NN.png` (keep the source pages too).
-7. **Sample PDF** (built-in styles only): `npm run samples` regenerates `samples/<name>.pdf`.
+6. **Keep the look checkable**: anyone can see the style by rendering the showcase in it
+   (`build.mjs <skill>/examples/showcase --style <name>`); keep the importer's source pages in `reference/`
+   so the original stays comparable.
+7. **Built-in styles only** (maintainers): `npm run samples` at the repo root renders it into `gallery/`.
 8. Tell the user what was extracted, what you changed by eye, and anything you could not match
    (e.g. a font not installed, photo-based layouts).
