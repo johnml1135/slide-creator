@@ -85,14 +85,18 @@ async function hero(style, buildDir, refs, file) {
   const fam = (f) => (Array.isArray(f) ? f : [f]).map((x) => (/\s/.test(x) ? `'${x}'` : x)).join(', ');
   const shot = (src, w, h) => `<img src="${src}" style="width:${w}px;height:${h}px;display:block;border-radius:6px;box-shadow:0 18px 40px -12px rgba(0,0,0,.35),0 2px 6px rgba(0,0,0,.12)">`;
   const smalls = await Promise.all(refs.slice(-3).map(async (n) => shot(await img(n), smallW, smallH)));
+  // Portrait pages: the cover and two content pages side by side at the same size reads better than a tall cover.
+  const portrait = ratio > 1;
+  const rowW = (W - 2 * pad - 2 * gap) / 3, rowH = Math.min(rowW * ratio, H - head - pad), rowWfit = rowH / ratio;
+  const row = portrait ? await Promise.all([refs[0], ...refs.slice(-3, -1)].map(async (n) => shot(await img(n), rowWfit, rowH))) : null;
+  const left = portrait ? (W - 3 * rowWfit - 2 * gap) / 2 : (W - bigW - gap - smallW) / 2;
   const html = `<body style="margin:0;width:${W}px;height:${H}px;background:linear-gradient(135deg, ${c.surface}, ${c.bg} 60%);font-family:${fam(t.type.body.family)};color:${c.ink};overflow:hidden">
-    <div style="position:absolute;left:${(W - bigW - gap - smallW) / 2}px;top:46px;right:${pad}px;display:flex;align-items:baseline;gap:24px">
+    <div style="position:absolute;left:${left}px;top:46px;right:${pad}px;display:flex;align-items:baseline;gap:24px">
       <div style="font-family:${fam(t.type.heading.family)};font-weight:${t.type.heading.weight ?? 600};font-size:52px;letter-spacing:-0.01em">${style.label}</div>
       <div style="font-size:20px;color:${c.muted}">${(style.bestFor || []).slice(0, 3).join(' · ')}</div>
     </div>
-    <div style="position:absolute;left:${(W - bigW - gap - smallW) / 2}px;top:${head}px;height:${H - head - pad}px;display:flex;gap:${gap}px;align-items:center">
-      ${shot(await img(refs[0]), bigW, bigH)}
-      <div style="display:flex;flex-direction:column;gap:${gap}px">${smalls.join('')}</div>
+    <div style="position:absolute;left:${left}px;top:${head}px;height:${H - head - pad}px;display:flex;gap:${gap}px;align-items:center">
+      ${portrait ? row.join('') : `${shot(await img(refs[0]), bigW, bigH)}<div style="display:flex;flex-direction:column;gap:${gap}px">${smalls.join('')}</div>`}
     </div></body>`;
   const browser = await launchBrowser();
   try {
