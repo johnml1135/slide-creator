@@ -49,45 +49,46 @@ Key invariants — keep them:
   `resolveTokens()`; text uses `--accent-text`, fills use `--accent`.
 - D2 diagram classes: `box key quiet group link good warn bad info note` (`DIAGRAM_CLASSES`).
 
-## Status (v0.1, first commit)
+## Status (v0.1, 2026-10-01)
 
-Verified (run and visually checked): style generator, all three styles in light + dark (plant-floor dark
-checked), base layouts/components, inspector (screenshots, overlays, contact sheet, overflow/safe-area,
-clipping, min font, contrast incl. section ::before bands), linter, `new.mjs`, `doctor.mjs`,
-`import_style.py` on PDF and PPTX.
+**Runs end to end on Windows + Edge**: Marp (PDF/PPTX + `--template bare` inspection HTML), D2 WASM, Vega 6 /
+Vega-Lite 6, Lucide inlining, inspector, linter. Samples (`samples/`, light + dark) and every style's
+`reference/` images are real renders from `npm run samples`. `scripts/install.mjs` installs the skill into a
+repo (`.github/skills/`), `~/.copilot/skills/` or any folder, optionally with `copilot-setup-steps.yml`.
 
-**Not yet run end-to-end** — npm was blocked where this was built:
-- Marp CLI invocation in `build.mjs` (spawned via the package's `bin`, `CHROME_PATH` env for the browser,
-  `--template bare` for inspection HTML). Verify the Marp HTML structure (`svg[data-marpit-svg] >
-  foreignObject > section`) works with `measureSlides()` and the screenshot clipping.
-- `@terrastruct/d2` JS API (`new D2().compile(src)` → `render(diagram, renderOptions)`), the generated
-  header syntax (vars, `style.fill: transparent`, classes with `font: mono`), and whether
-  `layout-engine: elk` is supported in the WASM build.
-- Vega 6 / Vega-Lite 6 ESM imports and `view.toSVG()` in Node; `$token` replacement inside conditions.
-- Lucide icon inlining (`lucide-static/icons/<name>.svg`).
-- Versions in `package.json` are best guesses.
+Styles: `editorial`, `boardroom`, `plant-floor` (16:9 slides) and `editorial-whitepaper` (a **document**
+style: US Letter landscape pages, `paper` two-column layout, `kind: "document"`, own example
+`examples/whitepaper`).
 
-The **sample PDFs** in `samples/` and the `reference/` PNGs were produced by `dev/preview.py`, an offline
-stand-in (python-markdown → HTML, simplified diagrams, matplotlib charts, substitute fonts). Regenerate with
-the real pipeline: `cd skill/slide-creator && npm install && npm run samples`, then copy fresh slide PNGs into
-each `styles/<name>/reference/`.
+Integration facts learned the hard way (keep them):
+- Marp's bare template clamps `html/body` height; the inspector un-clamps it or every slide after the first
+  screenshots as background.
+- Every slide sits inside Marp's `<svg>`; checks that skip "text inside SVG" must only skip SVGs *inside*
+  the section.
+- Marpit sets `section::after { padding: inherit }` — reset it or the page number moves in by the margins.
+- Marp reads slide size from literal `width/height` on the root `section` rule (emitted from `page` tokens).
+- `@terrastruct/d2` runs in a worker thread: `d2.worker.terminate()` or the process never exits. D2 only
+  accepts whole-number `stroke-width`. Its errors are a JSON array of `{range, errmsg}`.
+- d2/vega/vega-lite hide `package.json` behind `exports`; use `packageDir()`, not `resolve('<pkg>/package.json')`.
+- In dark schemes `ink` is light: derived "text on a fill" colours must pick the darker of `ink`/`bg`.
+- Markdown `breaks` is on in Marp by default; document styles set `"markdown": {"breaks": false}`.
 
 ## Next steps (suggested order)
 
-1. `npm install` in `skill/slide-creator`, `node scripts/doctor.mjs`, `npm run showcase`; fix whatever breaks
-   in Marp/D2/Vega integration. Check `examples/showcase/build/report.md` and the contact sheet.
-2. `npm run samples`; replace preview samples and reference images with real renders.
-3. Inspector: add an orphan check (single word on a heading's last line) and a "figure too small" check
-   (diagram/chart image < 60% of content width).
-4. Add a `--watch` mode or a quick `--slides 3,5` partial build for faster iteration.
-5. Phase 2 candidates: editable PPTX via PptxGenJS from the same tokens; a JSON Schema for `style.json`;
-   more showcase decks (A3 report-out, exec summary) to test styles against.
+1. Phase 2: editable PPTX via PptxGenJS from the same tokens; a JSON Schema for `style.json`.
+2. More example decks to test styles against (A3 report-out, exec summary); a document-style variant of
+   boardroom if users want branded reports.
+3. `--watch` mode (`--slides` partial builds exist).
+4. Check fonts/rendering on the Linux runner used by Copilot cloud agent (Chrome, no Windows fonts).
 
 ## Working on this repo
 
 - Node ESM scripts, no build step. Python only in `scripts/import_style.py` and `dev/`.
 - Test a style change quickly: `node skill/slide-creator/scripts/build.mjs skill/slide-creator/examples/showcase --style <name>`
-  then open `examples/showcase/build/contact-sheet.png`. **Always look at the rendered slides**, not just the report.
+  (`examples/whitepaper` for document styles; `--slides 3,5` for a few slides) then open
+  `build/contact-sheet.png`. **Always look at the rendered slides**, not just the report.
+- Before committing style or pipeline changes: `npm run samples` (all styles, light + dark) must report
+  0 errors / 0 warnings, and commit the regenerated samples and reference images.
 - Without Marp/D2/Vega available: `python3 dev/preview.py skill/slide-creator/examples/showcase --style <name> --pdf out.pdf`
   then `node skill/slide-creator/scripts/inspect.mjs skill/slide-creator/examples/showcase`.
 - The user is not a designer: explain design choices in plain words; keep `references/design-basics.md` current.
