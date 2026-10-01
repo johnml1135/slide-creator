@@ -10,7 +10,7 @@ import { existsSync } from 'node:fs';
 import path from 'node:path';
 import { spawn } from 'node:child_process';
 import { SKILL_DIR, loadStyle, resolveTokens, buildCss, buildD2Header, buildVegaConfig, resolveTokenRefs } from './lib/style.mjs';
-import { loadConfig, parseArgs, importDep, packageDir, findBrowser, splitFrontMatter } from './lib/project.mjs';
+import { loadConfig, parseArgs, importDep, packageDir, findBrowser, splitFrontMatter, readSheet } from './lib/project.mjs';
 
 const args = parseArgs(process.argv.slice(2));
 const projectDir = path.resolve(args._[0] || '.');
@@ -84,6 +84,19 @@ if (existsSync(chartDir)) {
       for (const f of files) {
         try {
           const spec = resolveTokenRefs(JSON.parse(await readFile(path.join(chartDir, f), 'utf8')), tokens);
+          const inlineExcel = async (node) => {
+            if (!node || typeof node !== 'object') return;
+            if (node.data?.url && /\.xlsx$/i.test(node.data.url)) {
+              const source = path.resolve(projectDir, node.data.url);
+              const { headers, records } = await readSheet(source, node.data.sheet);
+              if (!headers.length || headers.some((x) => !x)) throw new Error(`Excel file ${node.data.url} needs a header in every column`);
+              node.data = { values: records };
+            }
+            for (const key of ['layer', 'hconcat', 'vconcat', 'concat'])
+              for (const child of node[key] || []) await inlineExcel(child);
+            if (node.spec) await inlineExcel(node.spec);
+          };
+          await inlineExcel(spec);
           const compiled = (vl.compile || vl.default.compile)(spec, { config: vegaConfig }).spec;
           const View = vega.View || vega.default.View;
           const parse = vega.parse || vega.default.parse;
