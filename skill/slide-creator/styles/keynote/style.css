@@ -1,0 +1,23 @@
+/* Keynote: broad colour fields, oversized message, quiet supporting detail. */
+section { --bullet: '•'; --bullet-color: var(--accent-text); }
+header, footer { opacity: 0.55; }
+section::after { opacity: 0.55; }
+h2 { max-width: 19em; }
+h6, .kicker { color: var(--primary); }
+section.cover { justify-content: center; background: var(--primary); color: var(--on-primary); }
+section.cover h1, section.cover h6, section.cover p, section.cover header, section.cover footer { color: var(--on-primary); }
+section.cover h1 { max-width: 11em; }
+section.chapter { background: var(--accent); color: var(--on-accent); }
+section.chapter h1, section.chapter h6, section.chapter p, section.chapter header, section.chapter footer, section.chapter::after { color: var(--on-accent); }
+section.statement { background: var(--primary); }
+section.statement h1, section.statement p { color: var(--on-primary); font-size: var(--fs-h1); max-width: 16em; }
+section.statement header, section.statement footer, section.statement::after { color: var(--on-primary); }
+section.statement strong { color: var(--on-primary); text-decoration: underline; text-decoration-color: var(--accent); text-underline-offset: 0.12em; }
+.stat { color: var(--primary); }
+.kpi { border-top-color: var(--rule); }
+.kpi > b { color: var(--ink); }
+.kpi.key { border-top-color: var(--accent); }
+.kpi.key > b { color: var(--accent-text); }
+.card { border-radius: 0; }
+section.closing { background: var(--primary); }
+section.closing h1, section.closing h6, section.closing header, section.closing footer { color: var(--on-primary); }

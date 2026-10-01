@@ -51,6 +51,9 @@ Body…
 | `summary` | executive summary (best in boardroom) | `##` title + 3–5 bullets each starting with a **bold lead-in** |
 | `dense` | appendix / detail tables | smaller text, higher word limit — use sparingly |
 | `paper` | a body page in a **document** style (`editorial-whitepaper`) | `######` chapter pill, `#` page title, then `##`/`###` sections; text flows down the left column, then the right. Set `class: paper` in the front matter so it is the default. A `<div class="figure">` spans both columns. The column flow works in any style, but only document styles size the type for it |
+| `section-summary` | short checkpoint in a document | `#` finding title and up to three evidence-led bullets; used in `examples/report` |
+| `appendix` | references or supporting detail | `#` title and source list or compact table; used in `examples/report` |
+| `comparison` | two alternatives and a recommendation | `##` conclusion, two `card` blocks in `cols`, then a `callout`; used in `examples/exec-summary` |
 | `closing` | last slide | kicker, `#` question or next step |
 
 Combine with a space: `<!-- _class: chart dense -->`.

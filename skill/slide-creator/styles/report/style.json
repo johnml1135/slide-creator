@@ -1,0 +1,189 @@
+{
+  "name": "report",
+  "label": "Report",
+  "summary": "Formal, single-column US Letter portrait report with numbered sections, running header, tables and restrained figures.",
+  "bestFor": [
+    "quarterly operations reports",
+    "specifications and audits",
+    "formal findings and recommendations"
+  ],
+  "kind": "document",
+  "page": {
+    "width": 816,
+    "height": 1056
+  },
+  "markdown": {
+    "breaks": false
+  },
+  "samples": {
+    "example": "report",
+    "reference": [
+      1,
+      2,
+      3,
+      5,
+      7,
+      9
+    ]
+  },
+  "schemes": {
+    "default": {
+      "bg": "#FFFFFF",
+      "surface": "#EFE9DF",
+      "ink": "#141413",
+      "muted": "#5E5D58",
+      "rule": "#D9D7CE",
+      "primary": "#7A8C5E",
+      "accent": "#D97757",
+      "good": "#4F7A4A",
+      "warn": "#C08A2E",
+      "bad": "#B5483B",
+      "info": "#5B7A99",
+      "categorical": [
+        "#D97757",
+        "#141413",
+        "#8A8880",
+        "#7A8C5E",
+        "#5B7A99",
+        "#C08A2E"
+      ],
+      "sequential": [
+        "#EFE9DF",
+        "#D97757"
+      ]
+    },
+    "dark": {
+      "bg": "#1F1E1D",
+      "surface": "#2E2C29",
+      "ink": "#F0EEE6",
+      "muted": "#A8A69E",
+      "rule": "#3E3D39",
+      "primary": "#8FA275",
+      "accent": "#E08A6D",
+      "good": "#8DB384",
+      "warn": "#E0B062",
+      "bad": "#E07A6D",
+      "info": "#8FAAC7",
+      "categorical": [
+        "#E08A6D",
+        "#F0EEE6",
+        "#8A8880",
+        "#8FA275",
+        "#8FAAC7",
+        "#E0B062"
+      ],
+      "sequential": [
+        "#2E2C29",
+        "#E08A6D"
+      ]
+    }
+  },
+  "type": {
+    "heading": {
+      "family": [
+        "Aptos Display",
+        "Aptos",
+        "Segoe UI",
+        "Arial",
+        "sans-serif"
+      ],
+      "weight": 600,
+      "tracking": "-0.01em",
+      "case": "none"
+    },
+    "body": {
+      "family": [
+        "Aptos",
+        "Segoe UI",
+        "Arial",
+        "sans-serif"
+      ],
+      "weight": 400
+    },
+    "mono": {
+      "family": [
+        "Cascadia Mono",
+        "Consolas",
+        "JetBrains Mono",
+        "Menlo",
+        "monospace"
+      ]
+    },
+    "label": {
+      "family": [
+        "Aptos",
+        "Segoe UI",
+        "Arial",
+        "sans-serif"
+      ],
+      "weight": 600,
+      "tracking": "0",
+      "case": "none"
+    },
+    "scale": {
+      "display": 48,
+      "h1": 32,
+      "h2": 20,
+      "h3": 16,
+      "body": 15,
+      "small": 13,
+      "caption": 11,
+      "label": 11
+    },
+    "lineHeight": {
+      "tight": 1.15,
+      "body": 1.48
+    },
+    "measure": "100%"
+  },
+  "space": {
+    "unit": 6,
+    "margin": [
+      88,
+      76,
+      80,
+      76
+    ],
+    "gutter": 30,
+    "safe": 30
+  },
+  "shape": {
+    "radius": 4,
+    "radiusLarge": 6,
+    "rule": 1,
+    "ruleStrong": 1.5,
+    "shadow": "none"
+  },
+  "diagram": {
+    "layoutEngine": "elk",
+    "pad": 12,
+    "fontSize": 16,
+    "stroke": 1,
+    "radius": 4,
+    "nodeFill": "bg",
+    "nodeStroke": "ink",
+    "groupStroke": "surface",
+    "sketch": false,
+    "labelCase": "Sentence case for nodes and groups"
+  },
+  "chart": {
+    "grid": "y",
+    "fontSize": 11,
+    "width": 600,
+    "height": 250,
+    "barRadius": 1,
+    "lineWidth": 2,
+    "emphasis": "accent",
+    "deemphasis": "muted"
+  },
+  "rules": {
+    "maxWords": 560,
+    "maxBullets": 16,
+    "maxBlocks": 45,
+    "maxAccentsPerSlide": 2,
+    "minFontPx": 10,
+    "titleStyle": "phrase",
+    "photos": "only documentary evidence or a relevant site photo",
+    "icons": "avoid in body text"
+  }
+}

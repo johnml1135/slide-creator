@@ -294,3 +294,21 @@ ol.timeline > li.on > b:first-child { color: var(--accent-text); }
 .mt { margin-top: calc(var(--u) * 3); }
 .accent { color: var(--accent-text); }
 .hl { background: linear-gradient(transparent 60%, var(--accent-soft) 60%); }
+
+/* ================= Additional page types: used by report and executive-summary examples ================= */
+/* section-summary: a document checkpoint with three concise findings. */
+section.section-summary { justify-content: center; background: var(--surface); }
+section.section-summary h1 { max-width: 18em; }
+section.section-summary ul { max-width: 36em; }
+section.section-summary li { border-top: var(--rule-w) solid var(--rule); padding-top: var(--u); }
+
+/* appendix: sources and detailed reference material at reading size. */
+section.appendix { display: block; }
+section.appendix h1 { font-size: var(--fs-h1); margin-bottom: calc(var(--u) * 3); }
+section.appendix p, section.appendix li { font-size: var(--fs-small); max-width: none; }
+section.appendix table { font-size: var(--fs-small); }
+
+/* comparison: two aligned alternatives with a clear recommendation. */
+section.comparison > .cols, section.comparison > .cols-wide-left, section.comparison > .cols-wide-right { margin-top: calc(var(--u) * 2); flex: 1; }
+section.comparison .card { height: 100%; }
+section.comparison .callout { max-width: none; }

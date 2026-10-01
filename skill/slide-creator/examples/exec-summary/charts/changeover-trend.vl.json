@@ -1,0 +1,49 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "title": { "text": "Average changeover time, minutes", "subtitle": "Line 4, weekly" },
+  "width": 1000,
+  "height": 380,
+  "data": {
+    "values": [
+      { "week": "W1", "minutes": 94 }, { "week": "W2", "minutes": 91 }, { "week": "W3", "minutes": 86 },
+      { "week": "W4", "minutes": 78 }, { "week": "W5", "minutes": 70 }, { "week": "W6", "minutes": 63 },
+      { "week": "W7", "minutes": 58 }, { "week": "W8", "minutes": 55 }
+    ]
+  },
+  "layer": [
+    {
+      "mark": { "type": "bar", "width": { "band": 0.62 } },
+      "encoding": {
+        "x": { "field": "week", "type": "ordinal", "title": null, "sort": null },
+        "y": { "field": "minutes", "type": "quantitative", "title": null, "scale": { "domain": [0, 100] } },
+        "color": {
+          "condition": { "test": "datum.week === 'W8'", "value": "$accent" },
+          "value": "$rule"
+        }
+      }
+    },
+    {
+      "mark": { "type": "text", "dy": -12, "fontWeight": 600 },
+      "encoding": {
+        "x": { "field": "week", "type": "ordinal", "sort": null },
+        "y": { "field": "minutes", "type": "quantitative" },
+        "text": { "field": "minutes" }
+      }
+    },
+    {
+      "data": { "values": [{ "target": 45 }] },
+      "mark": { "type": "rule", "strokeDash": [6, 4], "strokeWidth": 2 },
+      "encoding": { "y": { "field": "target", "type": "quantitative" }, "color": { "value": "$muted" } }
+    },
+    {
+      "data": { "values": [{ "target": 45, "label": "Target 45" }] },
+      "mark": { "type": "text", "align": "left", "baseline": "middle", "dx": 8, "fontWeight": 600 },
+      "encoding": {
+        "x": { "value": "width" },
+        "y": { "field": "target", "type": "quantitative" },
+        "text": { "field": "label" },
+        "color": { "value": "$muted" }
+      }
+    }
+  ]
+}
