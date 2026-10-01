@@ -1,6 +1,6 @@
 ---
 name: slide-creator
-description: Create polished slide decks (PDF, or image-based PowerPoint) from Markdown with Marp, with on-style D2 diagrams and Vega-Lite charts, three built-in visual styles (editorial, boardroom, plant-floor), automatic inspection of the rendered slides and assessment against the style. Use when the user asks for a presentation, slide deck, slides, a pitch or review deck, diagrams or charts for slides, to restyle or recolour a deck, to check a deck's design, or to create or import a presentation style from an existing PowerPoint or PDF.
+description: Create polished slide decks (PDF, or image-based PowerPoint) from Markdown with Marp, with on-style D2 diagrams and Vega-Lite charts, three built-in slide styles (editorial, boardroom, plant-floor) plus a two-column whitepaper document style (editorial-whitepaper), automatic inspection of the rendered slides and assessment against the style. Use when the user asks for a presentation, slide deck, slides, a pitch or review deck, a whitepaper, playbook, handout or pre-read document, diagrams or charts for slides, to restyle or recolour a deck, to check a deck's design, or to create or import a presentation style from an existing PowerPoint or PDF.
 compatibility: Needs Node.js 18+ (npm install in this folder), an installed Microsoft Edge or Google Chrome for rendering, and Python 3.9+ only for style import.
 ---
 
@@ -26,6 +26,9 @@ path of `msedge.exe` or `chrome.exe`. For style import also run `pip install -r 
    - `boardroom` — leadership, business cases, decisions, anything read without a presenter
    - `plant-floor` — operations, engineering, process, continuous improvement, project status
    - `editorial` — explainers, guides, training, strategy narratives
+   - `editorial-whitepaper` — a **document** to read, not present: whitepapers, playbooks, pre-reads,
+     handouts; US Letter pages, two columns, ~350–550 words a page (see `references/design-basics.md`,
+     "Slides or a document?"). Its guide replaces the slide writing limits.
    Look at `<skill>/samples/<style>.pdf` if you need to show the user the options.
 2. **Read the style.** `<skill>/styles/<style>/guide.md`, and look at 2–3 images in its `reference/` folder.
 3. **Create the project** (skip if it exists):

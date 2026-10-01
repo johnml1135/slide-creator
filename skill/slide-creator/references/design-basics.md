@@ -44,6 +44,18 @@ slides look professional. Read once; the styles already encode most of it.
 9. **Write less** — cut adjectives, use fragments in bullets, move detail to speaker notes.
 10. **Check it rendered** — always look at the images before calling it done.
 
+## Slides or a document?
+
+Slides are for **watching**: a presenter talks, the screen shows one idea at a time in big text. A document
+is for **reading**: someone studies it alone, at their own pace, often printed. Mixing them up is the most
+common reason decks feel wrong — a slide crammed with 200 words is a bad document *and* a bad slide.
+
+- Presenting to a room, or a deck that will be clicked through → a slide style (`editorial`, `boardroom`, `plant-floor`).
+- A pre-read, handout, playbook or whitepaper with more than ~80 words a page → `editorial-whitepaper`.
+  It uses printed-page habits: US Letter pages, two columns (shorter lines are easier to read in small
+  type), a serif body face (it reads well at small sizes), plain sans subheads to make the page scannable,
+  and colour pages only for the cover and chapters.
+
 ## Story structures that work
 
 - **Situation → Complication → Resolution** (exec decks): context, what changed/the problem, what we propose.

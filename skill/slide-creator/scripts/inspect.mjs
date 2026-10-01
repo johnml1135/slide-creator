@@ -22,13 +22,14 @@ export async function inspect(cfg, { buildProblems = [], htmlPath } = {}) {
   await mkdir(slidesDir, { recursive: true });
 
   const browser = await launchBrowser();
-  const page = await browser.newPage({ viewport: { width: 1280, height: 720 }, deviceScaleFactor: 1 });
+  const { width: W, height: H } = tokens.page || { width: 1280, height: 720 };
+  const page = await browser.newPage({ viewport: { width: W, height: H }, deviceScaleFactor: 1 });
   await page.goto(pathToFileURL(html).href, { waitUntil: 'load' });
-  await page.addStyleTag({ content: 'html,body{margin:0;padding:0;background:#777;height:auto!important;overflow:visible!important} svg[data-marpit-svg]{display:block;width:1280px!important;height:720px!important;margin:0 0 24px} .marpit > svg + svg{margin-top:0}' });
+  await page.addStyleTag({ content: `html,body{margin:0;padding:0;background:#777;height:auto!important;overflow:visible!important} svg[data-marpit-svg]{display:block;width:${W}px!important;height:${H}px!important;margin:0 0 24px} .marpit > svg + svg{margin-top:0}` });
   await page.evaluate(() => document.fonts && document.fonts.ready);
   await page.waitForTimeout(300);
 
-  const domFindings = await page.evaluate(measureSlides, { minFont: tokens.rules?.minFontPx ?? 14 });
+  const domFindings = await page.evaluate(measureSlides, { W, H, minFont: tokens.rules?.minFontPx ?? 14, maxBlocks: tokens.rules?.maxBlocks ?? 7 });
   const lint = await runLint(cfg, tokens);
 
   // Merge findings per slide
@@ -92,8 +93,7 @@ export async function inspect(cfg, { buildProblems = [], htmlPath } = {}) {
 }
 
 /* Runs inside the page. Must be self-contained. */
-function measureSlides({ minFont }) {
-  const W = 1280, H = 720;
+function measureSlides({ W, H, minFont, maxBlocks }) {
   const sections = [...document.querySelectorAll('section')].filter((s) => !s.parentElement.closest('section'));
   const parse = (c) => {
     const m = /rgba?\(([^)]+)\)/.exec(c || '');
@@ -155,6 +155,8 @@ function measureSlides({ minFont }) {
 
     // 1. Content taller than the slide
     if (section.scrollHeight > section.clientHeight + 2) add('error', 'overflow', `Content is ${section.scrollHeight - section.clientHeight}px taller than the slide; shorten or split it`);
+    // In multi-column layouts (paper) overflowing text spills into an extra column to the right instead.
+    else if (section.scrollWidth > section.clientWidth + 2) add('error', 'overflow', 'Content overflows into an extra column; shorten the page or split it');
 
     // 2. Elements leaving the safe area (report outermost only)
     const flagged = new Set();
@@ -207,7 +209,7 @@ function measureSlides({ minFont }) {
 
     // 7. Crowding: too many distinct blocks
     const blocksTop = section.querySelectorAll(':scope > *:not(header):not(footer)').length;
-    if (blocksTop > 7) add('warning', 'crowded', `${blocksTop} top-level blocks; aim for one idea per slide`);
+    if (blocksTop > maxBlocks) add('warning', 'crowded', `${blocksTop} top-level blocks (limit ${maxBlocks}); aim for one idea per slide`);
 
     const title = (section.querySelector('h1, h2') || {}).innerText || '';
     return { index: i + 1, title: title.trim(), classes: section.className, rect: { x: S.left + window.scrollX, y: S.top + window.scrollY, width: S.width, height: S.height }, issues };

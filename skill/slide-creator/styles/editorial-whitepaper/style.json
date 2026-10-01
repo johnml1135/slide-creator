@@ -1,0 +1,76 @@
+{
+  "name": "editorial-whitepaper",
+  "label": "Editorial whitepaper",
+  "summary": "The editorial style set as a printed guide: US Letter landscape pages, serif body text in two columns, sans-serif subheads, full-bleed colour cover and chapter pages. For documents people read, not slides people watch.",
+  "bestFor": ["whitepapers and guides", "pre-reads and handouts", "playbooks and reports read on paper or screen", "anything with more than ~80 words a page"],
+  "kind": "document",
+  "page": { "width": 1056, "height": 816 },
+  "markdown": { "breaks": false },
+  "samples": { "example": "whitepaper", "reference": [1, 2, 4, 5, 6, 8] },
+  "schemes": {
+    "default": {
+      "bg": "#FFFFFF",
+      "surface": "#EFE9DF",
+      "ink": "#141413",
+      "muted": "#5E5D58",
+      "rule": "#D9D7CE",
+      "primary": "#7A8C5E",
+      "accent": "#D97757",
+      "good": "#4F7A4A",
+      "warn": "#C08A2E",
+      "bad": "#B5483B",
+      "info": "#5B7A99",
+      "categorical": ["#D97757", "#141413", "#8A8880", "#7A8C5E", "#5B7A99", "#C08A2E"],
+      "sequential": ["#EFE9DF", "#D97757"]
+    },
+    "dark": {
+      "bg": "#1F1E1D",
+      "surface": "#2E2C29",
+      "ink": "#F0EEE6",
+      "muted": "#A8A69E",
+      "rule": "#3E3D39",
+      "primary": "#8FA275",
+      "accent": "#E08A6D",
+      "good": "#8DB384",
+      "warn": "#E0B062",
+      "bad": "#E07A6D",
+      "info": "#8FAAC7",
+      "categorical": ["#E08A6D", "#F0EEE6", "#8A8880", "#8FA275", "#8FAAC7", "#E0B062"],
+      "sequential": ["#2E2C29", "#E08A6D"]
+    }
+  },
+  "type": {
+    "heading": { "family": ["Georgia", "Cambria", "Tiempos Text", "Times New Roman", "serif"], "weight": 400, "tracking": "-0.01em", "case": "none" },
+    "body": { "family": ["Cambria", "Georgia", "Times New Roman", "serif"], "weight": 400 },
+    "mono": { "family": ["Cascadia Mono", "Consolas", "JetBrains Mono", "Menlo", "monospace"] },
+    "label": { "family": ["Segoe UI", "Aptos", "Inter", "Helvetica Neue", "Arial", "sans-serif"], "weight": 600, "tracking": "0", "case": "none" },
+    "scale": { "display": 64, "h1": 44, "h2": 20, "h3": 16, "body": 14, "small": 12.5, "caption": 11.5, "label": 12.5 },
+    "lineHeight": { "tight": 1.1, "body": 1.45 },
+    "measure": "100%"
+  },
+  "space": { "unit": 5, "margin": [64, 72, 64, 72], "gutter": 36, "safe": 28 },
+  "shape": { "radius": 4, "radiusLarge": 6, "rule": 1, "ruleStrong": 1.5, "shadow": "none" },
+  "diagram": {
+    "layoutEngine": "elk",
+    "pad": 12,
+    "fontSize": 13,
+    "stroke": 1,
+    "radius": 4,
+    "nodeFill": "bg",
+    "nodeStroke": "ink",
+    "groupStroke": "surface",
+    "sketch": false,
+    "labelCase": "Sentence case for nodes and groups"
+  },
+  "chart": { "grid": "y", "fontSize": 11, "width": 400, "height": 190, "barRadius": 1, "lineWidth": 2, "emphasis": "accent", "deemphasis": "muted" },
+  "rules": {
+    "maxWords": 650,
+    "maxBullets": 14,
+    "maxBlocks": 40,
+    "maxAccentsPerSlide": 2,
+    "minFontPx": 11,
+    "titleStyle": "phrase",
+    "photos": "rare; a single calm image per chapter at most",
+    "icons": "avoid in body text"
+  }
+}

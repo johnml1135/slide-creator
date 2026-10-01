@@ -15,6 +15,9 @@
   "label": "Boardroom",
   "summary": "One or two sentences on the look.",
   "bestFor": ["…"],
+  "page": { "width": 1280, "height": 720 },   // optional page size in px (96 per inch); 1056 × 816 = US Letter landscape
+  "markdown": { "breaks": false },            // optional markdown-it options; breaks:false lets wrapped prose reflow
+  "samples": { "example": "showcase", "reference": [1, 3, 4, 5, 7, 8] },  // optional: which example + pages samples.mjs uses
   "schemes": {                         // one or more colour schemes; "default" is required
     "default": {
       "bg": "#FFFFFF",      // page
@@ -35,6 +38,7 @@
     "body":    { "family": ["Aptos", "Segoe UI", "Arial", "sans-serif"], "weight": 400 },
     "mono":    { "family": ["Cascadia Mono", "Consolas", "monospace"] },
     "label":   { "font": "body | heading | mono", "weight": 700, "tracking": "0.04em", "case": "uppercase | none" },
+               // or "family": [...] to give labels, subheads (document styles) and chart titles their own font
     "scale":   { "display": 64, "h1": 48, "h2": 34, "h3": 22, "body": 22, "small": 18, "caption": 14, "label": 14 },
     "lineHeight": { "tight": 1.15, "body": 1.45 },
     "measure": "40em"                  // max line length for paragraphs
@@ -52,7 +56,7 @@
 }
 ```
 
-Units: px on a 1280×720 slide. `diagram.stroke` must be a whole number (D2 rejects fractions; it is rounded). Colour-role names (`"surface"`, `"rule"`) are accepted wherever a colour is.
+Units: px on the page (1280×720 unless `page` says otherwise). `chart.width` / `chart.height` set the default chart size (default 1000×420); `rules.maxBlocks` the crowding limit (default 7). `diagram.stroke` must be a whole number (D2 rejects fractions; it is rounded). Colour-role names (`"surface"`, `"rule"`) are accepted wherever a colour is.
 
 ## Derived automatically (don't add unless overriding)
 

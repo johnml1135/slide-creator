@@ -8,6 +8,7 @@
   "scripts": {
     "doctor": "node scripts/doctor.mjs",
     "showcase": "node scripts/build.mjs examples/showcase",
+    "whitepaper": "node scripts/build.mjs examples/whitepaper",
     "samples": "node scripts/samples.mjs"
   },
   "dependencies": {

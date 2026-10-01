@@ -13,7 +13,7 @@ the **Edge or Chrome you already have**, and runs offline — nothing is sent to
 | **Charts** | [Vega-Lite](https://vega.github.io/vega-lite/) → SVG |
 | **Icons** | [Lucide](https://lucide.dev) (offline SVGs) |
 | **Inspection** | headless Edge/Chrome via Playwright: per-slide PNGs, contact sheet, layout & contrast checks |
-| **Styles** | token-based style packs; three built in; import your own from a .pptx/.pdf |
+| **Styles** | token-based style packs; three slide styles and one document style built in; import your own from a .pptx/.pdf |
 
 ## The built-in styles
 
@@ -23,8 +23,20 @@ the **Edge or Chrome you already have**, and runs offline — nothing is sent to
 | **boardroom** | consulting / executive: white, navy, action titles, strict grid | leadership updates, business cases, reviews | [PDF](skill/slide-creator/samples/boardroom.pdf) · [dark](skill/slide-creator/samples/boardroom-dark.pdf) · [overview](skill/slide-creator/samples/boardroom.png) |
 | **plant-floor** | industrial: header bar, condensed headings, mono labels, safety colours | operations, CI/A3, engineering, project status | [PDF](skill/slide-creator/samples/plant-floor.pdf) · [dark](skill/slide-creator/samples/plant-floor-dark.pdf) · [overview](skill/slide-creator/samples/plant-floor.png) |
 
-Every sample is the same 12-slide showcase deck ([source](skill/slide-creator/examples/showcase/deck.md)),
+Every slide sample is the same 12-slide showcase deck ([source](skill/slide-creator/examples/showcase/deck.md)),
 rendered by `npm run samples`. Any colour can be overridden per deck.
+
+### For documents: editorial-whitepaper
+
+When the result will be **read** rather than presented — a whitepaper, playbook, pre-read or handout —
+use **editorial-whitepaper**: the editorial look set as a printed guide, with US Letter landscape pages,
+serif body text in two columns, sans subheads, tables, full-width figures, and colour cover and chapter
+pages. Same Markdown, diagrams and charts; ~350–550 words a page.
+[PDF](skill/slide-creator/samples/editorial-whitepaper.pdf) · [dark](skill/slide-creator/samples/editorial-whitepaper-dark.pdf) ·
+[overview](skill/slide-creator/samples/editorial-whitepaper.png) · [source](skill/slide-creator/examples/whitepaper/deck.md)
+
+Ask for it by name (*"Write this up as an editorial-whitepaper document"*), or start one with
+`node <skill>/scripts/new.mjs my-paper --style editorial-whitepaper`.
 
 ---
 
@@ -168,12 +180,13 @@ node <skill>/scripts/build.mjs my-deck              # add --pptx for PowerPoint,
 ```
 skill/slide-creator/        ← the skill (this is what gets installed)
   SKILL.md                  agent instructions
-  styles/                   editorial, boardroom, plant-floor (style.json, style.css, guide.md, reference/)
+  styles/                   editorial, boardroom, plant-floor, editorial-whitepaper (style.json, style.css, guide.md, reference/)
   assets/base.css           shared layouts and components
   scripts/                  install, doctor, new, build, inspect, lint, samples, import_style.py
   references/               layouts, tokens, diagrams, charts, rubric, design basics
   workflows/new-style.md    create / import / change a style
-  examples/showcase/        one deck using every layout — the test deck for any style
+  examples/showcase/        one deck using every layout — the test deck for any slide style
+  examples/whitepaper/      a 9-page document — the test document for editorial-whitepaper
   samples/                  showcase rendered in each style (light and dark)
 dev/                        maintainer tools (offline preview renderer) — not part of the skill
 ```

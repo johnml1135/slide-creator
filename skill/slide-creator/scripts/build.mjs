@@ -115,6 +115,12 @@ const browser = findBrowser();
 const marpBin = await marpCliPath().catch((e) => { problems.push(e.message); return null; });
 if (marpBin) {
   const base = ['--theme', themePath, '--html', '--allow-local-files'];
+  // A style may set markdown-it options, e.g. { "breaks": false } so wrapped prose reflows (document styles).
+  if (style.markdown) {
+    const marpConfig = path.join(cfg.outDir, 'marp.config.json');
+    await writeFile(marpConfig, JSON.stringify({ options: { markdown: style.markdown } }, null, 2));
+    base.push('--config-file', marpConfig);
+  }
   const outputs = [];
   for (const f of cfg.formats) outputs.push([`--${f}`, '-o', path.join(cfg.outDir, `deck.${f}`)]);
   outputs.push(['--html', '--template', 'bare', '-o', path.join(cfg.outDir, 'inspect.html')]);

@@ -9,7 +9,7 @@ import { fileURLToPath } from 'node:url';
 import { DIAGRAM_CLASSES, loadStyle, resolveTokens } from './lib/style.mjs';
 import { loadConfig, parseArgs, splitSlides } from './lib/project.mjs';
 
-export const SLIDE_CLASSES = ['cover', 'agenda', 'chapter', 'statement', 'diagram', 'chart', 'closing', 'dense', 'summary'];
+export const SLIDE_CLASSES = ['cover', 'agenda', 'chapter', 'statement', 'diagram', 'chart', 'closing', 'dense', 'summary', 'paper'];
 export const COMPONENT_CLASSES = [
   'cols', 'cols3', 'cols4', 'cols-wide-left', 'cols-wide-right', 'card', 'outline', 'callout', 'good', 'warn', 'bad', 'info',
   'kpis', 'kpi', 'key', 'stat', 'label', 'do', 'dont', 'check', 'done', 'steps', 'on', 'timeline', 'tag', 'accent',
@@ -126,7 +126,8 @@ export async function runLint(cfg, tokens) {
       const hex = JSON.stringify(spec).match(HEX);
       if (hex) add('error', 'raw-colour', `Literal colour ${hex.join(', ')}; use "$accent", "$muted", "$cat1"… instead`);
       if (!spec.title) add('warning', 'chart-title', 'No title; state the takeaway in the chart title or the slide title');
-      if (spec.width && spec.width > 1150) add('warning', 'chart-size', 'Width over 1150px will not fit the slide');
+      const maxW = (tokens?.page?.width ?? 1280) - 130;
+      if (spec.width && spec.width > maxW) add('warning', 'chart-size', `Width over ${maxW}px will not fit the page`);
     }
   }
 
