@@ -52,7 +52,7 @@
 }
 ```
 
-Units: px on a 1280×720 slide. Colour-role names (`"surface"`, `"rule"`) are accepted wherever a colour is.
+Units: px on a 1280×720 slide. `diagram.stroke` must be a whole number (D2 rejects fractions; it is rounded). Colour-role names (`"surface"`, `"rule"`) are accepted wherever a colour is.
 
 ## Derived automatically (don't add unless overriding)
 

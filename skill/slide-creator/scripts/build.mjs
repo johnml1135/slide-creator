@@ -53,10 +53,15 @@ if (existsSync(diagramDir)) {
           await writeFile(path.join(cfg.outDir, 'diagrams', f.replace(/\.d2$/, '.svg')), svg);
           log(`diagram: ${f}`);
         } catch (e) {
-          const msg = String(e.message || e).replace(/(\d+):(\d+)/g, (m, l, c) => (+l > headerLines ? `${+l - headerLines}:${c}` : m));
+          // D2 reports errors as a JSON array of {range, errmsg}; keep just the messages, with deck line numbers.
+          let raw = String(e.message || e);
+          try { raw = JSON.parse(raw).map((x) => x.errmsg).join('; '); } catch { /* plain text */ }
+          const msg = raw.replace(/index:(\d+):(\d+)/g, (m, l, c) => `line ${+l > headerLines ? +l - headerLines : l}:${c}`);
           problems.push(`diagrams/${f}: ${msg}`);
         }
       }
+      // The D2 WASM runs in a worker thread that never exits on its own; stop it so the build can finish.
+      await d2.worker?.terminate();
     }
   }
 }

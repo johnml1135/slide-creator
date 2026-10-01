@@ -116,6 +116,7 @@ footer { bottom: calc(var(--u) * 4); right: calc(var(--m-right) + 80px); }
 section::after {
   content: attr(data-marpit-pagination);
   position: absolute; right: var(--m-right); bottom: calc(var(--u) * 4);
+  padding: 0; /* Marpit's default is padding: inherit, which pushes the number in by the slide margins */
   font-size: var(--fs-caption); color: var(--muted); font-variant-numeric: tabular-nums;
 }
 

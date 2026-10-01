@@ -187,12 +187,14 @@ export function buildD2Header(style, t) {
   const nodeStroke = colorRef(t, d.nodeStroke) || c.ink;
   const groupStroke = colorRef(t, d.groupStroke) || c.surface;
   const fs = d.fontSize || 18;
+  // D2 only accepts whole-number stroke widths (0-15).
+  const sw = Math.min(15, Math.max(1, Math.round(d.stroke ?? 1)));
   const mono = d.monoLabels ? '\n      font: mono' : '';
   const status = (k) => `  ${k}: {
     style: {
       fill: "${c[k]}"
       stroke: "${c[k]}"
-      stroke-width: ${d.stroke}
+      stroke-width: ${sw}
       border-radius: ${d.radius}
       font-color: "${c['on' + k[0].toUpperCase() + k.slice(1)]}"
       font-size: ${fs}
@@ -218,7 +220,7 @@ classes: {
     style: {
       fill: "${fill}"
       stroke: "${nodeStroke}"
-      stroke-width: ${d.stroke}
+      stroke-width: ${sw}
       border-radius: ${d.radius}
       font-color: "${c.ink}"
       font-size: ${fs}
@@ -228,7 +230,7 @@ classes: {
     style: {
       fill: "${c.accent}"
       stroke: "${c.accent}"
-      stroke-width: ${d.stroke}
+      stroke-width: ${sw}
       border-radius: ${d.radius}
       font-color: "${c.onAccent}"
       font-size: ${fs}
@@ -239,7 +241,7 @@ classes: {
     style: {
       fill: "${c.bg}"
       stroke: "${c.muted}"
-      stroke-width: ${Math.max(1, d.stroke - 0.5)}
+      stroke-width: ${Math.max(1, sw - 1)}
       stroke-dash: 4
       border-radius: ${d.radius}
       font-color: "${c.muted}"
@@ -250,7 +252,7 @@ classes: {
     style: {
       fill: "${c.surface}"
       stroke: "${groupStroke}"
-      stroke-width: ${d.stroke}
+      stroke-width: ${sw}
       stroke-dash: ${d.groupDash ?? 0}
       border-radius: ${t.shape.radiusLarge ?? d.radius}
       font-color: "${c.muted}"
@@ -261,7 +263,7 @@ classes: {
   link: {
     style: {
       stroke: "${c.ink}"
-      stroke-width: ${d.stroke}
+      stroke-width: ${sw}
       font-color: "${c.muted}"
       font-size: ${Math.max(12, fs - 4)}
     }

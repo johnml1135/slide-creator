@@ -24,7 +24,7 @@ export async function inspect(cfg, { buildProblems = [], htmlPath } = {}) {
   const browser = await launchBrowser();
   const page = await browser.newPage({ viewport: { width: 1280, height: 720 }, deviceScaleFactor: 1 });
   await page.goto(pathToFileURL(html).href, { waitUntil: 'load' });
-  await page.addStyleTag({ content: 'html,body{margin:0;padding:0;background:#777} svg[data-marpit-svg]{display:block;width:1280px!important;height:720px!important;margin:0 0 24px} .marpit > svg + svg{margin-top:0}' });
+  await page.addStyleTag({ content: 'html,body{margin:0;padding:0;background:#777;height:auto!important;overflow:visible!important} svg[data-marpit-svg]{display:block;width:1280px!important;height:720px!important;margin:0 0 24px} .marpit > svg + svg{margin-top:0}' });
   await page.evaluate(() => document.fonts && document.fonts.ready);
   await page.waitForTimeout(300);
 

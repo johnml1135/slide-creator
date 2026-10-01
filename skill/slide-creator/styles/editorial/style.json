@@ -50,7 +50,7 @@
     "layoutEngine": "elk",
     "pad": 32,
     "fontSize": 18,
-    "stroke": 1.5,
+    "stroke": 1,
     "radius": 8,
     "nodeFill": "#FFFFFF",
     "groupStroke": "surface",

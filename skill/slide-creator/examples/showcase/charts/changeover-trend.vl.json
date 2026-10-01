@@ -34,6 +34,16 @@
       "data": { "values": [{ "target": 45 }] },
       "mark": { "type": "rule", "strokeDash": [6, 4], "strokeWidth": 2 },
       "encoding": { "y": { "field": "target", "type": "quantitative" }, "color": { "value": "$muted" } }
+    },
+    {
+      "data": { "values": [{ "target": 45, "label": "Target 45" }] },
+      "mark": { "type": "text", "align": "left", "baseline": "middle", "dx": 8, "fontWeight": 600 },
+      "encoding": {
+        "x": { "value": "width" },
+        "y": { "field": "target", "type": "quantitative" },
+        "text": { "field": "label" },
+        "color": { "value": "$muted" }
+      }
     }
   ]
 }
