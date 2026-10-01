@@ -173,7 +173,9 @@ if (marpBin) {
     const code = await run(process.execPath, [marpBin, deckOut, ...base, ...o], browser ? { CHROME_PATH: browser } : {});
     if (code !== 0) problems.push(`marp ${o[0]} failed (exit ${code})`);
     else if (o[1] === '-o') {
-      if (o[0] === '--pdf') await finishPdf(o[2], cfg.name || path.basename(projectDir), author, titles);
+      // PDF title: slides.json name, else the deck's title: front matter, else its first heading.
+      const deckTitle = cfg.name || /^title:\s*["']?(.+?)["']?\s*$/m.exec(front)?.[1] || titles.find(Boolean) || path.basename(projectDir);
+      if (o[0] === '--pdf') await finishPdf(o[2], deckTitle, author, titles);
       log(`${o[0].slice(2)}: ${path.relative(projectDir, o[2])}`);
     }
   }
