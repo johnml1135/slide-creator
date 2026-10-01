@@ -141,8 +141,17 @@ them in `.vscode/settings.json`:
 { "chat.tools.terminal.autoApprove": { "node": true, "npm": true } }
 ```
 
-The result lands in the deck folder: `build/deck.pdf`, plus `build/contact-sheet.png` and
+The result lands in the deck folder: `build/<deck-name>.pdf`, plus `build/contact-sheet.png` and
 `build/report.md`, which Copilot uses to check and fix its own work before handing over.
+
+To see edits as you make them, run **Terminal: Run Task → Slides: preview (watch)** and enter the deck
+folder. Or run `node .github/skills/slide-creator/scripts/build.mjs decks/line4 --watch` in the terminal.
+Open the printed local URL in a browser, or use VS Code's **Simple Browser: Show** command. Saving
+`deck.md`, diagrams, charts, images, `slides.json`, or style files refreshes the preview; the small panel
+shows source checks and build errors. The preview skips the slow PDF and visual inspection steps. When
+ready to share, run **Slides: build PDF** or the build command without `--watch`, then review the contact
+sheet and report. The installer adds these two tasks and three short Copilot prompts (`/new-deck`,
+`/new-document`, `/review-deck`) when their files are absent.
 
 **Copilot CLI:** run `copilot` in the repo and ask the same way.
 **Copilot cloud agent:** assign an issue such as *"Create a boardroom deck in decks/q3-review from
@@ -181,7 +190,9 @@ node <skill>/scripts/build.mjs my-deck              # add --scheme dark or --sty
 ```
 
 `<skill>` is where you installed it, e.g. `.github/skills/slide-creator`. The build writes
-`my-deck/build/deck.pdf`, one PNG per slide, a contact sheet and a report.
+`my-deck/build/my-deck.pdf`, one PNG per slide, a contact sheet and a report. The PDF name comes from
+`slides.json` `name` when set, otherwise from the folder name. It includes title bookmarks and optional
+author metadata (`author` in the deck front matter or `slides.json`).
 
 ## Repo layout
 

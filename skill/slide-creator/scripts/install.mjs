@@ -58,6 +58,26 @@ console.log(`✓ copied skill to ${target}`);
 
 if (repo) {
   const rel = path.relative(repo, target).split(path.sep).join('/');
+  const tasks = path.join(repo, '.vscode', 'tasks.json');
+  if (!existsSync(tasks)) {
+    await mkdir(path.dirname(tasks), { recursive: true });
+    await writeFile(tasks, JSON.stringify({ version: '2.0.0', tasks: [
+      { label: 'Slides: preview (watch)', type: 'process', command: 'node', args: [`${'${workspaceFolder}'}/${rel}/scripts/build.mjs`, '${input:deckFolder}', '--watch'], isBackground: true, problemMatcher: [] },
+      { label: 'Slides: build PDF', type: 'process', command: 'node', args: [`${'${workspaceFolder}'}/${rel}/scripts/build.mjs`, '${input:deckFolder}'], problemMatcher: [] },
+    ], inputs: [{ id: 'deckFolder', type: 'promptString', description: 'Deck folder (relative to workspace root)', default: 'decks/my-deck' }] }, null, 2) + '\n');
+    console.log('✓ wrote .vscode/tasks.json');
+  }
+  const prompts = {
+    'new-deck.prompt.md': '---\nmode: agent\ndescription: Create a slide deck with the slide-creator skill\n---\n\nUse the slide-creator skill in `.github/skills/slide-creator/SKILL.md`. Ask for audience, message, slide count and source material if missing. Create the deck source in a folder, run a full build, inspect the report and rendered slides, then give the user the named PDF path.\n',
+    'new-document.prompt.md': '---\nmode: agent\ndescription: Create a readable document with slide-creator\n---\n\nUse `.github/skills/slide-creator/SKILL.md` with the `editorial-whitepaper` style. Ask for audience, purpose and source material if missing. Create the Markdown source, build, inspect every page, and give the user the named PDF path.\n',
+    'review-deck.prompt.md': '---\nmode: agent\ndescription: Review and improve a slide-creator deck\n---\n\nUse `.github/skills/slide-creator/SKILL.md`. Build the deck, read `build/report.md`, open the contact sheet and issue images, and fix clear content or layout problems in the source. Rebuild and report remaining issues and the named PDF path.\n',
+  };
+  const promptDir = path.join(repo, '.github', 'prompts');
+  await mkdir(promptDir, { recursive: true });
+  for (const [name, content] of Object.entries(prompts)) {
+    const file = path.join(promptDir, name);
+    if (!existsSync(file)) { await writeFile(file, content); console.log(`✓ wrote .github/prompts/${name}`); }
+  }
   const gi = path.join(repo, '.gitignore');
   const text = existsSync(gi) ? await readFile(gi, 'utf8') : '';
   const line = `${rel}/node_modules/`;

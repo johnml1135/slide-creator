@@ -11,6 +11,7 @@
   "scripts": {
     "doctor": "node scripts/doctor.mjs",
     "showcase": "node scripts/build.mjs examples/showcase",
+    "preview": "node scripts/preview-server.mjs",
     "whitepaper": "node scripts/build.mjs examples/whitepaper",
     "samples": "node scripts/samples.mjs"
   },
