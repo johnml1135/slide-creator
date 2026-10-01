@@ -15,74 +15,171 @@ the **Edge or Chrome you already have**, and runs offline — nothing is sent to
 | **Inspection** | headless Edge/Chrome via Playwright: per-slide PNGs, contact sheet, layout & contrast checks |
 | **Styles** | token-based style packs; three built in; import your own from a .pptx/.pdf |
 
-## The three built-in styles
+## The built-in styles
 
-| Style | Feel | Use for | Sample |
+| Style | Feel | Use for | Samples |
 |---|---|---|---|
-| **editorial** | calm, book-like, serif titles, warm paper, one clay accent (inspired by Anthropic's skills guide) | explainers, training, strategy narratives | [PDF](skill/slide-creator/samples/editorial.pdf) |
-| **boardroom** | consulting / executive: white, navy bar, action titles, strict grid | leadership updates, business cases, reviews | [PDF](skill/slide-creator/samples/boardroom.pdf) |
-| **plant-floor** | industrial: header bar, condensed headings, mono labels, safety colours | operations, CI/A3, engineering, project status | [PDF](skill/slide-creator/samples/plant-floor.pdf) · [dark](skill/slide-creator/samples/plant-floor-dark.pdf) |
+| **editorial** | calm, book-like, serif titles, warm paper, one clay accent | explainers, training, strategy narratives | [PDF](skill/slide-creator/samples/editorial.pdf) · [dark](skill/slide-creator/samples/editorial-dark.pdf) · [overview](skill/slide-creator/samples/editorial.png) |
+| **boardroom** | consulting / executive: white, navy, action titles, strict grid | leadership updates, business cases, reviews | [PDF](skill/slide-creator/samples/boardroom.pdf) · [dark](skill/slide-creator/samples/boardroom-dark.pdf) · [overview](skill/slide-creator/samples/boardroom.png) |
+| **plant-floor** | industrial: header bar, condensed headings, mono labels, safety colours | operations, CI/A3, engineering, project status | [PDF](skill/slide-creator/samples/plant-floor.pdf) · [dark](skill/slide-creator/samples/plant-floor-dark.pdf) · [overview](skill/slide-creator/samples/plant-floor.png) |
 
-Every style has a light and a dark colour scheme, and any colour can be overridden per deck.
+Every sample is the same 12-slide showcase deck ([source](skill/slide-creator/examples/showcase/deck.md)),
+rendered by `npm run samples`. Any colour can be overridden per deck.
 
-> The sample PDFs in this repo were rendered with an offline preview renderer (no Marp/D2/Vega available
-> where they were made), using stand-in fonts and simplified diagrams. Run `npm run samples` in the skill
-> folder to regenerate them with the real pipeline and your fonts.
+---
 
-## Install
+## Get it working
 
-**GitHub Copilot** — copy `skill/slide-creator/` to one of:
-- `~/.copilot/skills/slide-creator/` (personal, all projects), or
-- `<your repo>/.github/skills/slide-creator/` (one project)
+### 1. What you need
 
-**Claude Code** — copy it to `~/.claude/skills/slide-creator/`.
-**Claude.ai** — zip the `slide-creator` folder and upload it under Settings → Capabilities → Skills.
+- **Node.js 18 or newer** (`node -v`).
+- **Microsoft Edge or Google Chrome** — already on every Windows PC. Nothing else is downloaded.
+- **Git**, to get this repo.
+- *Optional:* Python 3.9+ — only for importing a style from an existing .pptx/.pdf.
 
-Then, once:
+### 2. Get the skill
 
 ```
-cd <skill folder>
-npm install
-node scripts/doctor.mjs
-pip install -r requirements.txt      # only for importing styles
+git clone https://github.com/johnml1135/slide-creator.git
 ```
 
-If `doctor` can't find a browser, set `SLIDE_BROWSER` to the path of `msedge.exe` or `chrome.exe`.
+The skill itself is the folder `skill/slide-creator/`. You never run anything from the clone directly —
+the installer copies the skill to where your agent looks for skills.
 
-## Use
+### 3. Install it — pick one
 
-Ask the agent, e.g. *"Make a 10-slide plant-floor deck on our Line 4 changeover results"* or
-*"Import the style from template.pptx and rebuild this deck in it."* The skill tells it to:
+**A. Into a repository (recommended for teams).** Everyone who clones that repo gets the skill in
+Copilot (VS Code agent mode, Copilot CLI, Copilot cloud agent) and Claude Code.
 
-1. scaffold a project (`scripts/new.mjs`), write the story, slides, diagrams and charts;
-2. build (`scripts/build.mjs`) → `build/deck.pdf`, `build/slides/*.png`, `build/contact-sheet.png`, `build/report.md`;
-3. fix errors from the report, look at the images, score them against the rubric, rebuild (≤3 rounds).
+```
+node slide-creator/skill/slide-creator/scripts/install.mjs --repo C:\path\to\your-repo
+```
 
-By hand:
+This copies the skill to `your-repo/.github/skills/slide-creator/`, adds its `node_modules/` to the repo's
+`.gitignore`, installs the npm packages, and runs a health check (`doctor`). Then commit:
+
+```
+cd C:\path\to\your-repo
+git add .gitignore .github/skills/slide-creator
+git commit -m "Add slide-creator skill"
+```
+
+Teammates run this once after pulling (or simply ask Copilot to make a deck — the skill tells it to):
+
+```
+npm ci --prefix .github/skills/slide-creator
+```
+
+**B. Just for you, in every project.** Installs to `~/.copilot/skills/slide-creator/`:
+
+```
+node slide-creator/skill/slide-creator/scripts/install.mjs --personal
+```
+
+**C. Copilot cloud agent** (assigning issues to Copilot on github.com). Do option A with one more flag:
+
+```
+node slide-creator/skill/slide-creator/scripts/install.mjs --repo C:\path\to\your-repo --cloud-agent
+```
+
+This also writes `.github/workflows/copilot-setup-steps.yml`, which installs the skill's packages before
+the agent starts (the runner's Chrome does the rendering). Commit it **to the default branch** — Copilot
+only uses it from there. If the file already exists, the installer prints the steps to add instead.
+
+**D. Claude Code or Claude.ai.** Claude Code: `--to ~/.claude/skills/slide-creator` (or option A — Claude
+Code also reads `.claude/skills/` in a repo; copy there with `--to <repo>/.claude/skills/slide-creator`).
+Claude.ai: zip the `skill/slide-creator` folder and upload it under Settings → Capabilities → Skills.
+
+**Updating:** `git pull` in the clone and run the same install command again. It replaces the skill files
+and keeps the installed packages.
+
+### 4. Check it
+
+The installer ends with the health check. Run it again any time:
+
+```
+node .github/skills/slide-creator/scripts/doctor.mjs        # or ~/.copilot/skills/slide-creator/...
+```
+
+All lines should show ✓. If it can't find a browser, set `SLIDE_BROWSER` to the full path of `msedge.exe`
+or `chrome.exe`.
+
+---
+
+## Use it with GitHub Copilot
+
+**VS Code:** open Copilot Chat, switch to **Agent** mode, and ask — or type `/slide-creator` to call the
+skill by name:
+
+> *Make a 10-slide plant-floor deck on our Line 4 changeover results, from notes.md. Put it in decks/line4.*
+
+Copilot reads the skill, scaffolds the deck folder, writes the slides, diagrams and charts, and runs the
+build in the terminal. Approve the `node …/build.mjs` commands when asked. To stop being asked, allow-list
+them in `.vscode/settings.json`:
+
+```json
+{ "chat.tools.terminal.autoApprove": { "node": true, "npm": true } }
+```
+
+The result lands in the deck folder: `build/deck.pdf`, plus `build/contact-sheet.png` and
+`build/report.md`, which Copilot uses to check and fix its own work before handing over.
+
+**Copilot CLI:** run `copilot` in the repo and ask the same way.
+**Copilot cloud agent:** assign an issue such as *"Create a boardroom deck in decks/q3-review from
+docs/q3.md"*. The pull request contains the deck source (Markdown, diagrams, charts); build output is
+git-ignored, so run the build locally — or ask Copilot to build it — to get the PDF.
+
+Other things to ask for:
+- *"Rebuild this deck in the boardroom style"* / *"…in dark mode"* / *"use our brand colours #0A3D62 and #E58E26"*
+- *"Import the style from template.pptx and use it for this deck"* (needs the optional Python step:
+  `pip install -r <skill>/requirements.txt`)
+- *"Check this deck's design and fix what's weak"*
+
+### If Copilot doesn't use the skill
+
+- Check that `SKILL.md` is at `.github/skills/slide-creator/SKILL.md` (or `~/.copilot/skills/slide-creator/SKILL.md`),
+  then reload VS Code. Type `/` in Chat: `slide-creator` should be listed.
+- Make sure Chat is in **Agent** mode — Ask/Edit modes can't run the build.
+- Mention it explicitly: *"Use the slide-creator skill to …"*.
+
+### Troubleshooting
+
+| Problem | Fix |
+|---|---|
+| `npm ci` fails behind a corporate proxy | `npm config set proxy http://proxy:port` and `https-proxy`, or point `registry` at your internal mirror |
+| `doctor`: no browser / headless browser failed | set `SLIDE_BROWSER` to `msedge.exe` or `chrome.exe`; some PCs block headless Edge — try Chrome, or ask IT |
+| Fonts look different from the samples | styles use Windows/Office fonts (Aptos, Segoe UI, Georgia…) with fallbacks; on Linux/macOS the fallbacks are used |
+| A build error mentions a diagram line | the line number is in your `.d2` file; see `references/diagrams.md` |
+
+---
+
+## Use it by hand
 
 ```
 node <skill>/scripts/new.mjs my-deck --style boardroom
 node <skill>/scripts/build.mjs my-deck              # add --pptx for PowerPoint, --scheme dark, --style other
 ```
 
+`<skill>` is where you installed it, e.g. `.github/skills/slide-creator`. The build writes
+`my-deck/build/deck.pdf`, one PNG per slide, a contact sheet and a report.
+
 ## Repo layout
 
 ```
-skill/slide-creator/        ← the skill (this is what you copy/download)
+skill/slide-creator/        ← the skill (this is what gets installed)
   SKILL.md                  agent instructions
   styles/                   editorial, boardroom, plant-floor (style.json, style.css, guide.md, reference/)
   assets/base.css           shared layouts and components
-  scripts/                  build, inspect, lint, new, doctor, samples, import_style.py
+  scripts/                  install, doctor, new, build, inspect, lint, samples, import_style.py
   references/               layouts, tokens, diagrams, charts, rubric, design basics
   workflows/new-style.md    create / import / change a style
-  examples/showcase/        one deck using every layout
-  samples/                  showcase rendered in each style
+  examples/showcase/        one deck using every layout — the test deck for any style
+  samples/                  showcase rendered in each style (light and dark)
 dev/                        maintainer tools (offline preview renderer) — not part of the skill
 ```
 
 ## Status
 
-Version 0.1 — first cut. The style generator, linter, inspector and style importer have been run and
-checked; the Marp, D2 and Vega-Lite steps are written against their documented APIs but have not yet been
-run end-to-end (their npm packages weren't installable where this was built). First real run:
-`npm install && npm run showcase`, then look at `examples/showcase/build/report.md`.
+Version 0.1. The full pipeline (Marp, D2, Vega-Lite, inspection) runs end to end on Windows with Edge;
+the samples and style reference images are real renders. Editable (non-image) PowerPoint output is a
+possible next phase.
