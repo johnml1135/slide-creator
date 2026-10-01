@@ -66,7 +66,7 @@ export async function runLint(cfg, tokens) {
     }
 
     for (const m of prose.matchAll(/!\[[^\]]*\]\(([^)\s]+)/g)) {
-      const src = m[1];
+      const src = decodeURIComponent(m[1]); // a file name with spaces is written with %20
       if (/^(https?:|data:)/.test(src)) { add('warning', 'remote-image', `Remote image ${src}; use a local file so the deck builds offline`); continue; }
       const svgSource = /^(diagrams|charts)\/(.+)\.svg$/.exec(src);
       if (svgSource) {

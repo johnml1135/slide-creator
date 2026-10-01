@@ -1,0 +1,1 @@
+{ "title": "Too wide to read", "width": 2600, "height": 300, "data": { "values": [{"x": "A", "y": 3}, {"x": "B", "y": 5}] }, "mark": "bar", "encoding": { "x": {"field": "x", "type": "nominal"}, "y": {"field": "y", "type": "quantitative"} } }

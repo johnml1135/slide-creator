@@ -12,7 +12,8 @@
     "doctor": "node scripts/doctor.mjs",
     "showcase": "node scripts/build.mjs examples/showcase",
     "whitepaper": "node scripts/build.mjs examples/whitepaper",
-    "samples": "node scripts/samples.mjs"
+    "samples": "node scripts/samples.mjs",
+    "test": "node tests/run.mjs"
   },
   "dependencies": {
     "@marp-team/marp-cli": "^4.1.0",
