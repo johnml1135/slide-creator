@@ -9,7 +9,7 @@ import { existsSync } from 'node:fs';
 import path from 'node:path';
 import { spawn } from 'node:child_process';
 import { SKILL_DIR, loadStyle, resolveTokens, buildCss, buildD2Header, buildVegaConfig, resolveTokenRefs } from './lib/style.mjs';
-import { loadConfig, parseArgs, importDep, resolveDepFile, findBrowser, splitFrontMatter } from './lib/project.mjs';
+import { loadConfig, parseArgs, importDep, packageDir, findBrowser, splitFrontMatter } from './lib/project.mjs';
 
 const args = parseArgs(process.argv.slice(2));
 const projectDir = path.resolve(args._[0] || '.');
@@ -135,7 +135,7 @@ if (!args['no-inspect'] && existsSync(path.join(cfg.outDir, 'inspect.html'))) {
 /* ---------- helpers ---------- */
 async function marpCliPath() {
   let pkgPath;
-  try { pkgPath = resolveDepFile('@marp-team/marp-cli/package.json'); }
+  try { pkgPath = path.join(packageDir('@marp-team/marp-cli'), 'package.json'); }
   catch { throw new Error(`Missing dependency "@marp-team/marp-cli". Run: npm install --prefix "${SKILL_DIR}"`); }
   const pkg = JSON.parse(await readFile(pkgPath, 'utf8'));
   const bin = typeof pkg.bin === 'string' ? pkg.bin : pkg.bin.marp;
@@ -159,7 +159,7 @@ async function inlineIcons(text) {
   const names = [...new Set([...text.matchAll(re)].map((m) => m[1]))];
   if (!names.length) return text;
   let iconDir;
-  try { iconDir = path.join(path.dirname(resolveDepFile('lucide-static/package.json')), 'icons'); }
+  try { iconDir = path.join(packageDir('lucide-static'), 'icons'); }
   catch { problems.push('Icons used but lucide-static is not installed (npm install in the skill folder).'); return text; }
   const svgs = {};
   for (const n of names) {

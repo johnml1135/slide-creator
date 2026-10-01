@@ -63,6 +63,16 @@ export function resolveDepFile(spec) {
   return req.resolve(spec);
 }
 
+/** Folder of an installed package. Unlike resolving "<pkg>/package.json", this works when the
+ *  package's "exports" map hides package.json (d2, vega, vega-lite do). Throws if not installed. */
+export function packageDir(name) {
+  const req = createRequire(path.join(SKILL_DIR, 'package.json'));
+  for (const dir of req.resolve.paths(name) || []) {
+    if (existsSync(path.join(dir, name, 'package.json'))) return path.join(dir, name);
+  }
+  throw new Error(`Missing dependency "${name}". Run: npm install --prefix "${SKILL_DIR}"`);
+}
+
 /** Find an installed Chromium-family browser (Edge first — it is on every corporate Windows PC). */
 export function findBrowser() {
   const env = process.env.SLIDE_BROWSER || process.env.CHROME_PATH;

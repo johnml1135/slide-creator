@@ -4,7 +4,7 @@
 
 import { execFileSync } from 'node:child_process';
 import { SKILL_DIR } from './lib/style.mjs';
-import { findBrowser, resolveDepFile, launchBrowser } from './lib/project.mjs';
+import { findBrowser, packageDir, launchBrowser } from './lib/project.mjs';
 
 let bad = 0;
 const ok = (m) => console.log(`  ✓ ${m}`);
@@ -18,7 +18,7 @@ major >= 18 ? ok(`Node ${process.versions.node}`) : fail(`Node ${process.version
 
 const deps = { '@marp-team/marp-cli': 'slides', '@terrastruct/d2': 'diagrams', vega: 'charts', 'vega-lite': 'charts', 'lucide-static': 'icons', 'playwright-core': 'inspection' };
 for (const [d, what] of Object.entries(deps)) {
-  try { resolveDepFile(`${d}/package.json`); ok(`${d} (${what})`); }
+  try { packageDir(d); ok(`${d} (${what})`); }
   catch { fail(`${d} missing (${what})`, `npm install --prefix "${SKILL_DIR}"`); }
 }
 
